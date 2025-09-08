@@ -1,0 +1,32 @@
+{"timestamp": "2025-08-31T15:55:37.869813", "level": "ERROR", "logger": "prod_test", "message": "Production error message", "error_code": 500, "retry_count": 3, "card_info": "1234-5678-9012-3456"}
+{"timestamp": "2025-08-31T15:55:37.869813", "level": "CRITICAL", "logger": "prod_test", "message": "Production critical message", "system_status": "warning", "payment_method": "1234 5678 9012 3456"}
+{"timestamp": "2025-08-31T15:55:37.872815", "level": "ERROR", "logger": "env_test", "message": "Production environment message", "error_code": 500, "retry_count": 3, "credit_card": "1234567890123456"}
+{"timestamp": "2025-08-31T15:55:37.878912", "level": "ERROR", "logger": "comprehensive_prod", "message": "Error with credit card", "error_code": 500, "card_info": "1234-5678-9012-3456"}
+{"timestamp": "2025-08-31T15:55:37.878912", "level": "CRITICAL", "logger": "comprehensive_prod", "message": "Critical with credit card", "system_status": "down", "payment_method": "1234 5678 9012 3456", "system_metrics": {"performance": {"response_time": 2500, "throughput": 150, "error_rate": 0.05}, "resources": {"cpu": 95.5, "memory": 98.2, "disk": 87.1, "network": 85.3}, "alerts": [{"type": "high_cpu", "threshold": 90, "current": 95.5}, {"type": "high_memory", "threshold": 95, "current": 98.2}]}}
+{"timestamp": "2025-08-31T16:01:58.198035", "level": "ERROR", "logger": "prod_test", "message": "Production error message", "error_code": 500, "retry_count": 3, "card_info": "1234-5678-9012-3456"}
+{"timestamp": "2025-08-31T16:01:58.198035", "level": "CRITICAL", "logger": "prod_test", "message": "Production critical message", "system_status": "warning", "payment_method": "1234 5678 9012 3456"}
+{"timestamp": "2025-08-31T16:01:58.208035", "level": "ERROR", "logger": "env_test", "message": "Production environment message", "error_code": 500, "retry_count": 3, "credit_card": "1234567890123456"}
+{"timestamp": "2025-08-31T16:01:58.221188", "level": "ERROR", "logger": "comprehensive_prod", "message": "Error with credit card", "error_code": 500, "card_info": "1234-5678-9012-3456"}
+{"timestamp": "2025-08-31T16:01:58.221188", "level": "CRITICAL", "logger": "comprehensive_prod", "message": "Critical with credit card", "system_status": "down", "payment_method": "1234 5678 9012 3456", "system_metrics": {"performance": {"response_time": 2500, "throughput": 150, "error_rate": 0.05}, "resources": {"cpu": 95.5, "memory": 98.2, "disk": 87.1, "network": 85.3}, "alerts": [{"type": "high_cpu", "threshold": 90, "current": 95.5}, {"type": "high_memory", "threshold": 95, "current": 98.2}]}}
+{"timestamp": "2025-08-31T16:03:51.304761", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:03:51.306454", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:04:48.063614", "level": "ERROR", "logger": "level_test_prod", "message": "ERROR level message", "log_level": "error"}
+{"timestamp": "2025-08-31T16:04:48.063614", "level": "CRITICAL", "logger": "level_test_prod", "message": "CRITICAL level message", "log_level": "critical"}
+{"timestamp": "2025-08-31T16:04:49.005495", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:04:49.005495", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:05:42.486987", "level": "ERROR", "logger": "level_test_prod", "message": "ERROR level message", "log_level": "error"}
+{"timestamp": "2025-08-31T16:05:42.487987", "level": "CRITICAL", "logger": "level_test_prod", "message": "CRITICAL level message", "log_level": "critical"}
+{"timestamp": "2025-08-31T16:05:43.341802", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:05:43.341802", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:07:43.698349", "level": "ERROR", "logger": "level_test_prod", "message": "ERROR level message", "log_level": "error"}
+{"timestamp": "2025-08-31T16:07:43.698349", "level": "CRITICAL", "logger": "level_test_prod", "message": "CRITICAL level message", "log_level": "critical"}
+{"timestamp": "2025-08-31T16:07:44.570285", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:07:44.570285", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:09:24.073023", "level": "ERROR", "logger": "level_test_prod", "message": "ERROR level message", "log_level": "error"}
+{"timestamp": "2025-08-31T16:09:24.073023", "level": "CRITICAL", "logger": "level_test_prod", "message": "CRITICAL level message", "log_level": "critical"}
+{"timestamp": "2025-08-31T16:09:24.957097", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:09:24.957097", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:09:33.754838", "level": "ERROR", "logger": "level_test_prod", "message": "ERROR level message", "log_level": "error"}
+{"timestamp": "2025-08-31T16:09:33.755840", "level": "CRITICAL", "logger": "level_test_prod", "message": "CRITICAL level message", "log_level": "critical"}
+{"timestamp": "2025-08-31T16:09:34.653878", "level": "ERROR", "logger": "file_test_prod", "message": "Error message for prod environment", "env": "prod"}
+{"timestamp": "2025-08-31T16:09:34.653878", "level": "CRITICAL", "logger": "file_test_prod", "message": "Critical message for prod environment", "env": "prod"}

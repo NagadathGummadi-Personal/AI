@@ -1,0 +1,60 @@
+{
+  "backend": "json",
+  "level": "WARNING",
+  "log_directory": "./logs",
+  "redaction": {
+    "enabled": false,
+    "placeholder": "[REDACTED]",
+    "patterns": [
+      {
+        "pattern": "password=\\S+",
+        "placeholder": "password=[HIDDEN]",
+        "flags": ["ignorecase"]
+      },
+      {
+        "pattern": "token=\\S+",
+        "placeholder": "token=[HIDDEN]",
+        "flags": ["ignorecase"]
+      },
+      {
+        "pattern": "api[_-]?key=\\S+",
+        "placeholder": "api_key=[HIDDEN]",
+        "flags": ["ignorecase"]
+      },
+      {
+        "pattern": "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b",
+        "placeholder": "[CREDIT_CARD_REDACTED]"
+      },
+      {
+        "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b",
+        "placeholder": "[EMAIL_REDACTED]"
+      },
+      {
+        "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+        "placeholder": "[SSN_REDACTED]"
+      },
+      {
+        "pattern": "\\b(?:\\+1[-\\s]?)?\\(?\\d{3}\\)?[-\\s]?\\d{3}[-\\s]?\\d{4}\\b",
+        "placeholder": "[PHONE_REDACTED]"
+      }
+    ]
+  },
+  "handlers": {
+    "console": {
+      "type": "console",
+      "level": "ERROR"
+    },
+    "file": {
+      "type": "rotating_file",
+      "level": "WARNING",
+      "filename": "prod_application.log",
+      "max_bytes": 52428800,
+      "backup_count": 10
+    },
+    "error_file": {
+      "type": "file",
+      "level": "ERROR",
+      "filename": "prod_errors.log"
+    }
+  }
+} 

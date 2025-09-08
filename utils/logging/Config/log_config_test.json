@@ -1,0 +1,31 @@
+{
+  "backend": "standard",
+  "level": "DEBUG",
+  "log_directory": "./logs",
+  "redaction": {
+    "enabled": false
+  },
+  "formatters": {
+    "default": {
+      "format": "[TEST] %(asctime)s - %(name)s - %(levelname)s - %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    },
+    "detailed": {
+      "format": "[TEST] %(asctime)s - %(name)s - %(levelname)s - %(module)s:%(funcName)s:%(lineno)d - %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
+  "handlers": {
+    "console": {
+      "type": "console",
+      "level": "DEBUG",
+      "formatter": "detailed"
+    },
+    "file": {
+      "type": "file",
+      "level": "DEBUG",
+      "formatter": "detailed",
+      "filename": "test_application.log"
+    }
+  }
+} 

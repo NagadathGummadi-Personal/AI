@@ -1,0 +1,32 @@
+{
+  "backend": "json",
+  "level": "DEBUG",
+  "log_directory": "./logs",
+  "redaction": {
+    "enabled": false,
+    "placeholder": "[DEV_REDACTED]",
+    "patterns": [
+      {
+        "pattern": "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b",
+        "placeholder": "[CREDIT_CARD_REDACTED]"
+      }
+    ]
+  },
+  "formatters": {
+    "default": {
+      "format": "{\"timestamp\": \"%(asctime)s\", \"level\": \"%(levelname)s\", \"logger\": \"%(name)s\", \"message\": %(message)s}",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
+  "handlers": {
+    "console": {
+      "type": "console",
+      "level": "DEBUG"
+    },
+    "file": {
+      "type": "file",
+      "level": "DEBUG",
+      "filename": "dev_application.log"
+    }
+  }
+} 

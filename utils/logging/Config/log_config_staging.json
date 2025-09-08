@@ -1,0 +1,44 @@
+{
+  "backend": "detailed",
+  "level": "INFO",
+  "log_directory": "./logs",
+  "redaction": {
+    "enabled": true,
+    "placeholder": "[STAGING_REDACTED]",
+    "patterns": [
+      {
+        "pattern": "password=\\S+",
+        "placeholder": "password=[HIDDEN]",
+        "flags": ["ignorecase"]
+      },
+      {
+        "pattern": "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b",
+        "placeholder": "[CREDIT_CARD_REDACTED]"
+      },
+      {
+        "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b",
+        "placeholder": "[EMAIL_REDACTED]"
+      }
+    ]
+  },
+  "formatters": {
+    "default": {
+      "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
+  "handlers": {
+    "console": {
+      "type": "console",
+      "level": "INFO",
+      "formatter": "default"
+    },
+    "file": {
+      "type": "rotating_file",
+      "level": "INFO",
+      "filename": "staging_application.log",
+      "max_bytes": 10485760,
+      "backup_count": 5
+    }
+  }
+} 

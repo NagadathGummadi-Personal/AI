@@ -1,0 +1,10 @@
+[project]
+name = "utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff.lint]
+ignore = ["T201"]  # Allow print statements for utility functions
