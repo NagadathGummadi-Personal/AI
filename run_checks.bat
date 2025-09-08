@@ -15,7 +15,8 @@ echo Running Pylint on Python files...
 for /r %%f in (*.py) do (
     echo %%f | findstr /v "\.venv" >nul && (
         echo Checking %%f
-        uv tool run pylint "%%f"
+        uv tool run pylint 
+        "%%f"
     )
 )
 
