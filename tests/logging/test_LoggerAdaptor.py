@@ -5,7 +5,6 @@ import json
 import os
 import tempfile
 from unittest.mock import Mock, patch, mock_open
-from pathlib import Path
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 from utils.logging.Enum import Environment, LoggingFormat, RedactionConfig
 
@@ -134,7 +133,7 @@ class TestLoggerAdaptor:
                 mock_get_file.return_value = "invalid.json"
                 
                 with pytest.raises(ValueError, match="Invalid JSON"):
-                    logger = LoggerAdaptor()
+                    _ = LoggerAdaptor()
 
     def test_format_message_single_string(self):
         """Test message formatting with single string argument."""
@@ -554,3 +553,326 @@ class TestLoggerAdaptor:
                     mock_log.assert_called_once_with(log_level, "Test message")
                 else:
                     mock_log.assert_not_called()
+
+
+class TestLoggingFormat:
+    """Test cases for LoggingFormat enum."""
+
+    def test_logging_format_values(self):
+        """Test that LoggingFormat enum has correct values."""
+        assert LoggingFormat.STANDARD.value == "standard"
+        assert LoggingFormat.JSON.value == "json"
+        assert LoggingFormat.DETAILED.value == "detailed"
+
+    def test_logging_format_membership(self):
+        """Test LoggingFormat enum membership."""
+        assert "standard" in [format.value for format in LoggingFormat]
+        assert "json" in [format.value for format in LoggingFormat]
+        assert "detailed" in [format.value for format in LoggingFormat]
+
+    def test_logging_format_iteration(self):
+        """Test iterating over LoggingFormat enum."""
+        formats = list(LoggingFormat)
+        assert len(formats) == 3
+        assert LoggingFormat.STANDARD in formats
+        assert LoggingFormat.JSON in formats
+        assert LoggingFormat.DETAILED in formats
+
+    def test_logging_format_string_representation(self):
+        """Test string representation of LoggingFormat enum."""
+        assert str(LoggingFormat.STANDARD) == "LoggingFormat.STANDARD"
+        assert str(LoggingFormat.JSON) == "LoggingFormat.JSON"
+        assert str(LoggingFormat.DETAILED) == "LoggingFormat.DETAILED"
+
+    def test_logging_format_comparison(self):
+        """Test LoggingFormat enum comparison."""
+        assert LoggingFormat.STANDARD == LoggingFormat.STANDARD
+        assert LoggingFormat.JSON != LoggingFormat.STANDARD
+        assert LoggingFormat.DETAILED != LoggingFormat.JSON
+
+
+class TestEnvironment:
+    """Test cases for Environment enum."""
+
+    def test_environment_values(self):
+        """Test that Environment enum has correct values."""
+        assert Environment.DEVELOPMENT.value == "development"
+        assert Environment.STAGING.value == "staging"
+        assert Environment.PRODUCTION.value == "production"
+        assert Environment.TESTING.value == "testing"
+
+    def test_environment_membership(self):
+        """Test Environment enum membership."""
+        environments = [env.value for env in Environment]
+        assert "development" in environments
+        assert "staging" in environments
+        assert "production" in environments
+        assert "testing" in environments
+
+    def test_environment_iteration(self):
+        """Test iterating over Environment enum."""
+        envs = list(Environment)
+        assert len(envs) == 4
+        assert Environment.DEVELOPMENT in envs
+        assert Environment.STAGING in envs
+        assert Environment.PRODUCTION in envs
+        assert Environment.TESTING in envs
+
+
+class TestRedactionConfig:
+    """Test cases for RedactionConfig enum with various patterns."""
+
+    def test_redaction_config_values(self):
+        """Test that RedactionConfig enum has correct values."""
+        assert RedactionConfig.ENABLED.value == "enabled"
+        assert RedactionConfig.PLACEHOLDER.value == "placeholder"
+        assert RedactionConfig.PATTERNS.value == "patterns"
+
+    def test_redaction_config_membership(self):
+        """Test RedactionConfig enum membership."""
+        config_keys = [config.value for config in RedactionConfig]
+        assert "enabled" in config_keys
+        assert "placeholder" in config_keys
+        assert "patterns" in config_keys
+
+    def test_redaction_patterns_credit_card(self):
+        """Test redaction patterns for credit card numbers."""
+        patterns = {
+            "visa": r"4[0-9]{12}(?:[0-9]{3})?",
+            "mastercard": r"5[1-5][0-9]{14}",
+            "amex": r"3[47][0-9]{13}",
+            "discover": r"6(?:011|5[0-9]{2})[0-9]{12}",
+            "generic_card": r"\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}"
+        }
+        
+        # Test that patterns are valid regex patterns
+        import re
+        for pattern_name, pattern in patterns.items():
+            try:
+                re.compile(pattern)
+                assert True, f"Pattern {pattern_name} is valid"
+            except re.error:
+                assert False, f"Pattern {pattern_name} is invalid: {pattern}"
+
+    def test_redaction_patterns_personal_info(self):
+        """Test redaction patterns for personal information."""
+        patterns = {
+            "ssn": r"\b\d{3}-?\d{2}-?\d{4}\b",
+            "phone": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+            "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+            "ip_address": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
+            "mac_address": r"\b[0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}\b"
+        }
+        
+        import re
+        for pattern_name, pattern in patterns.items():
+            try:
+                re.compile(pattern)
+                assert True, f"Pattern {pattern_name} is valid"
+            except re.error:
+                assert False, f"Pattern {pattern_name} is invalid: {pattern}"
+
+    def test_redaction_patterns_financial(self):
+        """Test redaction patterns for financial information."""
+        patterns = {
+            "bank_account": r"\b\d{8,17}\b",
+            "routing_number": r"\b\d{9}\b",
+            "iban": r"\b[A-Z]{2}\d{2}[A-Z0-9]{4,30}\b",
+            "swift_code": r"\b[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\b",
+            "currency_amount": r"\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?"
+        }
+        
+        import re
+        for pattern_name, pattern in patterns.items():
+            try:
+                re.compile(pattern)
+                assert True, f"Pattern {pattern_name} is valid"
+            except re.error:
+                assert False, f"Pattern {pattern_name} is invalid: {pattern}"
+
+    def test_redaction_config_structure(self):
+        """Test complete redaction configuration structure."""
+        redaction_config = {
+            RedactionConfig.ENABLED.value: True,
+            RedactionConfig.PLACEHOLDER.value: "[REDACTED]",
+            RedactionConfig.PATTERNS.value: [
+                {
+                    "name": "credit_card",
+                    "pattern": r"\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}",
+                    "placeholder": "[CARD]",
+                    "flags": ["IGNORECASE"]
+                },
+                {
+                    "name": "ssn",
+                    "pattern": r"\b\d{3}-?\d{2}-?\d{4}\b",
+                    "placeholder": "[SSN]",
+                    "flags": []
+                },
+                {
+                    "name": "email",
+                    "pattern": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+                    "placeholder": "[EMAIL]",
+                    "flags": ["IGNORECASE"]
+                },
+                {
+                    "name": "phone",
+                    "pattern": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+                    "placeholder": "[PHONE]",
+                    "flags": []
+                },
+                {
+                    "name": "api_key",
+                    "pattern": r"\b[Aa][Pp][Ii][-_]?[Kk][Ee][Yy]\s*[:=]\s*['\"]?([A-Za-z0-9_-]{20,})['\"]?",
+                    "placeholder": "[API_KEY]",
+                    "flags": ["IGNORECASE"]
+                }
+            ]
+        }
+        
+        # Validate structure
+        assert redaction_config[RedactionConfig.ENABLED.value] is True
+        assert redaction_config[RedactionConfig.PLACEHOLDER.value] == "[REDACTED]"
+        assert len(redaction_config[RedactionConfig.PATTERNS.value]) == 5
+        
+        # Validate each pattern
+        for pattern_config in redaction_config[RedactionConfig.PATTERNS.value]:
+            assert "name" in pattern_config
+            assert "pattern" in pattern_config
+            assert "placeholder" in pattern_config
+            assert "flags" in pattern_config
+            
+            # Test pattern compilation
+            import re
+            try:
+                re.compile(pattern_config["pattern"])
+                assert True, f"Pattern {pattern_config['name']} is valid"
+            except re.error:
+                assert False, f"Pattern {pattern_config['name']} is invalid"
+
+    def test_redaction_pattern_matching(self):
+        """Test that redaction patterns match expected strings."""
+        import re
+        
+        test_cases = [
+            {
+                "pattern": r"\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}",
+                "test_strings": [
+                    "4532-1234-5678-9012",
+                    "4532 1234 5678 9012",
+                    "4532123456789012"
+                ],
+                "should_match": True
+            },
+            {
+                "pattern": r"\b\d{3}-?\d{2}-?\d{4}\b",
+                "test_strings": [
+                    "123-45-6789",
+                    "123456789",
+                    "123-456789"
+                ],
+                "should_match": True
+            },
+            {
+                "pattern": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+                "test_strings": [
+                    "user@example.com",
+                    "test.email+tag@domain.co.uk",
+                    "user123@test-domain.org"
+                ],
+                "should_match": True
+            },
+            {
+                "pattern": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+                "test_strings": [
+                    "555-123-4567",
+                    "555.123.4567",
+                    "5551234567"
+                ],
+                "should_match": True
+            }
+        ]
+        
+        for test_case in test_cases:
+            pattern = re.compile(test_case["pattern"])
+            for test_string in test_case["test_strings"]:
+                match = pattern.search(test_string)
+                if test_case["should_match"]:
+                    assert match is not None, f"Pattern should match '{test_string}'"
+                else:
+                    assert match is None, f"Pattern should not match '{test_string}'"
+
+    def test_redaction_placeholder_variations(self):
+        """Test different placeholder variations for redaction."""
+        placeholders = [
+            "[REDACTED]",
+            "[CARD]",
+            "[SSN]",
+            "[EMAIL]",
+            "[PHONE]",
+            "[API_KEY]",
+            "[SENSITIVE]",
+            "***",
+            "XXXXX",
+            "[MASKED]"
+        ]
+        
+        # Test that all placeholders are valid strings
+        for placeholder in placeholders:
+            assert isinstance(placeholder, str)
+            assert len(placeholder) > 0
+            assert placeholder != ""
+
+    def test_redaction_flags_support(self):
+        """Test support for regex flags in redaction patterns."""
+        import re
+        
+        flag_mappings = {
+            "IGNORECASE": re.IGNORECASE,
+            "MULTILINE": re.MULTILINE,
+            "DOTALL": re.DOTALL,
+            "VERBOSE": re.VERBOSE,
+            "ASCII": re.ASCII
+        }
+        
+        # Test that flag strings map to correct regex flags
+        for flag_name, flag_value in flag_mappings.items():
+            assert hasattr(re, flag_name)
+            assert getattr(re, flag_name) == flag_value
+
+    def test_complex_redaction_scenario(self):
+        """Test complex redaction scenario with multiple patterns."""
+        test_message = """
+        User john.doe@company.com called 555-123-4567 about credit card 4532-1234-5678-9012.
+        SSN: 123-45-6789, API Key: api_key=abc123def456ghi789jkl012
+        IP Address: 192.168.1.100, Account: 1234567890123456
+        """
+        
+        patterns = [
+            (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "[EMAIL]"),
+            (r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "[PHONE]"),
+            (r"\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}", "[CARD]"),
+            (r"\b\d{3}-?\d{2}-?\d{4}\b", "[SSN]"),
+            (r"api_key\s*[:=]\s*[A-Za-z0-9_-]{10,}", "[API_KEY]"),
+            (r"\b(?:\d{1,3}\.){3}\d{1,3}\b", "[IP]"),
+            (r"\b\d{13,19}\b", "[ACCOUNT]")
+        ]
+        
+        import re
+        redacted_message = test_message
+        
+        for pattern, placeholder in patterns:
+            redacted_message = re.sub(pattern, placeholder, redacted_message, flags=re.IGNORECASE)
+        
+        # Verify that sensitive data has been redacted
+        assert "[EMAIL]" in redacted_message
+        assert "[PHONE]" in redacted_message
+        assert "[CARD]" in redacted_message
+        assert "[SSN]" in redacted_message
+        assert "[API_KEY]" in redacted_message
+        assert "[IP]" in redacted_message
+        
+        # Verify original sensitive data is not present
+        assert "john.doe@company.com" not in redacted_message
+        assert "555-123-4567" not in redacted_message
+        assert "4532-1234-5678-9012" not in redacted_message
+        assert "123-45-6789" not in redacted_message

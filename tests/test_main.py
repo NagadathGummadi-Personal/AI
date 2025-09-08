@@ -1,6 +1,5 @@
 """Test cases for main.py module."""
 
-import pytest
 from utils.main import hello_world
 
 
