@@ -21,13 +21,13 @@ members = [
 ]
 
 [tool.pytest.ini_options]
-# Test discovery
+# Test discovery - Modular architecture support
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-# Output options
+# Output options optimized for development
 addopts = [
     "-v",
     "--tb=short",
@@ -38,12 +38,16 @@ addopts = [
     "--durations-min=1.0",
 ]
 
-# Markers for test categorization
+# Markers for test categorization - Updated for modular architecture
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests across modules",
+    "unit: marks tests as unit tests for individual modules",
     "smoke: marks tests as smoke tests",
+    "logger: tests for LoggerAdaptor module",
+    "duration: tests for DurationLogger module",
+    "delayed: tests for DelayedLogger module",
+    "config: tests for ConfigManager module",
 ]
 
 # Minimum Python version

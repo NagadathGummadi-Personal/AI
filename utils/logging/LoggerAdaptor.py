@@ -1,5 +1,4 @@
 import json
-import os
 import re
 import logging
 import logging.handlers
@@ -7,7 +6,8 @@ from pathlib import Path
 from typing import Any
 from datetime import datetime
 from utils.logging.RedactionManager import RedactionManager
-from utils.logging.Enum import LoggingFormat, Environment, RedactionConfig
+from utils.logging.Enum import LoggingFormat, RedactionConfig
+from utils.logging.ConfigManager import ConfigManager
 
 
 class LoggerAdaptor:
@@ -16,30 +16,78 @@ class LoggerAdaptor:
 
     This adaptor reads configuration and adapts its behavior based on the config.
     All configuration is controlled via environment-based configuration files.
+
+    Features:
+    - Multiple logging backends (standard, JSON, detailed)
+    - Environment-specific configuration
+    - Redaction support for sensitive data
+    - Context management for structured logging
+    - Automatic configuration reloading
+
+    Usage:
+    ```python
+    from utils.logging.LoggerAdaptor import LoggerAdaptor
+    from utils.logging.DurationLogger import durationlogger
+
+    logger = LoggerAdaptor.get_logger("my_service")
+
+    # Standard logging
+    logger.info("Application started", user_id="123")
+
+    # JSON logging
+    logger.info("User login", username="john_doe", ip="192.168.1.1")
+
+    # Detailed logging with context
+    logger.set_context(service="auth_service", version="1.0")
+    logger.info("Authentication successful")
+
+    # Duration logging (using separate module)
+    @durationlogger
+    def process_data():
+        return do_expensive_operation()
+    ```
+
+    Note: Duration logging and delayed logging are now available in separate modules:
+    - utils.logging.DurationLogger for timing operations
+    - utils.logging.DelayedLogger for asynchronous logging
     """
 
     _instances = {}
     _config = None
 
     def __init__(self, name: str = "default", environment: str = None):
+        # Initialize configuration manager first
+        self.config_manager = ConfigManager()
+
         # Always detect environment first, default to 'prod' if not provided
         self.environment = (environment or self._detect_environment()).lower()
         self.name = name
 
-        # Select config file based on environment
-        self.config_file = self._get_environment_config_file(self.environment)
+        self.config_file = self.config_manager.get_environment_config_file(self.environment)
+
+        # Load configuration
+        LoggerAdaptor._config = self.config_manager.load_config(self.config_file)
+
         self.logger = None
         self.redaction_manager = None
         self.context = {}  # For structured logging context
 
-        # Load configuration if not already loaded or if config file changed
-        if LoggerAdaptor._config is None or getattr(
-                self, '_last_config_file', None) != self.config_file:
-            LoggerAdaptor._config = self._load_config(self.config_file)
-            self._last_config_file = self.config_file
-
         # Initialize logger
         self._initialize_logger()
+
+    def _load_config(self, config_file: str) -> dict[str, Any]:
+        """Load logging configuration from file (for backward compatibility)."""
+        return self.config_manager.load_config(config_file)
+
+    def _get_environment_config_file(self, environment: str) -> str:
+        """Get configuration file based on environment (for backward compatibility)."""
+        return self.config_manager.get_environment_config_file(environment)
+
+    @staticmethod
+    def _detect_environment_static() -> str:
+        """Static method to detect environment for class method (for backward compatibility)."""
+        config_manager = ConfigManager()
+        return config_manager.detect_environment()
 
     @classmethod
     def get_logger(
@@ -49,90 +97,21 @@ class LoggerAdaptor:
         """
         Get or create a logger instance (singleton pattern per name/environment).
         """
-        env = (environment or cls._detect_environment_static()).lower()
+        # Use ConfigManager for environment detection
+        config_manager = ConfigManager()
+        env = (environment or config_manager.detect_environment()).lower()
         instance_key = f"{name}_{env}"
         if instance_key not in cls._instances:
             cls._instances[instance_key] = cls(name, environment)
         return cls._instances[instance_key]
-
-    @staticmethod
-    def _detect_environment_static() -> str:
-        """Static method to detect environment for class method. Defaults to 'prod' if not set."""
-        env = os.getenv('ENVIRONMENT', os.getenv('ENV', 'prod')).lower()
-        env_mapping = {
-            'dev': Environment.DEVELOPMENT.value,
-            'development': Environment.DEVELOPMENT.value,
-            'stage': Environment.STAGING.value,
-            'staging': Environment.STAGING.value,
-            'prod': Environment.PRODUCTION.value,
-            'production': Environment.PRODUCTION.value,
-            'test': Environment.TESTING.value,
-            'testing': Environment.TESTING.value
-        }
-        return env_mapping.get(env, Environment.PRODUCTION.value)
 
     def _detect_environment(self) -> str:
         """Detect current environment from env variables.
 
         Defaults to 'prod' if not set.
         """
-        env = os.getenv('ENVIRONMENT', os.getenv('ENV', 'prod')).lower()
-        env_mapping = {
-            'dev': Environment.DEVELOPMENT.value,
-            'development': Environment.DEVELOPMENT.value,
-            'stage': Environment.STAGING.value,
-            'staging': Environment.STAGING.value,
-            'prod': Environment.PRODUCTION.value,
-            'production': Environment.PRODUCTION.value,
-            'test': Environment.TESTING.value,
-            'testing': Environment.TESTING.value
-        }
-        return env_mapping.get(env, Environment.PRODUCTION.value)
+        return self.config_manager.detect_environment()
 
-    def _get_environment_config_file(self, environment: str) -> str:
-        """Get configuration file based on environment."""
-        config_dir = "Utils/Logging/Config"
-        config_files = {
-            Environment.DEVELOPMENT.value: f"{config_dir}/log_config_dev.json",
-            Environment.STAGING.value: f"{config_dir}/log_config_staging.json",
-            Environment.PRODUCTION.value: f"{config_dir}/log_config_prod.json",
-            Environment.TESTING.value: f"{config_dir}/log_config_test.json"
-        }
-        config_file = config_files.get(
-            environment, f"{config_dir}/log_config_prod.json")
-
-        # Check if environment-specific config exists, otherwise use prod
-        if not os.path.exists(config_file):
-            config_file = f"{config_dir}/log_config_prod.json"
-        return config_file
-
-    def _load_config(self, config_file: str) -> dict[str, Any]:
-        """Load logging configuration from file."""
-        try:
-            with open(config_file, 'r', encoding='utf-8') as f:
-                config = json.load(f)
-            return config
-        except FileNotFoundError:
-            # Return default configuration if file not found
-            return self._get_default_config()
-        except json.JSONDecodeError as e:
-            msg = f"Invalid JSON in configuration file {config_file}: {e}"
-            raise ValueError(msg) from e
-
-    def _get_default_config(self) -> dict[str, Any]:
-        """Get default logging configuration."""
-        return {
-            "backend": "standard",
-            "level": "INFO",
-            "formatters": {
-                "default": {
-                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                    "datefmt": "%Y-%m-%d %H:%M:%S"}},
-            "handlers": {
-                "console": {
-                    "type": "console",
-                    "level": "INFO",
-                    "formatter": "default"}}}
 
     def _initialize_logger(self):
         """Initialize the logger based on configuration."""
@@ -147,6 +126,7 @@ class LoggerAdaptor:
         # Create the underlying logger
         self.logger = logging.getLogger(self.name)
         self._configure_logger(config)
+
 
     def _configure_logger(self, config: dict[str, Any]):
         """Configure the logger based on configuration."""
@@ -275,12 +255,15 @@ class LoggerAdaptor:
         redacted_message, redacted_kwargs = self._redact_if_enabled(
             message, **kwargs)
 
+        # Combine persistent context with immediate context
+        all_context = {**self.context, **redacted_kwargs}
+
         if self.backend == LoggingFormat.JSON.value:
-            self._log_json(level, redacted_message, **redacted_kwargs)
+            self._log_json(level, redacted_message, **all_context)
         elif self.backend == LoggingFormat.DETAILED.value:
-            self._log_detailed(level, redacted_message, **redacted_kwargs)
+            self._log_detailed(level, redacted_message, **all_context)
         else:  # Standard logging
-            self._log_standard(level, redacted_message, **redacted_kwargs)
+            self._log_standard(level, redacted_message, **all_context)
 
     def _log_standard(self, level: str, message: str, **kwargs):
         """Log using standard Python logging."""
@@ -327,6 +310,12 @@ class LoggerAdaptor:
             if '%(name)s' in format_pattern:
                 log_data['logger'] = self.name
 
+            # Add persistent context if available
+            if self.context:
+                for key, value in self.context.items():
+                    if key not in log_data:
+                        log_data[key] = value
+
             # Add any kwargs if they're not already in the formatter
             for key, value in kwargs.items():
                 if key not in log_data:
@@ -343,9 +332,16 @@ class LoggerAdaptor:
                 'timestamp': datetime.utcnow().isoformat(),
                 'level': level.upper(),
                 'logger': self.name,
-                'message': message,
-                **kwargs
+                'message': message
             }
+
+            # Add persistent context
+            if self.context:
+                log_data.update(self.context)
+
+            # Add kwargs
+            log_data.update(kwargs)
+
             self.logger.log(
                 getattr(
                     logging,
@@ -363,20 +359,19 @@ class LoggerAdaptor:
         detailed_message = f"[{timestamp}] {level_str} [{logger_name}] {message}"
 
         # Add context information if available
-        if self.context or kwargs:
-            context_parts = []
+        context_parts = []
 
-            # Add persistent context
-            if self.context:
-                context_parts.extend(
-                    [f"{k}={v}" for k, v in self.context.items()])
+        # Add persistent context
+        if self.context:
+            context_parts.extend(
+                [f"{k}={v}" for k, v in self.context.items()])
 
-            # Add immediate context (kwargs)
-            if kwargs:
-                context_parts.extend([f"{k}={v}" for k, v in kwargs.items()])
+        # Add immediate context (kwargs)
+        if kwargs:
+            context_parts.extend([f"{k}={v}" for k, v in kwargs.items()])
 
-            if context_parts:
-                detailed_message += f" | Context: {', '.join(context_parts)}"
+        if context_parts:
+            detailed_message += f" | Context: {', '.join(context_parts)}"
 
         # Use the detailed message and let formatters handle it if configured
         self.logger.log(getattr(logging, level.upper()), detailed_message)
@@ -401,6 +396,7 @@ class LoggerAdaptor:
         """Log critical message."""
         self._log_message('CRITICAL', *args, **kwargs)
 
+
     def set_context(self, **kwargs):
         """Set persistent context for structured logging."""
         self.context.update(kwargs)
@@ -409,13 +405,90 @@ class LoggerAdaptor:
         """Clear all persistent context."""
         self.context.clear()
 
+    def log_duration(self, operation_name: str, duration_seconds: float, **kwargs) -> None:
+        """
+        Log the duration of an operation.
+
+        Args:
+            operation_name: Name/description of the operation
+            duration_seconds: Duration in seconds
+            **kwargs: Additional context for the log entry
+        """
+        # Format duration for readability
+        duration_ms = duration_seconds * 1000
+        if duration_ms < 1000:
+            duration_str = f"{duration_ms:.2f}ms"
+        elif duration_ms < 60000:  # Less than 1 minute
+            duration_str = f"{duration_ms/1000:.2f}s"
+        else:  # More than 1 minute
+            minutes = int(duration_ms // 60000)
+            seconds = (duration_ms % 60000) / 1000
+            duration_str = f"{minutes}m{seconds:.1f}s"
+
+        # Determine log level based on duration thresholds
+        log_level = self._get_duration_log_level(duration_seconds)
+
+        # Create log message
+        message = f"Operation '{operation_name}' completed in {duration_str}"
+
+        # Add duration context
+        log_kwargs = {
+            'operation': operation_name,
+            'duration_seconds': round(duration_seconds, 3),
+            'duration_ms': round(duration_ms, 2),
+            'duration_formatted': duration_str,
+            **kwargs
+        }
+
+        # Log using appropriate method based on level
+        if log_level == 'DEBUG':
+            self.debug(message, **log_kwargs)
+        elif log_level == 'INFO':
+            self.info(message, **log_kwargs)
+        elif log_level == 'WARNING':
+            self.warning(message, **log_kwargs)
+        else:  # ERROR or CRITICAL
+            self.error(message, **log_kwargs)
+
+    def _get_duration_log_level(self, duration_seconds: float) -> str:
+        """
+        Determine the appropriate log level based on duration thresholds.
+
+        Args:
+            duration_seconds: Duration in seconds
+
+        Returns:
+            str: Appropriate log level ('DEBUG', 'INFO', 'WARNING', 'ERROR')
+        """
+        config = LoggerAdaptor._config
+        duration_config = config.get('duration_logging', {})
+
+        # Get thresholds from config, with sensible defaults
+        slow_threshold = duration_config.get('slow_threshold_seconds', 1.0)
+        warn_threshold = duration_config.get('warn_threshold_seconds', 5.0)
+        error_threshold = duration_config.get('error_threshold_seconds', 30.0)
+
+        if duration_seconds >= error_threshold:
+            return 'ERROR'
+        elif duration_seconds >= warn_threshold:
+            return 'WARNING'
+        elif duration_seconds >= slow_threshold:
+            return 'INFO'
+        else:
+            return 'DEBUG'
+
     def reload_config(self, config_file: str = None):
         """Reload configuration and reinitialize logger."""
         if config_file:
             self.config_file = config_file
 
-        LoggerAdaptor._config = self._load_config(self.config_file)
+        LoggerAdaptor._config = self.config_manager.load_config(self.config_file)
         self._initialize_logger()
+
+    def shutdown(self):
+        """Shutdown the logger."""
+        # Shutdown functionality can be extended by individual components if needed
+        pass
 
     @property
     def level(self) -> str:
@@ -475,3 +548,5 @@ class LoggerAdaptor:
     def has_redaction(self) -> bool:
         """Check if redaction is enabled and available."""
         return self.redaction_manager is not None
+
+

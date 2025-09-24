@@ -27,5 +27,17 @@
       "formatter": "detailed",
       "filename": "test_application.log"
     }
-  }
+  },
+  "delayed_logging": {
+    "enabled": false,
+    "queue_size_kb": 0,
+    "flush_on_exception": false,
+    "flush_on_completion": false
+  },
+  "duration_logging": {
+    "slow_threshold_seconds": 0.1,
+    "warn_threshold_seconds": 0.5,
+    "error_threshold_seconds": 2.0
+  },
+  "notes": "Test environment configuration for comprehensive testing. Features: delayed logging disabled for immediate feedback, sensitive duration thresholds to catch performance issues early, detailed logging for debugging, redaction disabled to see full data during testing"
 } 

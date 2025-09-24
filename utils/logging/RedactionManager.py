@@ -79,7 +79,8 @@ class RedactionManager:
 
         redacted_message = message
 
-        for pattern, placeholder in self.redaction_patterns:
+        # Apply patterns in reverse order so custom patterns override defaults
+        for pattern, placeholder in reversed(self.redaction_patterns):
             redacted_message = pattern.sub(placeholder, redacted_message)
 
         return redacted_message

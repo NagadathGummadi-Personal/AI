@@ -28,5 +28,17 @@
       "level": "DEBUG",
       "filename": "dev_application.log"
     }
-  }
-} 
+  },
+  "delayed_logging": {
+    "enabled": true,
+    "queue_size_kb": 10,
+    "flush_on_exception": true,
+    "flush_on_completion": true
+  },
+  "duration_logging": {
+    "slow_threshold_seconds": 0.5,
+    "warn_threshold_seconds": 2.0,
+    "error_threshold_seconds": 10.0
+  },
+  "notes": "Development environment configuration optimized for developer experience. Features: delayed logging enabled for performance testing, moderate duration thresholds, basic redaction for sensitive data protection, JSON backend for structured development logging"
+}

@@ -3,7 +3,7 @@
   "level": "WARNING",
   "log_directory": "./logs",
   "redaction": {
-    "enabled": false,
+    "enabled": true,
     "placeholder": "[REDACTED]",
     "patterns": [
       {
@@ -19,6 +19,11 @@
       {
         "pattern": "api[_-]?key=\\S+",
         "placeholder": "api_key=[HIDDEN]",
+        "flags": ["ignorecase"]
+      },
+      {
+        "pattern": "secret=\\S+",
+        "placeholder": "secret=[HIDDEN]",
         "flags": ["ignorecase"]
       },
       {
@@ -39,6 +44,16 @@
       }
     ]
   },
+  "formatters": {
+    "json": {
+      "format": "{\"timestamp\": \"%(asctime)s\", \"level\": \"%(levelname)s\", \"logger\": \"%(name)s\", \"message\": \"%(message)s\"}",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    },
+    "detailed": {
+      "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(funcName)s:%(lineno)d - %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
   "handlers": {
     "console": {
       "type": "console",
@@ -56,5 +71,17 @@
       "level": "ERROR",
       "filename": "prod_errors.log"
     }
-  }
+  },
+  "delayed_logging": {
+    "enabled": true,
+    "queue_size_kb": 5,
+    "flush_on_exception": true,
+    "flush_on_completion": true
+  },
+  "duration_logging": {
+    "slow_threshold_seconds": 1.0,
+    "warn_threshold_seconds": 10.0,
+    "error_threshold_seconds": 60.0
+  },
+  "notes": "Production environment configuration optimized for performance and security. Features: delayed logging enabled for high throughput, conservative duration thresholds, comprehensive redaction patterns for data protection, JSON backend for structured logging, rotating file handlers for log management"
 } 
