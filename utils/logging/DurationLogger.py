@@ -22,8 +22,7 @@ Usage:
 import time
 import functools
 from contextlib import contextmanager
-from typing import Any, Callable, ContextManager, Optional
-from datetime import datetime
+from typing import Any, Callable, ContextManager
 
 
 class DurationContext(ContextManager):

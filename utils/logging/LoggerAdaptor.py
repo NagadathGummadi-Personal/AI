@@ -15,7 +15,7 @@ class LoggerAdaptor:
     Unified Logger Adaptor that provides a consistent interface across different logging mechanisms.
 
     This adaptor reads configuration and adapts its behavior based on the config.
-    All configuration is controlled via environment-based configuration files.
+    Configuration can be loaded from environment-based files or provided directly.
 
     Features:
     - Multiple logging backends (standard, JSON, detailed)
@@ -23,13 +23,26 @@ class LoggerAdaptor:
     - Redaction support for sensitive data
     - Context management for structured logging
     - Automatic configuration reloading
+    - Programmatic configuration support
 
     Usage:
     ```python
     from utils.logging.LoggerAdaptor import LoggerAdaptor
     from utils.logging.DurationLogger import durationlogger
 
+    # Method 1: Environment-based configuration (default)
     logger = LoggerAdaptor.get_logger("my_service")
+
+    # Method 2: Programmatic configuration
+    custom_config = {
+        "backend": "json",
+        "level": "INFO",
+        "redaction": {"enabled": True, "patterns": []}
+    }
+    logger = LoggerAdaptor.get_logger("my_service", config=custom_config)
+
+    # Method 3: Direct constructor with config
+    logger = LoggerAdaptor("my_service", config=custom_config)
 
     # Standard logging
     logger.info("Application started", user_id="123")
@@ -47,6 +60,12 @@ class LoggerAdaptor:
         return do_expensive_operation()
     ```
 
+    Args:
+        name: Logger name (for identification)
+        environment: Environment name (dev, staging, prod, test) - optional
+        config: Optional configuration dictionary. If provided, this config will be used
+               instead of loading from environment-specific files.
+
     Note: Duration logging and delayed logging are now available in separate modules:
     - utils.logging.DurationLogger for timing operations
     - utils.logging.DelayedLogger for asynchronous logging
@@ -55,7 +74,7 @@ class LoggerAdaptor:
     _instances = {}
     _config = None
 
-    def __init__(self, name: str = "default", environment: str = None):
+    def __init__(self, name: str = "default", environment: str = None, config: dict[str, Any] = None):
         # Initialize configuration manager first
         self.config_manager = ConfigManager()
 
@@ -63,10 +82,14 @@ class LoggerAdaptor:
         self.environment = (environment or self._detect_environment()).lower()
         self.name = name
 
-        self.config_file = self.config_manager.get_environment_config_file(self.environment)
-
-        # Load configuration
-        LoggerAdaptor._config = self.config_manager.load_config(self.config_file)
+        # If config is provided, use it directly
+        if config is not None:
+            LoggerAdaptor._config = config
+            self.config_file = "provided_config"
+        else:
+            # Load configuration from file as before
+            self.config_file = self.config_manager.get_environment_config_file(self.environment)
+            LoggerAdaptor._config = self.config_manager.load_config(self.config_file)
 
         self.logger = None
         self.redaction_manager = None
@@ -93,16 +116,30 @@ class LoggerAdaptor:
     def get_logger(
             cls,
             name: str = "default",
-            environment: str = None) -> 'LoggerAdaptor':
+            environment: str = None,
+            config: dict[str, Any] = None) -> 'LoggerAdaptor':
         """
         Get or create a logger instance (singleton pattern per name/environment).
+
+        Args:
+            name: Logger name (for identification)
+            environment: Environment name (dev, staging, prod, test)
+            config: Optional configuration dictionary. If provided, this config will be used
+                   instead of loading from environment-specific files.
+
+        Returns:
+            LoggerAdaptor instance
         """
-        # Use ConfigManager for environment detection
-        config_manager = ConfigManager()
-        env = (environment or config_manager.detect_environment()).lower()
+        # Use ConfigManager for environment detection if no config provided
+        if config is None:
+            config_manager = ConfigManager()
+            env = (environment or config_manager.detect_environment()).lower()
+        else:
+            env = (environment or "default").lower()
+
         instance_key = f"{name}_{env}"
         if instance_key not in cls._instances:
-            cls._instances[instance_key] = cls(name, environment)
+            cls._instances[instance_key] = cls(name, environment, config)
         return cls._instances[instance_key]
 
     def _detect_environment(self) -> str:

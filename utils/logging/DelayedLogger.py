@@ -32,7 +32,6 @@ Usage:
 
 import os
 import threading
-import time
 from datetime import datetime
 from queue import Queue, Empty
 from typing import Any, Dict, Optional

@@ -22,9 +22,7 @@ Pytest Markers:
 """
 
 import pytest
-import time
-import threading
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from queue import Empty
 from utils.logging.DelayedLogger import DelayedLogger
 from utils.logging.LoggerAdaptor import LoggerAdaptor

@@ -17,7 +17,7 @@ that has been added to the LoggerAdaptor, including:
 import time
 import random
 from utils.logging.LoggerAdaptor import LoggerAdaptor
-from utils.logging.DurationLogger import durationlogger, log_duration, time_function
+from utils.logging.DurationLogger import durationlogger, log_duration, time_function, configure_duration_logger
 
 
 def demo_basic_duration_logging():
@@ -30,11 +30,11 @@ def demo_basic_duration_logging():
     logger = LoggerAdaptor.get_logger("duration_demo")
 
     # Configure the global duration logger to use our logger
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
     # Method 1: Context Manager (Recommended)
     print("\n1. Context Manager Usage:")
-    with durationlogger.time_operation("database_query", table="users", query_type="SELECT") as timer:
+    with durationlogger("database_query", table="users", query_type="SELECT") as timer:
         # Simulate database query
         time.sleep(0.1)
         timer.add_metadata(rows_affected=150, query_success=True)
@@ -62,15 +62,15 @@ def demo_function_decorator():
     print("="*60)
 
     logger = LoggerAdaptor.get_logger("decorator_demo")
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
-    @durationlogger.time_function(operation_type="data_processing", batch_id="batch_123")
+    @durationlogger(operation_type="data_processing", batch_id="batch_123")
     def process_data_batch():
         """Process a batch of data with automatic timing."""
         time.sleep(0.2)  # Simulate processing
         return random.randint(100, 1000)
 
-    @durationlogger.time_function()
+    @durationlogger()
     def risky_operation():
         """An operation that might fail."""
         if random.choice([True, False]):
@@ -102,23 +102,22 @@ def demo_convenience_functions():
     print("="*60)
 
     logger = LoggerAdaptor.get_logger("convenience_demo")
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
     # Using standalone context manager
     print("\n1. Standalone log_duration context manager:")
-    with log_duration(logger, "external_api_call", endpoint="/api/users") as timer:
+    with log_duration(logger, "external_api_call", endpoint="/api/users"):
         time.sleep(0.15)  # Simulate API call
-        timer.add_metadata(response_time=150, status_code=200)
 
-    # Using time_function context manager
-    print("\n2. time_function context manager (decorator-style):")
-    with time_function(logger, operation_name="data_validation", validation_type="schema"):
-        def validate_data():
-            time.sleep(0.08)  # Simulate validation
-            return "valid"
+    # Using time_function as decorator
+    print("\n2. time_function as decorator:")
+    @durationlogger(operation_name="data_validation", validation_type="schema")
+    def validate_data():
+        time.sleep(0.08)  # Simulate validation
+        return "valid"
 
-        result = validate_data()
-        print(f"   Validation result: {result}")
+    result = validate_data()
+    print(f"   Validation result: {result}")
 
 
 def demo_performance_comparison():
@@ -128,7 +127,7 @@ def demo_performance_comparison():
     print("="*60)
 
     logger = LoggerAdaptor.get_logger("performance_demo")
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
     # Traditional logging approach (synchronous)
     def traditional_approach():
@@ -142,9 +141,8 @@ def demo_performance_comparison():
 
     # Duration logging approach (automatic and non-blocking)
     def duration_logging_approach():
-        with durationlogger.time_operation("async_operation") as timer:
+        with durationlogger("async_operation", is_async=True, non_blocking=True) as timer:
             time.sleep(0.01)  # Simulate work
-            timer.add_metadata(is_async=True, non_blocking=True)
         return timer.get_duration()
 
     print("\nTraditional vs Duration Logging Performance:")
@@ -174,7 +172,7 @@ def demo_different_log_levels():
     print("="*60)
 
     logger = LoggerAdaptor.get_logger("threshold_demo")
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
     # Test different durations to trigger different log levels
     test_durations = [
@@ -189,7 +187,7 @@ def demo_different_log_levels():
         print(f"Duration: {duration}s → Expected Level: {expected_level}")
 
         # Simulate the operation
-        with durationlogger.time_operation(f"test_operation_{duration}s"):
+        with durationlogger(f"test_operation_{duration}s"):
             time.sleep(duration)
 
 
@@ -201,10 +199,10 @@ def demo_json_backend():
 
     # Create a logger with JSON backend configuration
     logger = LoggerAdaptor.get_logger("json_duration_demo")
-    durationlogger.set_logger(logger)
+    configure_duration_logger(logger)
 
     print("\n1. Context Manager with JSON logging:")
-    with durationlogger.time_operation("api_request", endpoint="/api/data", method="GET") as timer:
+    with durationlogger("api_request", endpoint="/api/data", method="GET") as timer:
         time.sleep(0.12)
         timer.add_metadata(
             request_id="req_12345",

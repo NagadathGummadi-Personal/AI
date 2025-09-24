@@ -43,14 +43,13 @@ import json
 import time
 import tempfile
 import os
-from unittest.mock import Mock, patch, mock_open
-from pathlib import Path
+from unittest.mock import patch, mock_open
 
 from utils.logging.LoggerAdaptor import LoggerAdaptor
-from utils.logging.DurationLogger import DurationLogger, durationlogger
+from utils.logging.DurationLogger import DurationLogger
 from utils.logging.DelayedLogger import DelayedLogger
 from utils.logging.ConfigManager import ConfigManager
-from utils.logging.Enum import Environment, LoggingFormat, RedactionConfig
+from utils.logging.Enum import Environment
 
 
 class TestIntegrationConstants:
