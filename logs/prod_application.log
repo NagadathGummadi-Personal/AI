@@ -1,0 +1,168 @@
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "1.35", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "1.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "0.0", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "107.12", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "106.19", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "106.16", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "107.8", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "106.15", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "106.15", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Simulated error for testing", "execution_time_ms": "107.24", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Division by zero", "execution_time_ms": "106.58", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "Unknown operation: invalid", "execution_time_ms": "105.38", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
+{"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}

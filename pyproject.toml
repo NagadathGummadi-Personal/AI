@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "pybreaker>=1.4.0",
+    "pydantic>=2.11.9",
+    "typing-extensions>=4.15.0",
 ]
 
 [dependency-groups]
