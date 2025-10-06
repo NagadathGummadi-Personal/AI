@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
 #Tool Interfaces
-from .tool_interfaces import IToolMemory, IToolMetrics, IToolTracer, IToolLimiter, IToolValidator, IToolSecurity
+from ..interfaces.tool_interfaces import IToolMemory, IToolMetrics, IToolTracer, IToolLimiter, IToolValidator, IToolSecurity
 
 class ToolUsage(TypedDict, total=False):
     """Usage statistics for tool execution"""

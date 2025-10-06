@@ -1,7 +1,10 @@
 from typing import Any, Dict, Protocol, runtime_checkable, Callable, Awaitable, AsyncContextManager, Optional
 from contextlib import asynccontextmanager
-#Tool Types
-from .tool_types import ToolResult, ToolSpec, ToolContext
+
+# Local imports
+from ..spec.tool_result import ToolResult
+from ..spec.tool_types import ToolSpec
+from ..spec.tool_context import ToolContext
 
 @runtime_checkable
 class IToolExecutor(Protocol):

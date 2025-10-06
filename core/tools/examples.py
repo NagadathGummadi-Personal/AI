@@ -6,28 +6,24 @@ It includes examples of tool definitions, parameter schemas, and execution patte
 """
 
 import asyncio
-from typing import Dict, Any, Optional
-from .tool_types import (
-    ToolSpec,
-    FunctionToolSpec,
-    HttpToolSpec,
-    DbToolSpec,
+from typing import Any, Dict, Optional
+
+# Local imports
+from .enum import ToolReturnTarget, ToolReturnType, ToolType
+from .interfaces.tool_interfaces import IToolExecutor
+from .spec.tool_config import CircuitBreakerConfig
+from .spec.tool_context import ToolContext
+from .spec.tool_result import ToolError, ToolResult
+from .spec.tool_types import DbToolSpec, FunctionToolSpec, HttpToolSpec, ToolSpec
+from .spec.tool_parameters import (
     ToolParameter,
     StringParameter,
     NumericParameter,
     BooleanParameter,
-    ToolType,
-    ToolReturnType,
-    ToolReturnTarget,
-    ToolContext,
-    CircuitBreakerConfig,
-    ToolError,
-    ToolResult,
-    IToolExecutor
 )
 from .validators import BasicValidator
-from .executors import FunctionToolExecutor
-from .implementations import NoOpMemory, NoOpMetrics, NoOpTracer, NoOpLimiter
+from .executors.executors import FunctionToolExecutor
+from .implementations import NoOpLimiter, NoOpMemory, NoOpMetrics, NoOpTracer
 
 
 # Example 1: Simple calculator tool

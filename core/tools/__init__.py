@@ -18,21 +18,25 @@ Core components:
 - Example implementations and usage patterns
 """
 
-from .tool_types import (
-    ToolType,
-    ToolReturnType,
-    ToolReturnTarget,
+from .enum import ToolType, ToolReturnType, ToolReturnTarget
+
+# Core spec models (re-export from subpackage)
+from .spec import (
+    ToolContext,
     ToolUsage,
     ToolResult,
     ToolError,
     ToolParameter,
     ToolSpec,
-    ToolContext,
+    FunctionToolSpec,
+    HttpToolSpec,
+    DbToolSpec,
     RetryConfig,
     CircuitBreakerConfig,
-    IdempotencyConfig
+    IdempotencyConfig,
 )
 
+# Interfaces (re-export from subpackage)
 from .interfaces import (
     IToolExecutor,
     IToolValidator,
@@ -42,11 +46,17 @@ from .interfaces import (
     IToolMemory,
     IToolMetrics,
     IToolTracer,
-    IToolLimiter
+    IToolLimiter,
 )
 
+# Implementations / executors / validators
 from .validators import BasicValidator
-from .executors import BaseToolExecutor, FunctionToolExecutor, HttpToolExecutor, DbToolExecutor
+from .executors import (
+    BaseToolExecutor,
+    FunctionToolExecutor,
+    HttpToolExecutor,
+    DbToolExecutor,
+)
 
 __all__ = [
     # Types
@@ -58,6 +68,9 @@ __all__ = [
     "ToolError",
     "ToolParameter",
     "ToolSpec",
+    "FunctionToolSpec",
+    "HttpToolSpec",
+    "DbToolSpec",
     "ToolContext",
     "RetryConfig",
     "CircuitBreakerConfig",

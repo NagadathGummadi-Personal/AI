@@ -4,32 +4,20 @@ Base Executor Implementations for Tools Specification System
 This module provides base classes and utilities for implementing
 tool executors with common patterns and boilerplate.
 """
-import time
+
+# Standard library
 import hashlib
 import json
-from typing import Any, Dict, List, Optional, Callable, Awaitable
-from ..spec.tool_types import (
-    ToolResult,
-    ToolSpec,
-    HttpToolSpec,
-    DbToolSpec,
-    ToolContext,
-    ToolReturnType,
-    ToolReturnTarget,
-    ToolError
-)
-from ..interfaces.interfaces import IToolExecutor
+import time
+from typing import Any, Awaitable, Callable, Dict, List, Optional
 
-from ..implementations import NoOpMetrics
-from ..tool_context import ToolUsage
-# Import LoggerAdaptor for proper logging
-try:
-    from utils.logging.LoggerAdaptor import LoggerAdaptor
-except ImportError:
-    # Fallback if logging system is not available
-    LoggerAdaptor = None
-
-
+# Local imports
+from ..interfaces.tool_interfaces import IToolExecutor
+from ..spec.tool_context import ToolContext, ToolUsage
+from ..spec.tool_result import ToolResult
+from ..spec.tool_types import DbToolSpec, HttpToolSpec, ToolSpec
+#LoggerAdaptor
+from utils.logging.LoggerAdaptor import LoggerAdaptor
 class BaseToolExecutor:
     """Base class for tool executors with common functionality"""
 
@@ -54,7 +42,7 @@ class BaseToolExecutor:
 
     def _calculate_usage(self, start_time: float, input_args: Dict[str, Any], output_content: Any) -> ToolUsage:
         """Calculate usage statistics for the tool execution"""
-        end_time = time.time()
+        # end_time retained for potential future use; presently not needed
 
         # Basic calculations - in real implementation, you'd have more sophisticated metrics
         input_bytes = len(json.dumps(input_args).encode('utf-8'))
@@ -99,8 +87,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
     def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
         super().__init__(spec)
         self.func = func
-        # Initialize logger for tool execution
-        self.logger = LoggerAdaptor.get_logger(f"tool.{spec.tool_name}", environment="dev") if LoggerAdaptor else None
+        self.logger = LoggerAdaptor.get_logger(f"tool.{spec.tool_name}", environment="dev")
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the function tool"""

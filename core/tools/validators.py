@@ -8,11 +8,20 @@ including the BasicValidator with comprehensive parameter validation.
 import json
 import re
 from typing import Any, Dict
-from .tool_types import ToolSpec
-#Tool Parameters
-from .tool_parameters import ToolParameter, StringParameter, NumericParameter, BooleanParameter, ArrayParameter, ObjectParameter
-#Tool Errors
-from .tool_result import ToolError
+
+# Local imports
+from .spec.tool_types import ToolSpec
+# Tool Parameters
+from .spec.tool_parameters import (
+    ToolParameter,
+    StringParameter,
+    NumericParameter,
+    BooleanParameter,
+    ArrayParameter,
+    ObjectParameter,
+)
+# Tool Errors
+from .spec.tool_result import ToolError
 
 
 class BasicValidator:

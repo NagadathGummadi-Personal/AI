@@ -1,10 +1,10 @@
-from pydantic import BaseModel, Field
-#Tool Enums
-from .enum import ToolType, ToolReturnType, ToolReturnTarget
-#Tool Parameters
-from .tool_parameters import ToolParameter
-
 from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
+# Local imports
+from ..enum import ToolType, ToolReturnType, ToolReturnTarget
+from .tool_parameters import ToolParameter
 from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
 
 class ToolSpec(BaseModel):

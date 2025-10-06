@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
 from typing import Any, Dict, List, Optional
-#Tool Enums
-from .enum import ToolReturnType, ToolReturnTarget
-#Tool Miscs
+
+from pydantic import BaseModel, Field
+
+# Local imports
+from ..enum import ToolReturnType, ToolReturnTarget
 from .tool_context import ToolUsage
 
 

@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
-#Tool Enums
-from .enum import ParameterType
+
+# Local imports
+from ..enum import ParameterType
 
 class ToolParameter(BaseModel):
     """Base class for tool parameters with common fields"""
