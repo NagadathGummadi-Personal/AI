@@ -11,10 +11,9 @@ This module tests the complete tools system including:
 
 import asyncio
 import pytest
-import json
 import time
-from typing import Dict, Any, List
-from unittest.mock import AsyncMock, MagicMock
+from typing import Dict, Any
+from unittest.mock import AsyncMock
 
 # Import the tools system
 from core.tools import (
@@ -23,13 +22,12 @@ from core.tools import (
     ToolType,
     ToolReturnType,
     ToolReturnTarget,
-    ToolContext,
-    ToolError,
     BasicValidator,
-    FunctionToolExecutor,
-    BaseToolExecutor
+    FunctionToolExecutor
 )
 
+from core.tools.tool_context import ToolContext
+from core.tools.tool_result import ToolError
 from core.tools.implementations import (
     NoOpMemory,
     NoOpMetrics,
@@ -37,7 +35,7 @@ from core.tools.implementations import (
     NoOpLimiter
 )
 
-from core.tools.tool_types import (
+from core.tools.tool_config import (
     RetryConfig,
     CircuitBreakerConfig,
     IdempotencyConfig

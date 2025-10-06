@@ -4,26 +4,24 @@ Base Executor Implementations for Tools Specification System
 This module provides base classes and utilities for implementing
 tool executors with common patterns and boilerplate.
 """
-
-import asyncio
 import time
 import hashlib
 import json
 from typing import Any, Dict, List, Optional, Callable, Awaitable
-from .tool_types import (
+from ..spec.tool_types import (
     ToolResult,
     ToolSpec,
     HttpToolSpec,
     DbToolSpec,
     ToolContext,
-    ToolUsage,
     ToolReturnType,
     ToolReturnTarget,
-    IToolExecutor,
     ToolError
 )
-from .implementations import NoOpMetrics
+from ..interfaces.interfaces import IToolExecutor
 
+from ..implementations import NoOpMetrics
+from ..tool_context import ToolUsage
 # Import LoggerAdaptor for proper logging
 try:
     from utils.logging.LoggerAdaptor import LoggerAdaptor
