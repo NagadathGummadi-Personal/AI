@@ -22,34 +22,52 @@ from .spec.tool_parameters import (
 )
 # Tool Errors
 from .spec.tool_result import ToolError
-
+from .constants import (
+    ERROR_VALIDATION,
+    PARAMETER_TYPE_STRING,
+    PARAMETER_TYPE_NUMBER,
+    PARAMETER_TYPE_INTEGER,
+    PARAMETER_TYPE_BOOLEAN,
+    # PARAMETER_TYPE_ARRAY,
+    # PARAMETER_TYPE_OBJECT,
+    BOOLEAN_TRUE_STRINGS,
+    PARAMETER_PY_TYPES,
+    MSG_UNKNOWN_PARAMETERS,
+    MSG_MISSING_REQUIRED_PARAMETER,
+    MSG_PARAMETER_FAILED_VALIDATION,
+)
 
 class BasicValidator:
     """Basic implementation of IToolValidator with comprehensive validation"""
 
-    PY_TYPES = {
-        "string": str,
-        "number": (int, float),
-        "integer": int,
-        "boolean": bool,
-        "array": (list, tuple),
-        "object": dict,
-    }
+    PY_TYPES = PARAMETER_PY_TYPES
 
     async def validate(self, args: Dict[str, Any], spec: ToolSpec) -> None:
         """Validate tool arguments against the specification"""
         allowed_names = {p.name for p in spec.parameters}
         unknown = set(args.keys()) - allowed_names
         if unknown:
-            raise ToolError(f"Unknown parameter(s): {sorted(unknown)}", retryable=False, code="VALIDATION_ERROR")
+            raise ToolError(
+                MSG_UNKNOWN_PARAMETERS.format(params=sorted(unknown)),
+                retryable=False,
+                code=ERROR_VALIDATION,
+            )
 
         for p in spec.parameters:
             if p.required and p.name not in args:
-                raise ToolError(f"Missing required parameter: {p.name}", retryable=False, code="VALIDATION_ERROR")
+                raise ToolError(
+                    MSG_MISSING_REQUIRED_PARAMETER.format(name=p.name),
+                    retryable=False,
+                    code=ERROR_VALIDATION,
+                )
             if p.name in args:
                 value = args[p.name]
                 if not self._validate_param(value, p):
-                    raise ToolError(f"Parameter '{p.name}' failed validation", retryable=False, code="VALIDATION_ERROR")
+                    raise ToolError(
+                        MSG_PARAMETER_FAILED_VALIDATION.format(name=p.name),
+                        retryable=False,
+                        code=ERROR_VALIDATION,
+                    )
 
     def _validate_param(self, value: Any, p: ToolParameter) -> bool:
         """Validate a single parameter value"""
@@ -151,17 +169,17 @@ class BasicValidator:
     def _try_coerce(self, value: Any, target_type: str) -> Any | None:
         """Attempt to coerce a value to the target type"""
         try:
-            if target_type == "string":
+            if target_type == PARAMETER_TYPE_STRING:
                 return str(value)
-            elif target_type == "integer":
+            elif target_type == PARAMETER_TYPE_INTEGER:
                 if isinstance(value, str):
                     return int(float(value))  # Handle "123.0" -> 123
                 return int(value)
-            elif target_type == "number":
+            elif target_type == PARAMETER_TYPE_NUMBER:
                 return float(value)
-            elif target_type == "boolean":
+            elif target_type == PARAMETER_TYPE_BOOLEAN:
                 if isinstance(value, str):
-                    return value.lower() in ("true", "1", "yes", "on")
+                    return value.lower() in BOOLEAN_TRUE_STRINGS
                 return bool(value)
         except (ValueError, TypeError):
             return None

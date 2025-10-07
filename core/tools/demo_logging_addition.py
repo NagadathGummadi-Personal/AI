@@ -29,6 +29,23 @@ from core.tools.spec.tool_config import (
     IdempotencyConfig,
     RetryConfig,
 )
+from core.tools.constants import (
+    METRIC_ADDITION_SUCCESS,
+    METRIC_ADDITION_DURATION,
+    METRIC_ADDITION_ERROR,
+    EVENT_EXECUTION_STARTED,
+    EVENT_PARAMETER_EXTRACTION,
+    EVENT_TYPE_COERCION,
+    EVENT_TYPE_COERCION_FAILED,
+    EVENT_SIMULATED_ERROR,
+    EVENT_CALCULATION_STARTED,
+    EVENT_CALCULATION_COMPLETED,
+    EVENT_METRICS_RECORDED,
+    EVENT_TRACING_SPAN_CREATED,
+    EVENT_CACHE_OPERATION,
+    EVENT_EXECUTION_COMPLETED,
+    EVENT_EXECUTION_ERROR,
+)
 
 
 class ComprehensiveLoggingAdditionTool:
@@ -68,7 +85,7 @@ class ComprehensiveLoggingAdditionTool:
         start_time = time.time()
 
         # Log execution start
-        self.log_event("EXECUTION_STARTED", {
+        self.log_event(EVENT_EXECUTION_STARTED, {
             "operation_id": operation_id,
             "tool_name": "comprehensive_addition",
             "input_args": args,
@@ -90,7 +107,7 @@ class ComprehensiveLoggingAdditionTool:
             a = args.get("a")
             b = args.get("b")
 
-            self.log_event("PARAMETER_EXTRACTION", {
+            self.log_event(EVENT_PARAMETER_EXTRACTION, {
                 "operation_id": operation_id,
                 "raw_a": args.get("a"),
                 "raw_b": args.get("b"),
@@ -107,7 +124,7 @@ class ComprehensiveLoggingAdditionTool:
                 a_float = float(a)
                 b_float = float(b)
 
-                self.log_event("TYPE_COERCION", {
+                self.log_event(EVENT_TYPE_COERCION, {
                     "operation_id": operation_id,
                     "original_a": a,
                     "original_b": b,
@@ -116,7 +133,7 @@ class ComprehensiveLoggingAdditionTool:
                     "coercion_successful": True
                 })
             except (ValueError, TypeError) as e:
-                self.log_event("TYPE_COERCION_FAILED", {
+                self.log_event(EVENT_TYPE_COERCION_FAILED, {
                     "operation_id": operation_id,
                     "error": str(e),
                     "a_value": a,
@@ -127,7 +144,7 @@ class ComprehensiveLoggingAdditionTool:
             # Simulate error if requested
             if args.get("simulate_error"):
                 error_msg = "Simulated error for testing comprehensive logging"
-                self.log_event("SIMULATED_ERROR", {
+                self.log_event(EVENT_SIMULATED_ERROR, {
                     "operation_id": operation_id,
                     "error_message": error_msg,
                     "requested_by_user": True
@@ -135,7 +152,7 @@ class ComprehensiveLoggingAdditionTool:
                 raise ValueError(error_msg)
 
             # Perform calculation with step-by-step logging
-            self.log_event("CALCULATION_STARTED", {
+            self.log_event(EVENT_CALCULATION_STARTED, {
                 "operation_id": operation_id,
                 "operand_a": a_float,
                 "operand_b": b_float
@@ -148,7 +165,7 @@ class ComprehensiveLoggingAdditionTool:
 
             calculation_time = time.time() - start_time
 
-            self.log_event("CALCULATION_COMPLETED", {
+            self.log_event(EVENT_CALCULATION_COMPLETED, {
                 "operation_id": operation_id,
                 "result": result,
                 "calculation_time_ms": round(calculation_time * 1000, 2),
@@ -161,10 +178,10 @@ class ComprehensiveLoggingAdditionTool:
 
             # Metrics logging
             if ctx.metrics:
-                await ctx.metrics.incr("addition.success", tags={"operation": "add"})
-                await ctx.metrics.timing_ms("addition.duration", int(calculation_time * 1000))
+                await ctx.metrics.incr(METRIC_ADDITION_SUCCESS, tags={"operation": "add"})
+                await ctx.metrics.timing_ms(METRIC_ADDITION_DURATION, int(calculation_time * 1000))
 
-                self.log_event("METRICS_RECORDED", {
+                self.log_event(EVENT_METRICS_RECORDED, {
                     "operation_id": operation_id,
                     "metrics_calls": ["addition.success", "addition.duration"]
                 })
@@ -175,7 +192,7 @@ class ComprehensiveLoggingAdditionTool:
                     "operation_id": operation_id,
                     "operands": [a_float, b_float]
                 }) as span_id:
-                    self.log_event("TRACING_SPAN_CREATED", {
+                    self.log_event(EVENT_TRACING_SPAN_CREATED, {
                         "operation_id": operation_id,
                         "span_id": span_id,
                         "span_attributes": {"operation_id": operation_id, "operands": [a_float, b_float]}
@@ -185,7 +202,7 @@ class ComprehensiveLoggingAdditionTool:
             if ctx.memory:
                 cache_key = f"addition_result_{hash((a_float, b_float))}"
                 await ctx.memory.set(cache_key, result, ttl_s=300)
-                self.log_event("CACHE_OPERATION", {
+                self.log_event(EVENT_CACHE_OPERATION, {
                     "operation_id": operation_id,
                     "cache_key": cache_key,
                     "cached_value": result,
@@ -203,7 +220,7 @@ class ComprehensiveLoggingAdditionTool:
                 "success": True
             }
 
-            self.log_event("EXECUTION_COMPLETED", {
+            self.log_event(EVENT_EXECUTION_COMPLETED, {
                 "operation_id": operation_id,
                 "result_summary": {
                     "result": result,
@@ -219,7 +236,7 @@ class ComprehensiveLoggingAdditionTool:
             execution_time = time.time() - start_time
 
             # Comprehensive error logging
-            self.log_event("EXECUTION_ERROR", {
+            self.log_event(EVENT_EXECUTION_ERROR, {
                 "operation_id": operation_id,
                 "error_type": type(e).__name__,
                 "error_message": str(e),
@@ -232,7 +249,7 @@ class ComprehensiveLoggingAdditionTool:
 
             # Record error metrics
             if ctx.metrics:
-                await ctx.metrics.incr("addition.error", tags={"error_type": type(e).__name__})
+                await ctx.metrics.incr(METRIC_ADDITION_ERROR, tags={"error_type": type(e).__name__})
 
             raise
 

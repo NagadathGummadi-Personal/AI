@@ -13,6 +13,34 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 # Local imports
 from ..interfaces.tool_interfaces import IToolExecutor
+from ..constants import (
+    LOG_STARTING_EXECUTION,
+    LOG_PARAMETERS,
+    LOG_VALIDATING,
+    LOG_VALIDATION_PASSED,
+    LOG_VALIDATION_SKIPPED,
+    LOG_AUTH_CHECK,
+    LOG_AUTH_PASSED,
+    LOG_AUTH_SKIPPED,
+    LOG_EGRESS_CHECK,
+    LOG_EGRESS_PASSED,
+    LOG_EGRESS_SKIPPED,
+    LOG_IDEMPOTENCY_CACHE_HIT,
+    LOG_EXECUTION_COMPLETED,
+    LOG_EXECUTION_FAILED,
+    LOG_HTTP_STARTING,
+    LOG_HTTP_COMPLETED,
+    LOG_HTTP_FAILED,
+    LOG_DB_STARTING,
+    LOG_DB_COMPLETED,
+    LOG_DB_FAILED,
+    HTTP_EXECUTION_STATUS_COMPLETED,
+    HTTP_EXECUTION_STATUS_FAILED,
+    DB_EXECUTION_STATUS_FAILED,
+    TOOL_EXECUTION_STATUS_FAILED,
+    TOOL_EXECUTION_STATUS_COMPLETED,
+    DB_EXECUTION_STATUS_COMPLETED,
+)
 from ..spec.tool_context import ToolContext, ToolUsage
 from ..spec.tool_result import ToolResult
 from ..spec.tool_types import DbToolSpec, HttpToolSpec, ToolSpec
@@ -87,7 +115,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
     def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
         super().__init__(spec)
         self.func = func
-        self.logger = LoggerAdaptor.get_logger(f"tool.{spec.tool_name}", environment="dev")
+        self.logger = LoggerAdaptor.get_logger(f"tool.{spec.tool_name}")
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the function tool"""
@@ -102,35 +130,35 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
         }
 
         # Log execution start with context
-        self.logger.info("Starting tool execution", **context_data)
+        self.logger.info(LOG_STARTING_EXECUTION, **context_data)
 
         # Log parameter details
-        self.logger.debug("Tool parameters", parameters=args, **context_data)
+        self.logger.debug(LOG_PARAMETERS, parameters=args, **context_data)
 
         try:
             # Validate parameters if validator is available
             if ctx.validator:
-                self.logger.info("Validating parameters", **context_data)
+                self.logger.info(LOG_VALIDATING, **context_data)
                 await ctx.validator.validate(args, self.spec)
-                self.logger.info("Parameter validation passed", **context_data)
+                self.logger.info(LOG_VALIDATION_PASSED, **context_data)
             else:
-                self.logger.warning("No validator available - skipping parameter validation", **context_data)
+                self.logger.warning(LOG_VALIDATION_SKIPPED, **context_data)
 
             # Authorize execution if security is available
             if ctx.security:
-                self.logger.info("Checking authorization", **context_data)
+                self.logger.info(LOG_AUTH_CHECK, **context_data)
                 await ctx.security.authorize(ctx, self.spec)
-                self.logger.info("Authorization passed", **context_data)
+                self.logger.info(LOG_AUTH_PASSED, **context_data)
             else:
-                self.logger.warning("No security component available - skipping authorization", **context_data)
+                self.logger.warning(LOG_AUTH_SKIPPED, **context_data)
 
             # Check egress permissions if security is available
             if ctx.security:
-                self.logger.info("Checking egress permissions", **context_data)
+                self.logger.info(LOG_EGRESS_CHECK, **context_data)
                 await ctx.security.check_egress(args, self.spec)
-                self.logger.info("Egress check passed", **context_data)
+                self.logger.info(LOG_EGRESS_PASSED, **context_data)
             else:
-                self.logger.warning("No security component available - skipping egress check", **context_data)
+                self.logger.warning(LOG_EGRESS_SKIPPED, **context_data)
             # Check idempotency if enabled
             if self.spec.idempotency.enabled and ctx.memory:
                 idempotency_key = self._generate_idempotency_key(args, ctx)
@@ -140,7 +168,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
                 if self.spec.idempotency.persist_result:
                     cached_result = await ctx.memory.get(f"result:{idempotency_key}")
                     if cached_result:
-                        self.logger.info("Using cached result for idempotency", idempotency_key=idempotency_key, **context_data)
+                        self.logger.info(LOG_IDEMPOTENCY_CACHE_HIT, idempotency_key=idempotency_key, **context_data)
                         # Reconstruct ToolResult from cached data
                         return ToolResult(**cached_result)
 
@@ -150,7 +178,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
             execution_time = time.time() - start_time
 
             # Log successful completion
-            self.logger.info("Tool execution completed",
+            self.logger.info(LOG_EXECUTION_COMPLETED,
                 result=str(result_content),
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -178,7 +206,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
 
         except Exception as e:
             execution_time = time.time() - start_time
-            self.logger.error("Tool execution failed",
+            self.logger.error(LOG_EXECUTION_FAILED,
                 error=str(e),
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -204,7 +232,7 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
         super().__init__(spec)
         self.spec: HttpToolSpec = spec
         # Initialize logger for HTTP tool execution
-        self.logger = LoggerAdaptor.get_logger(f"http.{spec.tool_name}", environment="dev") if LoggerAdaptor else None
+        self.logger = LoggerAdaptor.get_logger(f"http.{spec.tool_name}") if LoggerAdaptor else None
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the HTTP tool"""
@@ -221,21 +249,21 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
         }
 
         # Log execution start
-        self.logger.info("Starting HTTP tool execution", **context_data)
+        self.logger.info(LOG_HTTP_STARTING, **context_data)
 
         try:
             # In a real implementation, this would make HTTP requests
             # For demo purposes, just return a mock response
             result_content = {
                 "status_code": 200,
-                "response": f"HTTP {self.spec.method} to {self.spec.url} completed",
+                "response": HTTP_EXECUTION_STATUS_COMPLETED.format(self.spec.tool_name, self.spec.method, self.spec.url),
                 "args": args
             }
 
             execution_time = time.time() - start_time
 
             # Log successful completion
-            self.logger.info("HTTP tool execution completed",
+            self.logger.info(LOG_HTTP_COMPLETED,
                 status_code=200,
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -247,7 +275,7 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
 
         except Exception as e:
             execution_time = time.time() - start_time
-            self.logger.error("HTTP tool execution failed",
+            self.logger.error(LOG_HTTP_FAILED,
                 error=str(e),
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -256,7 +284,7 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
             error_result = self._create_result(
                 content={"error": str(e)},
                 usage=usage,
-                warnings=[f"HTTP execution failed: {str(e)}"]
+                warnings=[HTTP_EXECUTION_STATUS_FAILED.format(self.spec.tool_name, self.spec.method, self.spec.url, str(e))]
             )
             return error_result
 
@@ -268,7 +296,7 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
         super().__init__(spec)
         self.spec: DbToolSpec = spec
         # Initialize logger for DB tool execution
-        self.logger = LoggerAdaptor.get_logger(f"db.{spec.tool_name}", environment="dev") if LoggerAdaptor else None
+        self.logger = LoggerAdaptor.get_logger(f"db.{spec.tool_name}") if LoggerAdaptor else None
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the database tool"""
@@ -286,7 +314,7 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
         }
 
         # Log execution start
-        self.logger.info("Starting database tool execution", **context_data)
+        self.logger.info(LOG_DB_STARTING, **context_data)
 
         try:
             # In a real implementation, this would execute SQL queries
@@ -304,7 +332,7 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
             execution_time = time.time() - start_time
 
             # Log successful completion
-            self.logger.info("Database tool execution completed",
+            self.logger.info(LOG_DB_COMPLETED,
                 rows_affected=1,
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -316,7 +344,7 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
 
         except Exception as e:
             execution_time = time.time() - start_time
-            self.logger.error("Database tool execution failed",
+            self.logger.error(LOG_DB_FAILED,
                 error=str(e),
                 execution_time_ms=round(execution_time * 1000, 2),
                 **context_data)
@@ -325,6 +353,6 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
             error_result = self._create_result(
                 content={"error": str(e)},
                 usage=usage,
-                warnings=[f"Database execution failed: {str(e)}"]
+                warnings=[DB_EXECUTION_STATUS_FAILED.format(self.spec.tool_name, str(e))]
             )
             return error_result

@@ -3,6 +3,14 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 # Local imports
+from ..defaults import (
+    DEFAULT_TOOL_VERSION,
+    DEFAULT_TOOL_TIMEOUT_S,
+    DEFAULT_RETURN_TYPE,
+    DEFAULT_RETURN_TARGET,
+    HTTP_DEFAULT_METHOD,
+    DB_DEFAULT_DRIVER,
+)
 from ..enum import ToolType, ToolReturnType, ToolReturnTarget
 from .tool_parameters import ToolParameter
 from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
@@ -10,17 +18,17 @@ from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
 class ToolSpec(BaseModel):
     """Base class for tool specifications with common metadata"""
     id: str
-    version: str = "1.0.0"
+    version: str = DEFAULT_TOOL_VERSION
     tool_name: str
     description: str
     tool_type: ToolType
     parameters: List[ToolParameter]
-    return_type: ToolReturnType = Field(default=ToolReturnType.JSON, alias="returns")
-    return_target: ToolReturnTarget = ToolReturnTarget.STEP
+    return_type: ToolReturnType = Field(default=DEFAULT_RETURN_TYPE, alias="returns")
+    return_target: ToolReturnTarget = DEFAULT_RETURN_TARGET
     required: bool = False
     owner: Optional[str] = None
     permissions: List[str] = Field(default_factory=list)
-    timeout_s: int = 30
+    timeout_s: int = DEFAULT_TOOL_TIMEOUT_S
     examples: List[Dict[str, Any]] = Field(default_factory=list)
 
     # Advanced config
@@ -46,7 +54,7 @@ class HttpToolSpec(ToolSpec):
 
     # HTTP-specific fields
     url: str
-    method: str = "POST"  # GET, POST, PUT, DELETE, etc.
+    method: str = HTTP_DEFAULT_METHOD  # GET, POST, PUT, DELETE, etc.
     headers: Optional[Dict[str, str]] = None
     query_params: Optional[Dict[str, str]] = None
     body: Optional[Dict[str, Any]] = None  # Only for non-GET requests
@@ -63,4 +71,4 @@ class DbToolSpec(ToolSpec):
     database: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
-    driver: str = "postgresql"  # postgresql, mysql, sqlite, etc.
+    driver: str = DB_DEFAULT_DRIVER  # postgresql, mysql, sqlite, etc.

@@ -6,25 +6,21 @@ interfaces that can be used as defaults or for testing purposes.
 """
 
 # Standard library
-import asyncio
-import time
 from contextlib import asynccontextmanager
-from typing import Any, AsyncContextManager, Awaitable, Callable, Dict, List, Optional
+from typing import Any, AsyncContextManager, Dict, List, Optional, Callable, Awaitable
 
 # Local imports
-from .interfaces.tool_interfaces import (
-    IToolEmitter,
-    IToolExecutor,
-    IToolLimiter,
-    IToolMemory,
-    IToolMetrics,
-    IToolPolicy,
-    IToolSecurity,
-    IToolTracer,
-    IToolValidator,
-)
+# Note: Protocol imports not needed here; concrete no-op classes define their own signatures
 from .spec.tool_context import ToolContext
 from .spec.tool_result import ToolError, ToolResult
+from .constants import (
+    ERROR_UNAUTHORIZED,
+    ERROR_INSUFFICIENT_PERMISSIONS,
+    ERROR_UNAUTHORIZED_ROLE,
+    MSG_UNAUTHORIZED_USER,
+    MSG_MISSING_REQUIRED_PERMISSIONS,
+    MSG_UNAUTHORIZED_ROLE,
+)
 from .spec.tool_types import ToolSpec
 
 
@@ -67,23 +63,32 @@ class BasicSecurity:
         """Authorize execution based on user and permissions"""
         # Check if user is authorized
         if self.authorized_users and ctx.user_id not in self.authorized_users:
-            raise ToolError(f"User {ctx.user_id} is not authorized to execute tool {spec.tool_name}",
-                          retryable=False, code="UNAUTHORIZED")
+            raise ToolError(
+                MSG_UNAUTHORIZED_USER.format(user_id=ctx.user_id, tool_name=spec.tool_name),
+                retryable=False,
+                code=ERROR_UNAUTHORIZED,
+            )
 
         # Check if user has required permissions
         if spec.permissions:
             user_permissions = ctx.auth.get("permissions", [])
             if not all(perm in user_permissions for perm in spec.permissions):
                 missing_perms = [perm for perm in spec.permissions if perm not in user_permissions]
-                raise ToolError(f"User {ctx.user_id} missing required permissions: {missing_perms}",
-                              retryable=False, code="INSUFFICIENT_PERMISSIONS")
+                raise ToolError(
+                    MSG_MISSING_REQUIRED_PERMISSIONS.format(user_id=ctx.user_id, missing_perms=missing_perms),
+                    retryable=False,
+                    code=ERROR_INSUFFICIENT_PERMISSIONS,
+                )
 
         # Check role-based authorization
         if self.authorized_roles:
             user_role = ctx.auth.get("user_role")
             if user_role not in self.authorized_roles:
-                raise ToolError(f"User role {user_role} is not authorized to execute tool {spec.tool_name}",
-                              retryable=False, code="UNAUTHORIZED_ROLE")
+                raise ToolError(
+                    MSG_UNAUTHORIZED_ROLE.format(user_role=user_role, tool_name=spec.tool_name),
+                    retryable=False,
+                    code=ERROR_UNAUTHORIZED_ROLE,
+                )
 
     async def check_egress(self, args: Dict[str, Any], spec: ToolSpec) -> None:
         """Check egress permissions (basic implementation)"""

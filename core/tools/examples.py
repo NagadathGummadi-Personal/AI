@@ -24,6 +24,15 @@ from .spec.tool_parameters import (
 from .validators import BasicValidator
 from .executors.executors import FunctionToolExecutor
 from .implementations import NoOpLimiter, NoOpMemory, NoOpMetrics, NoOpTracer
+from .constants import (
+    ERROR_MATH,
+    ERROR_INVALID_OPERATION,
+    METRIC_TOOL_EXECUTION_STARTED,
+    METRIC_TOOL_EXECUTION_SUCCESS,
+    METRIC_TOOL_EXECUTION_FAILED,
+    MSG_DIVISION_BY_ZERO,
+    MSG_UNKNOWN_OPERATION,
+)
 
 
 # Example 1: Simple calculator tool
@@ -197,10 +206,10 @@ class CalculatorImpl:
             result = a * b
         elif operation == "divide":
             if b == 0:
-                raise ToolError("Division by zero", retryable=False, code="MATH_ERROR")
+                raise ToolError(MSG_DIVISION_BY_ZERO, retryable=False, code=ERROR_MATH)
             result = a / b
         else:
-            raise ToolError(f"Unknown operation: {operation}", retryable=False, code="INVALID_OPERATION")
+            raise ToolError(MSG_UNKNOWN_OPERATION.format(operation=operation), retryable=False, code=ERROR_INVALID_OPERATION)
 
         return {
             "operation": operation,
