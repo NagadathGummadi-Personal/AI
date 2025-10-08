@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 # Local imports
 from ..enum import ToolReturnType, ToolReturnTarget
 from .tool_context import ToolUsage
+from ..constants import TOOL_ERROR
 
 
 class ToolResult(BaseModel):
@@ -21,7 +22,7 @@ class ToolResult(BaseModel):
 
 class ToolError(Exception):
     """Exception class for tool errors with retry information"""
-    def __init__(self, message: str, retryable: bool = False, code: str = "TOOL_ERROR"):
+    def __init__(self, message: str, retryable: bool = False, code: str = TOOL_ERROR):
         super().__init__(message)
         self.retryable = retryable
         self.code = code

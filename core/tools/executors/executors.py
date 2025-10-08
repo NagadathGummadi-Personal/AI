@@ -34,12 +34,44 @@ from ..constants import (
     LOG_DB_STARTING,
     LOG_DB_COMPLETED,
     LOG_DB_FAILED,
-    HTTP_EXECUTION_STATUS_COMPLETED,
-    HTTP_EXECUTION_STATUS_FAILED,
-    DB_EXECUTION_STATUS_FAILED,
-    TOOL_EXECUTION_STATUS_FAILED,
-    TOOL_EXECUTION_STATUS_COMPLETED,
-    DB_EXECUTION_STATUS_COMPLETED,
+    # HTTP_EXECUTION_STATUS_COMPLETED,
+    # HTTP_EXECUTION_STATUS_FAILED,
+    # DB_EXECUTION_STATUS_FAILED,
+    # TOOL_EXECUTION_STATUS_FAILED,
+    # TOOL_EXECUTION_STATUS_COMPLETED,
+    # DB_EXECUTION_STATUS_COMPLETED,
+
+    UTF_8,
+    EXC_HTTP_EXECUTION_NOT_IMPLEMENTED,
+    IDEMPOTENCY_CACHE_PREFIX,
+    EXC_DB_EXECUTION_NOT_IMPLEMENTED,
+    TOOL_EXECUTION_TIME,
+    TOOL_EXECUTIONS,
+    STATUS,
+    SUCCESS,
+    TOOL,
+    ERROR,
+    EXECUTION_FAILED,
+    HTTP,
+    DB,
+    EMPTY_STRING,
+)
+from ..defaults import (
+    DEFAULT_TOOL_CONTEXT_DATA,
+    DEFAULT_HTTP_CONTEXT_DATA,
+    DEFAULT_DB_CONTEXT_DATA,
+    HTTP_DEFAULT_SUCCESS_STATUS_RESPONSE,
+    HTTP_DEFAULT_ERROR_STATUS_WARNING,
+    DB_DEFAULT_SUCCESS_RESULT_CONTENT,
+    DB_DEFAULT_ERROR_STATUS_WARNING,
+    calculate_tokens_in,
+    calculate_tokens_out,
+    calculate_cost_usd,
+    calculate_attempts,
+    calculate_retries,
+    check_cached_hit,
+    check_idempotency_reused,
+    check_circuit_opened,
 )
 from ..spec.tool_context import ToolContext, ToolUsage
 from ..spec.tool_result import ToolResult
@@ -61,8 +93,8 @@ class BaseToolExecutor:
 
         key_components = [
             self.spec.id,
-            str(ctx.user_id or ""),
-            str(ctx.session_id or ""),
+            str(ctx.user_id or EMPTY_STRING),
+            str(ctx.session_id or EMPTY_STRING),
             json.dumps(key_data, sort_keys=True)
         ]
 
@@ -71,22 +103,21 @@ class BaseToolExecutor:
     def _calculate_usage(self, start_time: float, input_args: Dict[str, Any], output_content: Any) -> ToolUsage:
         """Calculate usage statistics for the tool execution"""
         # end_time retained for potential future use; presently not needed
-
         # Basic calculations - in real implementation, you'd have more sophisticated metrics
-        input_bytes = len(json.dumps(input_args).encode('utf-8'))
-        output_bytes = len(json.dumps(output_content).encode('utf-8')) if output_content else 0
+        input_bytes = len(json.dumps(input_args).encode(UTF_8))
+        output_bytes = len(json.dumps(output_content).encode(UTF_8)) if output_content else 0
 
         return ToolUsage(
             input_bytes=input_bytes,
             output_bytes=output_bytes,
-            tokens_in=0,  # Would need tokenizer
-            tokens_out=0,  # Would need tokenizer
-            cost_usd=0.0,  # Would need pricing model
-            attempts=1,
-            retries=0,
-            cached_hit=False,
-            idempotency_reused=False,
-            circuit_opened=False
+            tokens_in=calculate_tokens_in(),
+            tokens_out=calculate_tokens_out(),
+            cost_usd=calculate_cost_usd(),
+            attempts=calculate_attempts(),
+            retries=calculate_retries(),
+            cached_hit=check_cached_hit(),
+            idempotency_reused=check_idempotency_reused(),
+            circuit_opened=check_circuit_opened(),
         )
 
     def _create_result(
@@ -115,19 +146,14 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
     def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
         super().__init__(spec)
         self.func = func
-        self.logger = LoggerAdaptor.get_logger(f"tool.{spec.tool_name}")
+        self.logger = LoggerAdaptor.get_logger(f"{TOOL}.{spec.tool_name}")
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the function tool"""
         start_time = time.time()
 
         # Set up logging context
-        context_data = {
-            "user_id": ctx.user_id,
-            "session_id": ctx.session_id,
-            "tool_name": self.spec.tool_name,
-            "trace_id": ctx.trace_id
-        }
+        context_data = DEFAULT_TOOL_CONTEXT_DATA(self.spec, ctx)
 
         # Log execution start with context
         self.logger.info(LOG_STARTING_EXECUTION, **context_data)
@@ -166,7 +192,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
 
                 # Try to get cached result
                 if self.spec.idempotency.persist_result:
-                    cached_result = await ctx.memory.get(f"result:{idempotency_key}")
+                    cached_result = await ctx.memory.get(f"{IDEMPOTENCY_CACHE_PREFIX}:{idempotency_key}")
                     if cached_result:
                         self.logger.info(LOG_IDEMPOTENCY_CACHE_HIT, idempotency_key=idempotency_key, **context_data)
                         # Reconstruct ToolResult from cached data
@@ -185,8 +211,9 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
 
             # Log metrics if available
             if ctx.metrics:
-                await ctx.metrics.timing_ms("tool.execution_time", int(execution_time * 1000), tags={"tool": self.spec.tool_name})
-                await ctx.metrics.incr("tool.executions", tags={"tool": self.spec.tool_name, "status": "success"})
+                TAGS = {TOOL: self.spec.tool_name, STATUS: SUCCESS}
+                await ctx.metrics.timing_ms(TOOL_EXECUTION_TIME, int(execution_time * 1000), tags=TAGS)
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags=TAGS)
 
             # Calculate usage metrics
             usage = self._calculate_usage(start_time, args, result_content)
@@ -197,7 +224,7 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
             # Cache result if idempotency is enabled
             if self.spec.idempotency.enabled and ctx.memory and self.spec.idempotency.persist_result:
                 await ctx.memory.set(
-                    f"result:{ctx.idempotency_key}",
+                    f"{IDEMPOTENCY_CACHE_PREFIX}:{ctx.idempotency_key}",
                     result.dict(),
                     ttl_s=self.spec.idempotency.ttl_s
                 )
@@ -213,14 +240,14 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
 
             # Log error metrics if available
             if ctx.metrics:
-                await ctx.metrics.incr("tool.executions", tags={"tool": self.spec.tool_name, "status": "error"})
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags={TOOL: self.spec.tool_name, STATUS: ERROR})
 
             # Create error result
             usage = self._calculate_usage(start_time, args, None)
             error_result = self._create_result(
-                content={"error": str(e)},
+                content={ERROR: str(e)},
                 usage=usage,
-                warnings=[f"Execution failed: {str(e)}"]
+                warnings=[f"{EXECUTION_FAILED}: {str(e)}"]
             )
             return error_result
 
@@ -232,33 +259,25 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
         super().__init__(spec)
         self.spec: HttpToolSpec = spec
         # Initialize logger for HTTP tool execution
-        self.logger = LoggerAdaptor.get_logger(f"http.{spec.tool_name}") if LoggerAdaptor else None
+        self.logger = LoggerAdaptor.get_logger(f"{HTTP}.{spec.tool_name}") if LoggerAdaptor else None
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the HTTP tool"""
         start_time = time.time()
 
         # Set up logging context
-        context_data = {
-            "user_id": ctx.user_id,
-            "session_id": ctx.session_id,
-            "tool_name": self.spec.tool_name,
-            "trace_id": ctx.trace_id,
-            "http_method": self.spec.method,
-            "http_url": self.spec.url
-        }
+        context_data = DEFAULT_HTTP_CONTEXT_DATA(self.spec, ctx)
 
         # Log execution start
         self.logger.info(LOG_HTTP_STARTING, **context_data)
 
         try:
             # In a real implementation, this would make HTTP requests
-            # For demo purposes, just return a mock response
-            result_content = {
-                "status_code": 200,
-                "response": HTTP_EXECUTION_STATUS_COMPLETED.format(self.spec.tool_name, self.spec.method, self.spec.url),
-                "args": args
-            }
+            # Dev-only mock; raise if not dev
+            from ..config import is_dev
+            if not is_dev():
+                raise NotImplementedError(EXC_HTTP_EXECUTION_NOT_IMPLEMENTED)
+            result_content = HTTP_DEFAULT_SUCCESS_STATUS_RESPONSE(self.spec, args)
 
             execution_time = time.time() - start_time
 
@@ -282,9 +301,9 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
 
             usage = self._calculate_usage(start_time, args, None)
             error_result = self._create_result(
-                content={"error": str(e)},
+                content={ERROR: str(e)},
                 usage=usage,
-                warnings=[HTTP_EXECUTION_STATUS_FAILED.format(self.spec.tool_name, self.spec.method, self.spec.url, str(e))]
+                warnings=[HTTP_DEFAULT_ERROR_STATUS_WARNING(self.spec, str(e))]
             )
             return error_result
 
@@ -296,38 +315,24 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
         super().__init__(spec)
         self.spec: DbToolSpec = spec
         # Initialize logger for DB tool execution
-        self.logger = LoggerAdaptor.get_logger(f"db.{spec.tool_name}") if LoggerAdaptor else None
+        self.logger = LoggerAdaptor.get_logger(f"{DB}.{spec.tool_name}") if LoggerAdaptor else None
 
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """Execute the database tool"""
         start_time = time.time()
 
         # Set up logging context
-        context_data = {
-            "user_id": ctx.user_id,
-            "session_id": ctx.session_id,
-            "tool_name": self.spec.tool_name,
-            "trace_id": ctx.trace_id,
-            "db_host": self.spec.host,
-            "db_port": self.spec.port,
-            "db_database": self.spec.database
-        }
+        context_data = DEFAULT_DB_CONTEXT_DATA(self.spec, ctx)
 
         # Log execution start
         self.logger.info(LOG_DB_STARTING, **context_data)
 
         try:
             # In a real implementation, this would execute SQL queries
-            # For demo purposes, just return a mock response
-            result_content = {
-                "rows_affected": 1,
-                "query": args.get("query", "SELECT 1"),
-                "connection": {
-                    "host": self.spec.host,
-                    "port": self.spec.port,
-                    "database": self.spec.database
-                }
-            }
+            from ..config import is_dev
+            if not is_dev():
+                raise NotImplementedError(EXC_DB_EXECUTION_NOT_IMPLEMENTED)
+            result_content = DB_DEFAULT_SUCCESS_RESULT_CONTENT(self.spec, args)
 
             execution_time = time.time() - start_time
 
@@ -351,8 +356,8 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
 
             usage = self._calculate_usage(start_time, args, None)
             error_result = self._create_result(
-                content={"error": str(e)},
+                content={ERROR: str(e)},
                 usage=usage,
-                warnings=[DB_EXECUTION_STATUS_FAILED.format(self.spec.tool_name, str(e))]
+                warnings=[DB_DEFAULT_ERROR_STATUS_WARNING(self.spec, str(e))]
             )
             return error_result

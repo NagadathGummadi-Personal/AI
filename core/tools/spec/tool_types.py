@@ -11,6 +11,7 @@ from ..defaults import (
     HTTP_DEFAULT_METHOD,
     DB_DEFAULT_DRIVER,
 )
+from ..constants import RETURNS, ARBITRARY_TYPES_ALLOWED, POPULATE_BY_NAME
 from ..enum import ToolType, ToolReturnType, ToolReturnTarget
 from .tool_parameters import ToolParameter
 from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
@@ -23,7 +24,7 @@ class ToolSpec(BaseModel):
     description: str
     tool_type: ToolType
     parameters: List[ToolParameter]
-    return_type: ToolReturnType = Field(default=DEFAULT_RETURN_TYPE, alias="returns")
+    return_type: ToolReturnType = Field(default=DEFAULT_RETURN_TYPE, alias=RETURNS)
     return_target: ToolReturnTarget = DEFAULT_RETURN_TARGET
     required: bool = False
     owner: Optional[str] = None
@@ -36,10 +37,9 @@ class ToolSpec(BaseModel):
     circuit_breaker: CircuitBreakerConfig = Field(default_factory=CircuitBreakerConfig)
     idempotency: IdempotencyConfig = Field(default_factory=IdempotencyConfig)
     metrics_tags: Dict[str, str] = Field(default_factory=dict)  # static tags for metrics
-
     model_config = {
-        "arbitrary_types_allowed": True,
-        "populate_by_name": True
+        ARBITRARY_TYPES_ALLOWED: True,
+        POPULATE_BY_NAME: True
     }
 
 

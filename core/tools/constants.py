@@ -2,7 +2,6 @@
 Central constants for literals, error codes, event names, and logging formats.
 """
 
-# Error/Status Codes
 ERROR_TIMEOUT = "TIMEOUT"
 ERROR_UNAVAILABLE = "UNAVAILABLE"
 ERROR_TOOL = "TOOL_ERROR"
@@ -13,6 +12,9 @@ ERROR_UNAUTHORIZED_ROLE = "UNAUTHORIZED_ROLE"
 ERROR_VALIDATION = "VALIDATION_ERROR"
 ERROR_TOOL_NOT_FOUND = "TOOL_NOT_FOUND"
 ERROR_INVALID_OPERATION = "INVALID_OPERATION"
+
+# IDEMPOTENCY constants
+IDEMPOTENCY_CACHE_PREFIX = "result"
 
 # Event/Metric Names
 METRIC_TOOL_EXECUTION_STARTED = "tool.execution.started"
@@ -110,10 +112,87 @@ MSG_UNAUTHORIZED_ROLE = "User role {user_role} is not authorized to execute tool
 MSG_DIVISION_BY_ZERO = "Division by zero"
 MSG_UNKNOWN_OPERATION = "Unknown operation: {operation}"
 
-#HTTP Execution Status
-HTTP_EXECUTION_STATUS_COMPLETED = "HTTP {self.spec.method} to {self.spec.url} completed"
-HTTP_EXECUTION_STATUS_FAILED = "HTTP {self.spec.method} to {self.spec.url} failed"
-DB_EXECUTION_STATUS_COMPLETED = "Database execution completed"
-DB_EXECUTION_STATUS_FAILED = "Database execution failed"
-TOOL_EXECUTION_STATUS_COMPLETED = "Tool execution completed"
-TOOL_EXECUTION_STATUS_FAILED = "Tool execution failed"
+# Generic exception messages
+EXC_HTTP_EXECUTION_NOT_IMPLEMENTED = "HTTP execution not implemented"
+EXC_DB_EXECUTION_NOT_IMPLEMENTED = "DB execution not implemented"
+EXC_CALCULATION_NOT_IMPLEMENTED = "Calculation for {name} not implemented"
+
+# Encoding constants
+UTF_8 = "utf-8"
+
+# HTTP/DB/Tool execution status format strings
+HTTP_EXECUTION_STATUS_COMPLETED = "HTTP tool {tool_name} execution completed: {method} to {url}"
+HTTP_EXECUTION_STATUS_FAILED = "HTTP tool {tool_name} execution failed: {method} to {url}: {error}"
+DB_EXECUTION_STATUS_COMPLETED = "Database tool {tool_name} execution completed: {rows_affected} rows"
+DB_EXECUTION_STATUS_FAILED = "Database tool {tool_name} execution failed: {error}"
+TOOL_EXECUTION_STATUS_COMPLETED = "Tool {tool_name} execution completed"
+TOOL_EXECUTION_STATUS_FAILED = "Tool {tool_name} execution failed: {error}"
+
+#Other
+ENVIRONMENT = "ENVIRONMENT"
+DEFAULT_ENVIRONMENT_STRING = "dev"
+DEFAULT_VERSION_STRING = "1.0.0"
+DB_DEFAULT_QUERY_STRING = "SELECT 1"
+USER_ID = "user_id"
+SESSION_ID = "session_id"
+TOOL_NAME = "tool_name"
+TRACE_ID = "trace_id"
+HTTP_METHOD = "http_method"
+HTTP_URL = "http_url"
+DB_HOST = "db_host"
+DB_PORT = "db_port"
+DB_DATABASE = "db_database"
+STATUS_CODE = "status_code"
+RESPONSE = "response"
+ARGS = "args"
+METHOD = "method"
+URL = "url"
+ROWS_AFFECTED = "rows_affected"
+QUERY = "query"
+CONNECTION = "connection"
+HOST = "host"
+PORT = "port"
+DATABASE = "database"
+TOKENS_IN = "tokens_in"
+TOKENS_OUT = "tokens_out"
+COST_USD = "cost_usd"
+ATTEMPTS = "attempts"
+RETRIES = "retries"
+CACHED_HIT = "cached_hit"
+IDEMPOTENCY_REUSED = "idempotency_reused"
+CIRCUIT_OPENED = "circuit_opened"
+TIMEOUT = "timeout"
+UNAVAILABLE = "unavailable"
+TOOL_ERROR = "tool_error"
+POST = "post"
+POSTGRESQL = "postgresql"
+TOOL_EXECUTION_TIME = "tool.execution_time"
+TOOL_EXECUTIONS = "tool.executions"
+STATUS = 'status'
+SUCCESS = 'success'
+TOOL = 'tool'
+ERROR = 'error'
+EXECUTION_FAILED = 'execution_failed'
+HTTP = 'http'
+DB = 'db'
+ARBITRARY_TYPES_ALLOWED ='arbitrary_types_allowed'
+RETURNS = 'returns'
+POPULATE_BY_NAME = 'populate_by_name'
+EMPTY_STRING = ''
+
+#Enum constants
+JSON = 'json'
+TEXT = 'text'
+HUMAN = 'human'
+LLM = 'llm'
+AGENT = 'agent'
+STEP = 'step'
+FUNCTION = 'function'
+HTTP = 'http'
+DB = 'db'
+STRING = 'string'
+NUMBER = 'number'
+INTEGER = 'integer'
+BOOLEAN = 'boolean'
+ARRAY = 'array'
+OBJECT = 'object'

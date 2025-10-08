@@ -11,7 +11,7 @@ from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
 #Tool Interfaces
 from ..interfaces.tool_interfaces import IToolMemory, IToolMetrics, IToolTracer, IToolLimiter, IToolValidator, IToolSecurity
-
+from ..constants import ARBITRARY_TYPES_ALLOWED
 class ToolUsage(TypedDict, total=False):
     """Usage statistics for tool execution"""
     input_bytes: int
@@ -28,7 +28,7 @@ class ToolUsage(TypedDict, total=False):
 class ToolContext(BaseModel):
     """Execution context with tracing, auth, and dependencies"""
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config = {ARBITRARY_TYPES_ALLOWED: True}
     tenant_id: Optional[str] = None
     user_id: Optional[str] = None
     session_id: Optional[str] = None

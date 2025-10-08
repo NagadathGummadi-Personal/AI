@@ -1,31 +1,49 @@
 from enum import Enum
 
+from .constants import (
+    JSON,
+    TEXT,
+    HUMAN,
+    LLM,
+    AGENT,
+    STEP,
+    FUNCTION,
+    HTTP,
+    DB,
+    STRING,
+    NUMBER,
+    INTEGER,
+    BOOLEAN,
+    ARRAY,
+    OBJECT,
+)
+
 class ToolReturnType(str, Enum):
     """Enumeration for tool return formats"""
-    JSON = "json"
-    TEXT = "text"
+    JSON = JSON
+    TEXT = TEXT
 
 
 class ToolReturnTarget(str, Enum):
     """Enumeration for tool return routing targets"""
-    HUMAN = "human" #results sent to human directly
-    LLM = "llm" #results sent to llm
-    AGENT = "agent" #results sent to agent
-    STEP = "step" #results are part of workflow step
+    HUMAN = HUMAN #results sent to human directly
+    LLM = LLM #results sent to llm
+    AGENT = AGENT #results sent to agent
+    STEP = STEP #results are part of workflow step
 
 
 class ToolType(str, Enum):
     """Enumeration for tool types"""
-    FUNCTION = "function"
-    HTTP = "http"
-    DB = "db"
+    FUNCTION = FUNCTION
+    HTTP = HTTP
+    DB = DB
 
 
 class ParameterType(str, Enum):
     """Enumeration for parameter types"""
-    STRING = "string"
-    NUMBER = "number"
-    INTEGER = "integer"
-    BOOLEAN = "boolean"
-    ARRAY = "array"
-    OBJECT = "object"
+    STRING = STRING
+    NUMBER = NUMBER
+    INTEGER = INTEGER
+    BOOLEAN = BOOLEAN
+    ARRAY = ARRAY
+    OBJECT = OBJECT
