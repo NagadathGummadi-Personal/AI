@@ -50,7 +50,7 @@ from .interfaces import (
 )
 
 # Implementations / executors / validators
-from .validators import BasicValidator
+from .executors.validators.validators import BasicValidator
 from .executors import (
     BaseToolExecutor,
     FunctionToolExecutor,

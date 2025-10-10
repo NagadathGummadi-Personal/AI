@@ -197,11 +197,11 @@ class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
                         bypass_idempotency = True
                 if not bypass_idempotency:
                     idempotency_key = self._generate_idempotency_key(args, ctx)
-                ctx.idempotency_key = idempotency_key
-                # Try to get cached result
-                if self.spec.idempotency.persist_result:
-                    cached_result = await ctx.memory.get(f"{IDEMPOTENCY_CACHE_PREFIX}:{idempotency_key}")
-                    if cached_result:
+                    ctx.idempotency_key = idempotency_key
+                    # Try to get cached result
+                    if self.spec.idempotency.persist_result:
+                        cached_result = await ctx.memory.get(f"{IDEMPOTENCY_CACHE_PREFIX}:{idempotency_key}")
+                        if cached_result:
                             self.logger.info(
                                 LOG_IDEMPOTENCY_CACHE_HIT,
                                 idempotency_key=idempotency_key,

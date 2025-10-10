@@ -26,3 +26,6 @@ class ToolError(Exception):
         super().__init__(message)
         self.retryable = retryable
         self.code = code
+
+# Ensure forward references are resolved for Pydantic v2
+ToolResult.model_rebuild()
