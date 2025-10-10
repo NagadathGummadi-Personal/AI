@@ -10,9 +10,9 @@ import re
 from typing import Any, Dict
 
 # Local imports
-from .spec.tool_types import ToolSpec
+from ...spec.tool_types import ToolSpec
 # Tool Parameters
-from .spec.tool_parameters import (
+from ...spec.tool_parameters import (
     ToolParameter,
     StringParameter,
     NumericParameter,
@@ -21,8 +21,8 @@ from .spec.tool_parameters import (
     ObjectParameter,
 )
 # Tool Errors
-from .spec.tool_result import ToolError
-from .constants import (
+from ...spec.tool_result import ToolError
+from ...constants import (
     ERROR_VALIDATION,
     PARAMETER_TYPE_STRING,
     PARAMETER_TYPE_NUMBER,
