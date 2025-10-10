@@ -10,7 +10,6 @@ from .constants import (
     HTTP_EXECUTION_STATUS_COMPLETED,
     HTTP_EXECUTION_STATUS_FAILED,
     DB_EXECUTION_STATUS_FAILED,
-    EXC_CALCULATION_NOT_IMPLEMENTED,
     DEFAULT_VERSION_STRING,
     DEFAULT_ENVIRONMENT_STRING,
     DB_DEFAULT_QUERY_STRING,
@@ -34,21 +33,14 @@ from .constants import (
     HOST,
     PORT,
     DATABASE,
-    TOKENS_IN,
-    TOKENS_OUT,
-    COST_USD,
-    ATTEMPTS,
-    RETRIES,
-    CACHED_HIT,
-    IDEMPOTENCY_REUSED,
-    CIRCUIT_OPENED,
     TIMEOUT,
     UNAVAILABLE,
     TOOL_ERROR,
     POST,
     POSTGRESQL,
 )
-from .config import is_dev
+# Re-export env-aware usage calculators
+
 
 # ToolSpec defaults
 DEFAULT_TOOL_VERSION = DEFAULT_VERSION_STRING
@@ -128,86 +120,7 @@ def DB_DEFAULT_ERROR_STATUS_WARNING(spec, error: str) -> str:
     return DB_EXECUTION_STATUS_FAILED.format(tool_name=spec.tool_name, error=error)
 
 
-# -------- Usage calculation helpers --------
-def calculate_tokens_in_dev() -> int:
-    return 0
-
-
-def calculate_tokens_out_dev() -> int:
-    return 0
-
-
-def calculate_cost_usd_dev() -> float:
-    return 0.0
-
-
-def calculate_attempts_dev() -> int:
-    return 1
-
-
-def calculate_retries_dev() -> int:
-    return 0
-
-
-def check_cached_hit_dev() -> bool:
-    return False
-
-
-def check_idempotency_reused_dev() -> bool:
-    return False
-
-
-def check_circuit_opened_dev() -> bool:
-    return False
-
-
-# -------- Env-aware wrappers (dev vs non-dev) --------
-def calculate_tokens_in() -> int:
-    if is_dev():
-        return calculate_tokens_in_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=TOKENS_IN))
-
-
-def calculate_tokens_out() -> int:
-    if is_dev():
-        return calculate_tokens_out_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=TOKENS_OUT))
-
-
-def calculate_cost_usd() -> float:
-    if is_dev():
-        return calculate_cost_usd_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=COST_USD))
-
-
-def calculate_attempts() -> int:
-    if is_dev():
-        return calculate_attempts_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=ATTEMPTS))
-
-
-def calculate_retries() -> int:
-    if is_dev():
-        return calculate_retries_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=RETRIES))
-
-
-def check_cached_hit() -> bool:
-    if is_dev():
-        return check_cached_hit_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=CACHED_HIT))
-
-
-def check_idempotency_reused() -> bool:
-    if is_dev():
-        return check_idempotency_reused_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=IDEMPOTENCY_REUSED))
-
-
-def check_circuit_opened() -> bool:
-    if is_dev():
-        return check_circuit_opened_dev()
-    raise NotImplementedError(EXC_CALCULATION_NOT_IMPLEMENTED.format(name=CIRCUIT_OPENED))
+"""Re-export env-aware calculator functions from executors.usage_calculators."""
 
 # Retry defaults
 RETRY_DEFAULT_MAX_ATTEMPTS = 3
