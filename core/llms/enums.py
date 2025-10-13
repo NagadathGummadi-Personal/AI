@@ -11,7 +11,6 @@ from .constants import (
     MEDIA_TYPE_AUDIO,
     MEDIA_TYPE_IMAGE,
     MEDIA_TYPE_JSON,
-    MEDIA_TYPE_EMBEDDING,
     PROVIDER_AZURE_OPENAI,
     PROVIDER_BEDROCK,
     PROVIDER_GEMINI,
@@ -19,10 +18,14 @@ from .constants import (
     LLM_TYPE_COMPLETION,
     LLM_TYPE_EMBEDDING,
     LLM_TYPE_MULTIMODAL,
+    ROLE_SYSTEM,
+    ROLE_USER,
+    ROLE_ASSISTANT,
+    ROLE_FUNCTION,
 )
 
 
-class InputType(str, Enum):
+class InputMediaType(str, Enum):
     """Enumeration for LLM input types"""
     TEXT = CONTENT_TYPE_TEXT
     IMAGE = CONTENT_TYPE_IMAGE
@@ -38,7 +41,7 @@ class OutputMediaType(str, Enum):
     AUDIO = MEDIA_TYPE_AUDIO
     IMAGE = MEDIA_TYPE_IMAGE
     JSON = MEDIA_TYPE_JSON
-    EMBEDDING = MEDIA_TYPE_EMBEDDING
+    MULTIMODAL = CONTENT_TYPE_MULTIMODAL
 
 
 class LLMProvider(str, Enum):
@@ -58,7 +61,7 @@ class LLMType(str, Enum):
 
 class MessageRole(str, Enum):
     """Enumeration for message roles in chat conversations"""
-    SYSTEM = "system"
-    USER = "user"
-    ASSISTANT = "assistant"
-    FUNCTION = "function"
+    SYSTEM = ROLE_SYSTEM
+    USER = ROLE_USER
+    ASSISTANT = ROLE_ASSISTANT
+    FUNCTION = ROLE_FUNCTION

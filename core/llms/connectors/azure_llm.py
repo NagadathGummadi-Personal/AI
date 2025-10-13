@@ -27,7 +27,7 @@ from ..constants import (
     ROLE_ASSISTANT,
     ROLE_FUNCTION,
 )
-from ..enums import InputType, OutputMediaType
+from ..enums import InputMediaType, OutputMediaType
 from ..exceptions import InputValidationError, ProviderError, TimeoutError
 
 # Optional imports for Azure OpenAI
@@ -82,12 +82,12 @@ class AzureLLM(BaseLLM):
 
         # Check for vision models (GPT-4v, GPT-4o)
         if any(vision_model in model_name for vision_model in ["gpt-4v", "gpt-4o", "vision"]):
-            self.config.supported_input_types.add(InputType.IMAGE)
+            self.config.supported_input_types.add(InputMediaType.IMAGE)
             self.config.supported_output_types.add(OutputMediaType.IMAGE)
 
         # Check for multimodal models
         if "gpt-4o" in model_name or "vision" in model_name:
-            self.config.supported_input_types.add(InputType.MULTIMODAL)
+            self.config.supported_input_types.add(InputMediaType.MULTIMODAL)
 
     async def _get_answer_impl(self, messages: List[Dict[str, Any]], **kwargs) -> str:
         """
@@ -273,13 +273,13 @@ class AzureLLM(BaseLLM):
             # Log metrics (in a real implementation, use your metrics system)
             print(f"Azure OpenAI Usage - In: {tokens_in}, Out: {tokens_out}, Cost: ${total_cost:.6f}")
 
-    def validate_input(self, input_type: InputType, content: Any) -> bool:
+    def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """Validate Azure OpenAI specific input"""
         # First do base validation
         super().validate_input(input_type, content)
 
         # Azure OpenAI specific validation
-        if input_type == InputType.IMAGE:
+        if input_type == InputMediaType.IMAGE:
             if isinstance(content, str):
                 # Should be a URL or file path
                 if not (content.startswith("http") or content.endswith((".jpg", ".jpeg", ".png", ".gif"))):

@@ -18,12 +18,24 @@ from .defaults import (
     DEFAULT_SUPPORTED_INPUT_TYPES,
     DEFAULT_SUPPORTED_OUTPUT_TYPES,
     DEFAULT_STREAMING_SUPPORTED,
-    AZURE_OPENAI_DEFAULT_API_VERSION,
-    BEDROCK_DEFAULT_REGION,
-    GEMINI_DEFAULT_API_VERSION,
     GEMINI_DEFAULT_LOCATION,
+    MSG_INVALID_TEMPERATURE_RANGE_AZURE_OPENAI,
+    MSG_INVALID_TEMPERATURE_RANGE_BEDROCK,
+    MSG_INVALID_TEMPERATURE_RANGE_GEMINI,
+    MSG_INVALID_MAX_TOKENS_POSITIVE,
+    MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED,
+    MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED,
+    MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS,
+    MSG_MISSING_API_KEY_AZURE_OPENAI,
+    MSG_MISSING_MODEL_NAME_AZURE_OPENAI,
+    MSG_MISSING_API_KEY_GEMINI,
+    MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI,
+    MSG_REGION_REQUIRED_BEDROCK,
+    MSG_MODEL_ID_REQUIRED_BEDROCK,
+    MSG_PROJECT_ID_REQUIRED_GEMINI,
+    MSG_PROVIDER_NOT_SUPPORTED,
 )
-from .enums import InputType, LLMProvider, OutputMediaType
+from .enums import InputMediaType, LLMProvider, OutputMediaType
 from .exceptions import ConfigurationError
 
 
@@ -44,7 +56,7 @@ class BaseLLMConfig:
     max_retries: int = DEFAULT_LLM_MAX_RETRIES
 
     # Input/output handling
-    supported_input_types: Set[InputType] = field(default_factory=lambda: DEFAULT_SUPPORTED_INPUT_TYPES)
+    supported_input_types: Set[InputMediaType] = field(default_factory=lambda: DEFAULT_SUPPORTED_INPUT_TYPES)
     supported_output_types: Set[OutputMediaType] = field(default_factory=lambda: DEFAULT_SUPPORTED_OUTPUT_TYPES)
     streaming_supported: bool = DEFAULT_STREAMING_SUPPORTED
 
@@ -61,20 +73,40 @@ class BaseLLMConfig:
 
     def validate_config(self) -> None:
         """Validate the configuration parameters"""
-        if not 0 <= self.temperature <= 2:
-            raise ConfigurationError("Temperature must be between 0 and 2")
+        # Validate temperature
+        if self.provider == LLMProvider.AZURE_OPENAI:
+            if not 0 <= self.temperature <= 2:
+                raise ConfigurationError(MSG_INVALID_TEMPERATURE_RANGE_AZURE_OPENAI)
+        elif self.provider == LLMProvider.BEDROCK:
+            if not 0 <= self.temperature <= 1:
+                raise ConfigurationError(MSG_INVALID_TEMPERATURE_RANGE_BEDROCK)
+        elif self.provider == LLMProvider.GEMINI:
+            if not 0 <= self.temperature <= 2:
+                raise ConfigurationError(MSG_INVALID_TEMPERATURE_RANGE_GEMINI)
+        else:
+            raise ConfigurationError(f"Unsupported provider: {self.provider}")
+        
+        # Validate max tokens - Basic validation
         if self.max_tokens <= 0:
-            raise ConfigurationError("Max tokens must be positive")
+            raise ConfigurationError(MSG_INVALID_MAX_TOKENS_POSITIVE)
+        # Validate supported input types
         if not self.supported_input_types:
-            raise ConfigurationError("At least one input type must be supported")
+            raise ConfigurationError(MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED)
+        # Validate supported output types
         if not self.supported_output_types:
-            raise ConfigurationError("At least one output type must be supported")
+            raise ConfigurationError(MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED)
+        # Validate json output
         if self.json_output and not (self.json_schema or self.json_class):
-            raise ConfigurationError("json_output=True requires json_schema or json_class")
-        if not self.api_key:
-            raise ConfigurationError(f"API key is required for provider {self.provider}")
-        if not self.model_name:
-            raise ConfigurationError("Model name is required")
+            raise ConfigurationError(MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS)
+        # Validate api key
+        if self.provider == LLMProvider.AZURE_OPENAI:
+            if not self.api_key:
+                raise ConfigurationError(MSG_MISSING_API_KEY_AZURE_OPENAI)
+            if not self.model_name:
+                raise ConfigurationError(MSG_MISSING_MODEL_NAME_AZURE_OPENAI)
+        elif self.provider == LLMProvider.GEMINI:
+            if not self.api_key:
+                raise ConfigurationError(MSG_MISSING_API_KEY_GEMINI)
 
 
 @dataclass
@@ -88,7 +120,7 @@ class AzureOpenAIConfig(BaseLLMConfig):
         """Validate Azure OpenAI specific configuration"""
         super().validate_config()
         if not self.endpoint and not self.deployment_name:
-            raise ConfigurationError("Either endpoint or deployment_name must be provided for Azure OpenAI")
+            raise ConfigurationError(MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI)
 
 
 @dataclass
@@ -102,7 +134,9 @@ class BedrockConfig(BaseLLMConfig):
         """Validate Bedrock specific configuration"""
         super().validate_config()
         if not self.region:
-            raise ConfigurationError("Region is required for Bedrock")
+            raise ConfigurationError(MSG_REGION_REQUIRED_BEDROCK)
+        if not self.model_id:
+            raise ConfigurationError(MSG_MODEL_ID_REQUIRED_BEDROCK)
 
 
 @dataclass
@@ -116,7 +150,7 @@ class GeminiConfig(BaseLLMConfig):
         """Validate Gemini specific configuration"""
         super().validate_config()
         if not self.project_id:
-            raise ConfigurationError("Project ID is required for Gemini")
+            raise ConfigurationError(MSG_PROJECT_ID_REQUIRED_GEMINI)
 
 
 # Configuration registry for easy access
@@ -143,7 +177,7 @@ def create_llm_config(provider: LLMProvider, **kwargs) -> BaseLLMConfig:
     """
     config_class = LLM_CONFIGS.get(provider)
     if not config_class:
-        raise ConfigurationError(f"Unsupported provider: {provider}")
+        raise ConfigurationError(MSG_PROVIDER_NOT_SUPPORTED.format(provider=provider))
 
     config = config_class(**kwargs)
     config.validate_config()

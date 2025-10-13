@@ -3,33 +3,17 @@ Azure OpenAI LLM connector for the AI Agent SDK.
 """
 
 import asyncio
+import json
 import time
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any, AsyncIterator, Dict, List
 
 from core.llms.base_llm import BaseLLM
 from core.llms.configs import AzureOpenAIConfig
 from core.llms.constants import (
-    ERROR_TIMEOUT,
-    ERROR_UNAVAILABLE,
-    ERROR_LLM,
-    LOG_AZURE_OPENAI_COMPLETED,
-    LOG_AZURE_OPENAI_FAILED,
-    LOG_AZURE_OPENAI_REQUEST,
-    METRIC_LLM_REQUEST_STARTED,
-    METRIC_LLM_REQUEST_SUCCESS,
-    METRIC_LLM_REQUEST_FAILED,
-    METRIC_LLM_TOKENS_IN,
-    METRIC_LLM_TOKENS_OUT,
-    METRIC_LLM_COST_USD,
     PROVIDER_AZURE_OPENAI,
-    ROLE_SYSTEM,
-    ROLE_USER,
-    ROLE_ASSISTANT,
-    ROLE_FUNCTION,
-    JSON_OBJECT_TYPE,
 )
 from .converter import convert_to_azure_openai_request
-from core.llms.enums import InputType, OutputMediaType
+from core.llms.enums import InputMediaType, OutputMediaType
 from core.llms.exceptions import InputValidationError, ProviderError, TimeoutError
 
 # Optional imports for Azure OpenAI
@@ -84,12 +68,12 @@ class AzureLLM(BaseLLM):
 
         # Check for vision models (GPT-4v, GPT-4o)
         if any(vision_model in model_name for vision_model in ["gpt-4v", "gpt-4o", "vision"]):
-            self.config.supported_input_types.add(InputType.IMAGE)
+            self.config.supported_input_types.add(InputMediaType.IMAGE)
             self.config.supported_output_types.add(OutputMediaType.IMAGE)
 
         # Check for multimodal models
         if "gpt-4o" in model_name or "vision" in model_name:
-            self.config.supported_input_types.add(InputType.MULTIMODAL)
+            self.config.supported_input_types.add(InputMediaType.MULTIMODAL)
 
     async def _get_answer_impl(self, messages: List[Dict[str, Any]], **kwargs) -> str:
         """
@@ -124,6 +108,11 @@ class AzureLLM(BaseLLM):
             request_params = convert_to_azure_openai_request(
                 messages, self.config.model_name, **request_kwargs
             )
+            
+            # Add tools if registered and supported
+            if self._available_tools and self.model_capabilities.supports_function_calling:
+                request_params["tools"] = list(self._available_tools.values())
+                request_params["tool_choice"] = kwargs.get("tool_choice", "auto")
 
             # Make the API call
             start_time = time.time()
@@ -135,6 +124,57 @@ class AzureLLM(BaseLLM):
                 raise ProviderError("No response choices returned from Azure OpenAI")
 
             message = response.choices[0].message
+            
+            # Check if the model wants to call tools
+            if hasattr(message, 'tool_calls') and message.tool_calls:
+                # Handle tool calls
+                tool_results = []
+                for tool_call in message.tool_calls:
+                    tool_name = tool_call.function.name
+                    tool_args = json.loads(tool_call.function.arguments)
+                    
+                    # Execute the tool
+                    try:
+                        result = await self.execute_tool(tool_name, tool_args)
+                        tool_results.append({
+                            "tool_call_id": tool_call.id,
+                            "role": "tool",
+                            "name": tool_name,
+                            "content": str(result)
+                        })
+                    except Exception as e:
+                        tool_results.append({
+                            "tool_call_id": tool_call.id,
+                            "role": "tool",
+                            "name": tool_name,
+                            "content": f"Error: {str(e)}"
+                        })
+                
+                # If tools were called, make another request with the results
+                if tool_results:
+                    # Add the assistant's message with tool calls
+                    new_messages = messages + [{
+                        "role": "assistant",
+                        "content": message.content,
+                        "tool_calls": [
+                            {
+                                "id": tc.id,
+                                "type": "function",
+                                "function": {
+                                    "name": tc.function.name,
+                                    "arguments": tc.function.arguments
+                                }
+                            }
+                            for tc in message.tool_calls
+                        ]
+                    }]
+                    
+                    # Add tool results
+                    new_messages.extend(tool_results)
+                    
+                    # Make follow-up request
+                    return await self._get_answer_impl(new_messages, **kwargs)
+            
             content = message.content or ""
 
             # Track usage metrics
@@ -273,13 +313,13 @@ class AzureLLM(BaseLLM):
             # Log metrics (in a real implementation, use your metrics system)
             print(f"Azure OpenAI Usage - In: {tokens_in}, Out: {tokens_out}, Cost: ${total_cost:.6f}")
 
-    def validate_input(self, input_type: InputType, content: Any) -> bool:
+    def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """Validate Azure OpenAI specific input"""
         # First do base validation
         super().validate_input(input_type, content)
 
         # Azure OpenAI specific validation
-        if input_type == InputType.IMAGE:
+        if input_type == InputMediaType.IMAGE:
             if isinstance(content, str):
                 # Should be a URL or file path
                 if not (content.startswith("http") or content.endswith((".jpg", ".jpeg", ".png", ".gif"))):

@@ -7,7 +7,7 @@ multi-modal input/output validation, JSON-structured responses, and seamless
 integration with the existing tools architecture.
 
 Core components:
-- InputType: Enumeration for input types (Text, Image, Audio, Video, Document, Multimodal)
+- InputMediaType: Enumeration for input types (Text, Image, Audio, Video, Document, Multimodal)
 - OutputMediaType: Enumeration for output types (Text, Audio, Image, JSON, Embedding)
 - LLMProvider: Enumeration for providers (Azure OpenAI, Bedrock, Gemini)
 - LLMType: Enumeration for LLM types (Chat, Completion, Embedding, Multimodal)
@@ -30,7 +30,7 @@ from typing import List, Optional
 
 # Enums and types
 from .enums import (
-    InputType,
+    InputMediaType,
     OutputMediaType,
     LLMProvider,
     LLMType,
@@ -60,6 +60,21 @@ from .interfaces import ILLM
 from .connectors.azure.azure_llm import AzureLLM
 from .connectors.bedrock.bedrock_llm import BedrockLLM
 from .connectors.gemini.gemini_llm import GeminiLLM
+
+# Model enums (re-exported for backward compatibility)
+from .connectors.azure.models import AzureOpenAIModel
+from .connectors.bedrock.models import BedrockModel
+from .connectors.gemini.models import GeminiModel
+
+# Model registry and metadata
+from .model_registry import (
+    ModelRegistry,
+    ModelMetadata,
+    ModelFamily,
+    get_model_registry,
+    get_model_metadata,
+    validate_model_parameters,
+)
 
 # Exception classes
 from .exceptions import (
@@ -226,10 +241,21 @@ def create_gemini_llm(
     return LLMFactory.create_llm(config)
 
 
+# Tool integration support
+from .tool_integration import (
+    ToolConverter,
+    ToolConverterFactory,
+    convert_tools_for_provider,
+    convert_tool_result_for_provider,
+)
+from .connectors.azure.tool_converter import AzureOpenAIToolConverter
+from .connectors.bedrock.tool_converter import BedrockToolConverter
+from .connectors.gemini.tool_converter import GeminiToolConverter
+
 # Export all public API components
 __all__ = [
     # Enums and types
-    "InputType",
+    "InputMediaType",
     "OutputMediaType",
     "LLMProvider",
     "LLMType",
@@ -254,12 +280,34 @@ __all__ = [
     "AzureLLM",
     "BedrockLLM",
     "GeminiLLM",
+    
+    # Model enums
+    "AzureOpenAIModel",
+    "BedrockModel",
+    "GeminiModel",
+    
+    # Model registry and metadata
+    "ModelRegistry",
+    "ModelMetadata",
+    "ModelFamily",
+    "get_model_registry",
+    "get_model_metadata",
+    "validate_model_parameters",
 
     # Factory and convenience functions
     "LLMFactory",
     "create_azure_llm",
     "create_bedrock_llm",
     "create_gemini_llm",
+
+    # Tool integration
+    "ToolConverter",
+    "AzureOpenAIToolConverter",
+    "BedrockToolConverter",
+    "GeminiToolConverter",
+    "ToolConverterFactory",
+    "convert_tools_for_provider",
+    "convert_tool_result_for_provider",
 
     # Exception classes
     "LLMError",

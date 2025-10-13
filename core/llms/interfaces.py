@@ -2,10 +2,10 @@
 LLM interfaces for the AI Agent SDK.
 """
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any, AsyncIterator, Dict, List, Optional, Protocol, runtime_checkable
 
-from .enums import InputType
+from .enums import InputMediaType
 
 
 class LLMResponse:
@@ -66,7 +66,7 @@ class ILLM(Protocol):
         ...
 
     @abstractmethod
-    def validate_input(self, input_type: InputType, content: Any) -> bool:
+    def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """
         Validate input for the given input type
 
@@ -92,7 +92,7 @@ class ILLM(Protocol):
         """
         ...
 
-
+# !TODO: Remove this interface
 @runtime_checkable
 class ILLMConnector(Protocol):
     """Interface for LLM provider connectors"""

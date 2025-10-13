@@ -24,7 +24,7 @@ from ..constants import (
     ROLE_ASSISTANT,
     ROLE_FUNCTION,
 )
-from ..enums import InputType, OutputMediaType
+from ..enums import InputMediaType, OutputMediaType
 from ..exceptions import InputValidationError, ProviderError, TimeoutError
 
 # Optional imports for Google Gemini
@@ -82,12 +82,12 @@ class GeminiLLM(BaseLLM):
 
         # Check for vision models (Gemini Pro Vision)
         if any(vision_model in model_name for vision_model in ["gemini-pro-vision", "gemini-1.5"]):
-            self.config.supported_input_types.add(InputType.IMAGE)
+            self.config.supported_input_types.add(InputMediaType.IMAGE)
             self.config.supported_output_types.add(OutputMediaType.IMAGE)
 
         # Check for multimodal models
         if "gemini-1.5" in model_name or "vision" in model_name:
-            self.config.supported_input_types.add(InputType.MULTIMODAL)
+            self.config.supported_input_types.add(InputMediaType.MULTIMODAL)
 
     async def _get_answer_impl(self, messages: List[Dict[str, Any]], **kwargs) -> str:
         """
@@ -295,13 +295,13 @@ class GeminiLLM(BaseLLM):
             # If usage tracking fails, continue without error
             pass
 
-    def validate_input(self, input_type: InputType, content: Any) -> bool:
+    def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """Validate Gemini specific input"""
         # First do base validation
         super().validate_input(input_type, content)
 
         # Gemini specific validation
-        if input_type == InputType.IMAGE:
+        if input_type == InputMediaType.IMAGE:
             if isinstance(content, str):
                 # Should be a URL or file path
                 if not (content.startswith("http") or content.startswith("gs://")):

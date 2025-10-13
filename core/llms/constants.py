@@ -91,23 +91,49 @@ PROVIDER_AZURE_OPENAI = "azure_openai"
 PROVIDER_BEDROCK = "bedrock"
 PROVIDER_GEMINI = "gemini"
 
+# Model enum class names (for __getattr__)
+AZURE_OPENAI_MODEL = "AzureOpenAIModel"
+BEDROCK_MODEL = "BedrockModel"
+GEMINI_MODEL = "GeminiModel"
+MODEL_CAPABILITIES = "MODEL_CAPABILITIES"
+MODEL_PARAMETER_DEFAULTS = "MODEL_PARAMETER_DEFAULTS"
+
 # Azure OpenAI model names
 AZURE_OPENAI_GPT_4O = "gpt-4o"
+AZURE_OPENAI_GPT_4_1_MINI = "gpt-4.1-mini"
 AZURE_OPENAI_GPT_4O_MINI = "gpt-4o-mini"
 AZURE_OPENAI_GPT_4_TURBO = "gpt-4-turbo"
 AZURE_OPENAI_GPT_4 = "gpt-4"
-AZURE_OPENAI_GPT_3_5_TURBO = "gpt-3.5-turbo"
+AZURE_OPENAI_GPT_35_TURBO = "gpt-3.5-turbo"
+AZURE_OPENAI_GPT_35_TURBO_16K = "gpt-3.5-turbo-16k"
+AZURE_OPENAI_GPT_35_TURBO_0125 = "gpt-3.5-turbo-0125"
+
+# Azure OpenAI model families
+AZURE_MODEL_FAMILY_GPT_4O = "gpt-4o"
+AZURE_MODEL_FAMILY_GPT_4 = "gpt-4"
+AZURE_MODEL_FAMILY_GPT_35 = "gpt-3.5"
 
 # Bedrock model names (Anthropic Claude)
 BEDROCK_CLAUDE_3_OPUS = "anthropic.claude-3-opus-20240229-v1:0"
 BEDROCK_CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
 BEDROCK_CLAUDE_3_HAIKU = "anthropic.claude-3-haiku-20240229-v1:0"
+BEDROCK_CLAUDE_35_SONNET = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+
+# Bedrock model families
+BEDROCK_MODEL_FAMILY_CLAUDE_3 = "claude-3"
+BEDROCK_MODEL_FAMILY_CLAUDE_35 = "claude-3.5"
 
 # Gemini model names
 GEMINI_PRO = "gemini-pro"
 GEMINI_PRO_VISION = "gemini-pro-vision"
 GEMINI_1_5_PRO = "gemini-1.5-pro"
 GEMINI_1_5_FLASH = "gemini-1.5-flash"
+GEMINI_1_5_PRO_002 = "gemini-1.5-pro-002"
+GEMINI_1_5_FLASH_002 = "gemini-1.5-flash-002"
+
+# Gemini model families
+GEMINI_MODEL_FAMILY_PRO = "gemini-pro"
+GEMINI_MODEL_FAMILY_1_5 = "gemini-1.5"
 
 # Encoding constants
 UTF_8 = "utf-8"
@@ -171,6 +197,33 @@ MSG_MISSING_API_KEY = "API key is required for provider {provider}"
 MSG_MISSING_MODEL_NAME = "Model name is required"
 MSG_PROVIDER_NOT_SUPPORTED = "Provider {provider} is not supported"
 MSG_JUMP_START_FAILED = "LLM jump_start connectivity test failed"
+MSG_INVALID_TEMPERATURE_RANGE_AZURE_OPENAI = "Temperature must be between 0 and 2"
+MSG_INVALID_TEMPERATURE_RANGE_BEDROCK = "Temperature must be between 0 and 1"
+MSG_INVALID_TEMPERATURE_RANGE_GEMINI = "Temperature must be between 0 and 2"
+MSG_INVALID_MAX_TOKENS_POSITIVE = "Max tokens must be positive"
+MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED = "At least one input type must be supported"
+MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED = "At least one output type must be supported"
+MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS = "json_output=True requires json_schema or json_class"
+MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI = "Either endpoint or deployment_name must be provided for Azure OpenAI"
+MSG_REGION_REQUIRED_BEDROCK = "Region is required for Bedrock"
+MSG_MODEL_ID_REQUIRED_BEDROCK = "Model ID is required for Bedrock"
+MSG_PROJECT_ID_REQUIRED_GEMINI = "Project ID is required for Gemini"
+MSG_PROVIDER_NOT_SUPPORTED = "Provider {provider} is not supported"
+MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING = "Model {model_name} does not support function calling"
+MSG_NO_HANDLER_REGISTERED_FOR_TOOL = "No handler registered for tool: {tool_name}"
+MSG_INVALID_JSON_OUTPUT = "Invalid JSON output: {e}"
+
+# Tool integration logging
+LOG_LLM_TOOL_CONVERSION = "Converting tool spec to provider format"
+LOG_LLM_TOOL_CALL_STARTED = "Tool call started"
+LOG_LLM_TOOL_CALL_COMPLETED = "Tool call completed"
+LOG_LLM_TOOL_CALL_FAILED = "Tool call failed"
+
+# Tool integration error messages
+MSG_UNSUPPORTED_PARAMETER_TYPE = "Unsupported parameter type: {param_type}"
+MSG_TOOL_CONVERSION_FAILED = "Failed to convert tool spec: {error}"
+MSG_TOOL_EXECUTION_FAILED = "Tool execution failed: {error}"
+MSG_TOOL_NOT_FOUND = "Tool not found: {tool_name}"
 
 # Generic exception messages
 EXC_LLM_NOT_IMPLEMENTED = "LLM implementation not available"
@@ -189,3 +242,46 @@ HTTP_INTERNAL_SERVER_ERROR = 500
 HTTP_BAD_GATEWAY = 502
 HTTP_SERVICE_UNAVAILABLE = 503
 HTTP_GATEWAY_TIMEOUT = 504
+
+# Other constants
+
+# Model constants
+AZURE_OPENAI_MODEL = "AzureOpenAIModel"
+BEDROCK_MODEL = "BedrockModel"
+GEMINI_MODEL = "GeminiModel"
+MODEL_CAPABILITIES = "MODEL_CAPABILITIES"
+MODEL_PARAMETER_DEFAULTS = "MODEL_PARAMETER_DEFAULTS"
+
+# Message roles
+ROLE_SYSTEM = "system"
+ROLE_USER = "user"
+ROLE_ASSISTANT = "assistant"
+ROLE_FUNCTION = "function"
+
+# Provider constants
+AZURE_OPENAI_DEFAULT_API_VERSION = "2023-12-01-preview"
+BEDROCK_DEFAULT_REGION = "us-east-1"
+BEDROCK_DEFAULT_MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
+GEMINI_DEFAULT_API_VERSION = "v1"
+GEMINI_DEFAULT_LOCATION = "us-central1"
+VERSION_1_0_0 = "1.0.0"
+DEV = "dev"
+CONTENT = "content"
+USAGE = "usage"
+SUCCESS = "success"
+ERROR = "error"
+IS_FINAL = "is_final"
+PING = "ping"
+ROLE = "role"
+ROLE_USER = "user"
+CONTENT = "content"
+MAX_TOKENS_LIMIT = "max_tokens_limit"
+MAX_CONTEXT_LENGTH = "max_context_length"
+SUPPORTS_VISION = "supports_vision"
+SUPPORTS_FUNCTION_CALLING = "supports_function_calling"
+INPUTS = "inputs"
+OUTPUTS = "outputs"
+JSON_OUTPUT = "json_output"
+TEMPERATURE_RANGE = "temperature_range"
+MODEL_VALIDATE = "model_validate"
+PARSE_OBJ = "parse_obj"

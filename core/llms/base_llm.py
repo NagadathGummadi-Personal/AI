@@ -2,41 +2,52 @@
 Base LLM implementation for the AI Agent SDK.
 """
 
+import asyncio
 import json
 import time
 from abc import ABC
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
+from typing import Any, AsyncIterator, Dict, List, Optional, Callable
 
 from pydantic import ValidationError
 
 from .configs import BaseLLMConfig
 from .constants import (
-    LOG_LLM_JSON_PARSING_FAILED,
-    LOG_LLM_JSON_PARSING_SUCCESS,
-    LOG_LLM_JSON_PROCESSING,
-    LOG_LLM_PROMPT_MERGING,
-    LOG_LLM_VALIDATION_FAILED,
-    LOG_LLM_VALIDATION_PASSED,
-    LOG_LLM_VALIDATING,
-    MSG_JSON_SCHEMA_REQUIRED,
     MSG_UNSUPPORTED_INPUT_TYPE,
-    MSG_UNSUPPORTED_OUTPUT_TYPE,
     MSG_TEXT_INPUT_MUST_BE_STRING,
     MSG_IMAGE_INPUT_MUST_BE_STRING_OR_BYTES,
+    MSG_TOOL_NOT_FOUND,
+    MSG_TOOL_EXECUTION_FAILED,
     ROLE_SYSTEM,
     TOKENS_IN,
     TOKENS_OUT,
     COST_USD,
     MODEL_NAME,
     PROVIDER,
-    REQUEST_ID,
-    TIMESTAMP,
     DURATION_MS,
     STREAMING,
+    MSG_INVALID_JSON_OUTPUT,
+    ROLE,
+    CONTENT,
+    MAX_TOKENS_LIMIT,
+    MAX_CONTEXT_LENGTH,
+    SUPPORTS_VISION,
+    SUPPORTS_FUNCTION_CALLING,
+    INPUTS,
+    OUTPUTS,
+    JSON_OUTPUT,
+    TEMPERATURE_RANGE,
+    MODEL_VALIDATE,
+    PARSE_OBJ,
+    PING,
+    ROLE_USER,
+    MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING,
+    MSG_NO_HANDLER_REGISTERED_FOR_TOOL,
+    EXC_ANSWER_NOT_IMPLEMENTED,
+    EXC_STREAMING_NOT_IMPLEMENTED,
 )
-from core.llms.enums import InputType
-from .exceptions import InputValidationError, JSONParsingError
-from .interfaces import ILLM, LLMResponse, LLMStreamChunk
+from core.llms.enums import InputMediaType
+from .exceptions import InputValidationError, JSONParsingError, ProviderError
+from .interfaces import LLMResponse, LLMStreamChunk
 from .models import get_model_capabilities
 
 
@@ -53,6 +64,10 @@ class BaseLLM(ABC):
         self.config.validate_config()
         self.client = None
         self.model_capabilities = get_model_capabilities(config.model_name)
+        
+        # Tool handling
+        self._available_tools: Dict[str, Any] = {}
+        self._tool_handlers: Dict[str, Callable] = {}
 
     async def get_answer(self, messages: List[Dict[str, Any]], **kwargs) -> LLMResponse:
         """
@@ -125,10 +140,10 @@ class BaseLLM(ABC):
 
             if self.config.json_class:
                 # Use Pydantic model or custom class for validation
-                if hasattr(self.config.json_class, "model_validate"):
+                if hasattr(self.config.json_class, MODEL_VALIDATE):
                     # Pydantic v2
                     obj = self.config.json_class.model_validate(data)
-                elif hasattr(self.config.json_class, "parse_obj"):
+                elif hasattr(self.config.json_class, PARSE_OBJ):
                     # Pydantic v1
                     obj = self.config.json_class.parse_obj(data)
                 else:
@@ -139,7 +154,7 @@ class BaseLLM(ABC):
             return LLMResponse(data)
 
         except (json.JSONDecodeError, ValidationError) as e:
-            raise JSONParsingError(f"Invalid JSON output: {e}")
+            raise JSONParsingError(MSG_INVALID_JSON_OUTPUT.format(e=e))
 
     def _merge_prompt(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -154,9 +169,9 @@ class BaseLLM(ABC):
         if not self.config.prompt:
             return messages
 
-        return [{"role": ROLE_SYSTEM, "content": self.config.prompt}] + messages
+        return [{ROLE : ROLE_SYSTEM, CONTENT: self.config.prompt}, *messages]
 
-    def validate_input(self, input_type: InputType, content: Any) -> bool:
+    def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """
         Validate input for the given input type.
 
@@ -174,9 +189,9 @@ class BaseLLM(ABC):
             raise InputValidationError(MSG_UNSUPPORTED_INPUT_TYPE.format(input_type=input_type))
 
         # Basic validation - can be extended by subclasses
-        if input_type == InputType.TEXT and not isinstance(content, str):
+        if input_type == InputMediaType.TEXT and not isinstance(content, str):
             raise InputValidationError(MSG_TEXT_INPUT_MUST_BE_STRING)
-        elif input_type == InputType.IMAGE and not isinstance(content, (str, bytes)):
+        elif input_type == InputMediaType.IMAGE and not isinstance(content, (str, bytes)):
             raise InputValidationError(MSG_IMAGE_INPUT_MUST_BE_STRING_OR_BYTES)
 
         return True
@@ -190,17 +205,22 @@ class BaseLLM(ABC):
         """
         capabilities = self.model_capabilities
         return {
-            "provider": self.config.provider.value,
-            "model_name": self.config.model_name,
-            "inputs": [i.value for i in capabilities.supported_input_types],
-            "outputs": [o.value for o in capabilities.supported_output_types],
-            "streaming": capabilities.supports_streaming,
-            "json_output": self.config.json_output,
-            "temperature_range": (0, 2),
-            "max_tokens_limit": capabilities.max_output_tokens,
-            "max_context_length": capabilities.max_context_length,
-            "supports_vision": capabilities.supports_vision,
-            "supports_function_calling": capabilities.supports_function_calling,
+            PROVIDER: self.config.provider.value,
+            MODEL_NAME: self.config.model_name,
+            INPUTS: [i.value for i in capabilities.supported_input_types],
+            OUTPUTS: [o.value for o in capabilities.supported_output_types],
+            STREAMING: capabilities.supports_streaming,
+            JSON_OUTPUT: self.config.json_output,
+            TEMPERATURE_RANGE: (
+                (0, 2) if self.config.provider.value == PROVIDER_AZURE_OPENAI else
+                (0, 1) if self.config.provider.value == PROVIDER_BEDROCK else
+                (0, 2) if self.config.provider.value == PROVIDER_GEMINI else
+                (0, 2)
+            ),
+            MAX_TOKENS_LIMIT: capabilities.max_output_tokens,
+            MAX_CONTEXT_LENGTH: capabilities.max_context_length,
+            SUPPORTS_VISION: capabilities.supports_vision,
+            SUPPORTS_FUNCTION_CALLING: capabilities.supports_function_calling,
         }
 
     def _track_usage(self, content: str, duration_ms: int, streaming: bool = False) -> Dict[str, Any]:
@@ -234,11 +254,92 @@ class BaseLLM(ABC):
         Returns:
             True if connection is successful, False otherwise
         """
-        try:
-            await self.get_answer([{"role": "user", "content": "ping"}])
+        try:    
+            await self.get_answer([{ROLE: ROLE_USER, CONTENT: PING}])
             return True
         except Exception:
             return False
+
+    def register_tools(self, tools: List[Any], handlers: Optional[Dict[str, Callable]] = None) -> None:
+        """
+        Register tools for function calling.
+        
+        Args:
+            tools: List of tool specifications (ToolSpec objects)
+            handlers: Optional mapping of tool names to handler functions
+        """
+        from .tool_integration import convert_tools_for_provider
+        
+        if not self.model_capabilities.supports_function_calling:
+            raise ProviderError(
+                MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING.format(model_name=self.config.model_name)
+            )
+        
+        # Convert tools to provider format
+        converted_tools = convert_tools_for_provider(tools, self.config.provider)
+        
+        # Store tools and handlers
+        for tool, converted in zip(tools, converted_tools):
+            tool_name = tool.tool_name
+            self._available_tools[tool_name] = converted
+            
+            if handlers and tool_name in handlers:
+                self._tool_handlers[tool_name] = handlers[tool_name]
+
+    def get_registered_tools(self) -> Dict[str, Any]:
+        """
+        Get all registered tools in provider-specific format.
+        
+        Returns:
+            Dictionary of tool names to provider-specific tool definitions
+        """
+        return self._available_tools.copy()
+
+    async def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
+        """
+        Execute a tool by name with given arguments.
+        
+        Args:
+            tool_name: Name of the tool to execute
+            arguments: Tool arguments
+            
+        Returns:
+            Tool execution result
+            
+        Raises:
+            ProviderError: If tool not found or execution fails
+        """
+        if tool_name not in self._available_tools:
+            raise ProviderError(MSG_TOOL_NOT_FOUND.format(tool_name=tool_name))
+        
+        if tool_name not in self._tool_handlers:
+            raise ProviderError(
+                MSG_NO_HANDLER_REGISTERED_FOR_TOOL.format(tool_name=tool_name)
+            )
+        
+        try:
+            handler = self._tool_handlers[tool_name]
+            result = await handler(**arguments) if asyncio.iscoroutinefunction(handler) else handler(**arguments)
+            return result
+        except Exception as e:
+            raise ProviderError(
+                MSG_TOOL_EXECUTION_FAILED.format(error=str(e))
+            )
+
+    def format_tool_result(self, result: Any, tool_name: str) -> Dict[str, Any]:
+        """
+        Format tool execution result for provider.
+        
+        Args:
+            result: Tool execution result
+            tool_name: Name of the tool
+            
+        Returns:
+            Provider-specific result format
+        """
+        from .tool_integration import convert_tool_result_for_provider
+        
+        return convert_tool_result_for_provider(result, tool_name, self.config.provider)
 
     async def _get_answer_impl(self, messages: List[Dict[str, Any]], **kwargs) -> str:
         """
@@ -253,7 +354,7 @@ class BaseLLM(ABC):
         Returns:
             Raw text response from LLM
         """
-        raise NotImplementedError("Subclasses must implement _get_answer_impl")
+        raise NotImplementedError(EXC_ANSWER_NOT_IMPLEMENTED)
 
     async def _get_stream_impl(self, messages: List[Dict[str, Any]], **kwargs) -> AsyncIterator[str]:
         """
@@ -268,4 +369,4 @@ class BaseLLM(ABC):
         Yields:
             Raw text chunks from LLM
         """
-        raise NotImplementedError("Subclasses must implement _get_stream_impl")
+        raise NotImplementedError(EXC_STREAMING_NOT_IMPLEMENTED)

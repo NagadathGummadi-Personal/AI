@@ -5,7 +5,7 @@ These constants are used across spec models and implementations to
 avoid scattering literal defaults and to make production tuning easier.
 """
 
-from .enums import InputType, OutputMediaType, LLMProvider
+from .enums import InputMediaType, OutputMediaType
 from .constants import (
     DEFAULT_TEMPERATURE,
     DEFAULT_MAX_TOKENS,
@@ -27,6 +27,18 @@ from .constants import (
     TIMESTAMP,
     DURATION_MS,
     STREAMING,
+    VERSION_1_0_0,
+    DEV,
+    AZURE_OPENAI_DEFAULT_API_VERSION,
+    BEDROCK_DEFAULT_REGION,
+    BEDROCK_DEFAULT_MODEL_ID,
+    GEMINI_DEFAULT_API_VERSION,
+    GEMINI_DEFAULT_LOCATION,
+    CONTENT,
+    USAGE,
+    SUCCESS,
+    ERROR,
+    IS_FINAL,
 )
 
 # LLM Configuration defaults
@@ -39,21 +51,22 @@ DEFAULT_LLM_TIMEOUT = DEFAULT_TIMEOUT
 DEFAULT_LLM_MAX_RETRIES = DEFAULT_MAX_RETRIES
 
 # Supported input/output defaults
-DEFAULT_SUPPORTED_INPUT_TYPES = {InputType.TEXT}
+DEFAULT_SUPPORTED_INPUT_TYPES = {InputMediaType.TEXT}
 DEFAULT_SUPPORTED_OUTPUT_TYPES = {OutputMediaType.TEXT}
 DEFAULT_STREAMING_SUPPORTED = True
 
 # Environment defaults
-DEFAULT_LLM_VERSION = "1.0.0"
-DEFAULT_LLM_ENVIRONMENT = "dev"
+
+DEFAULT_LLM_VERSION = VERSION_1_0_0
+DEFAULT_LLM_ENVIRONMENT = DEV
 
 # Provider-specific defaults
-AZURE_OPENAI_DEFAULT_API_VERSION = "2023-12-01-preview"
+AZURE_OPENAI_DEFAULT_API_VERSION = AZURE_OPENAI_DEFAULT_API_VERSION
 AZURE_OPENAI_DEFAULT_BASE_URL = None  # Will use default Azure endpoint
-BEDROCK_DEFAULT_REGION = "us-east-1"
-BEDROCK_DEFAULT_MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
-GEMINI_DEFAULT_API_VERSION = "v1"
-GEMINI_DEFAULT_LOCATION = "us-central1"
+BEDROCK_DEFAULT_REGION = BEDROCK_DEFAULT_REGION
+BEDROCK_DEFAULT_MODEL_ID = BEDROCK_DEFAULT_MODEL_ID
+GEMINI_DEFAULT_API_VERSION = GEMINI_DEFAULT_API_VERSION
+GEMINI_DEFAULT_LOCATION = GEMINI_DEFAULT_LOCATION
 
 # -------- Context data builders --------
 
@@ -83,25 +96,25 @@ def DEFAULT_LLM_USAGE_DATA(tokens_in: int = 0, tokens_out: int = 0, cost_usd: fl
 def DEFAULT_LLM_SUCCESS_RESPONSE(content: str = "Mock LLM response", usage=None):
     """Default success response for testing."""
     return {
-        "content": content,
-        "usage": usage or DEFAULT_LLM_USAGE_DATA(),
-        "success": True,
+        CONTENT: content,
+        USAGE: usage or DEFAULT_LLM_USAGE_DATA(),
+        SUCCESS: True,
     }
 
 
 def DEFAULT_LLM_ERROR_RESPONSE(error: str = "Mock LLM error"):
     """Default error response for testing."""
     return {
-        "error": error,
-        "success": False,
+        ERROR: error,
+        SUCCESS: False,
     }
 
 
 def DEFAULT_LLM_STREAM_CHUNK(content: str = "Mock stream chunk", is_final: bool = False):
     """Default streaming chunk for testing."""
     return {
-        "content": content,
-        "is_final": is_final,
+        CONTENT: content,
+        IS_FINAL: is_final,
     }
 
 
