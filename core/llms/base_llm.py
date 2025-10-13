@@ -11,6 +11,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Callable
 from pydantic import ValidationError
 
 from .configs import BaseLLMConfig
+
 from .constants import (
     MSG_UNSUPPORTED_INPUT_TYPE,
     MSG_TEXT_INPUT_MUST_BE_STRING,
@@ -44,6 +45,9 @@ from .constants import (
     MSG_NO_HANDLER_REGISTERED_FOR_TOOL,
     EXC_ANSWER_NOT_IMPLEMENTED,
     EXC_STREAMING_NOT_IMPLEMENTED,
+    PROVIDER_AZURE_OPENAI,
+    PROVIDER_BEDROCK,
+    PROVIDER_GEMINI,
 )
 from core.llms.enums import InputMediaType
 from .exceptions import InputValidationError, JSONParsingError, ProviderError
@@ -64,7 +68,7 @@ class BaseLLM(ABC):
         self.config.validate_config()
         self.client = None
         self.model_capabilities = get_model_capabilities(config.model_name)
-        
+
         # Tool handling
         self._available_tools: Dict[str, Any] = {}
         self._tool_handlers: Dict[str, Callable] = {}
@@ -92,7 +96,9 @@ class BaseLLM(ABC):
 
         return response
 
-    async def get_stream(self, messages: List[Dict[str, Any]], **kwargs) -> AsyncIterator[LLMStreamChunk]:
+    async def get_stream(
+        self, messages: List[Dict[str, Any]], **kwargs
+    ) -> AsyncIterator[LLMStreamChunk]:
         """
         Get a streaming response from the LLM.
 
@@ -156,6 +162,31 @@ class BaseLLM(ABC):
         except (json.JSONDecodeError, ValidationError) as e:
             raise JSONParsingError(MSG_INVALID_JSON_OUTPUT.format(e=e))
 
+    def _replace_dynamic_variables(self, prompt: str) -> str:
+        """
+        Replace dynamic variables in the prompt.
+
+        Args:
+            prompt: The prompt string with potential {{variable_name}} patterns
+
+        Returns:
+            The prompt with variables replaced or unchanged if no matches found
+        """
+        import re
+
+        if not self.config.dynamic_variables:
+            return prompt
+
+        def replace_variable(match):
+            var_name = match.group(1)  # Extract variable name from {{variable_name}}
+            return str(
+                self.config.dynamic_variables.get(var_name, match.group(0))
+            )  # Use original if not found
+
+        # Pattern to match {{variable_name}} format
+        pattern = r"\{\{(\w+)\}\}"
+        return re.sub(pattern, replace_variable, prompt)
+
     def _merge_prompt(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Merge system prompt with messages if configured.
@@ -169,7 +200,9 @@ class BaseLLM(ABC):
         if not self.config.prompt:
             return messages
 
-        return [{ROLE : ROLE_SYSTEM, CONTENT: self.config.prompt}, *messages]
+        # Replace dynamic variables in the prompt
+        processed_prompt = self._replace_dynamic_variables(self.config.prompt)
+        return [{ROLE: ROLE_SYSTEM, CONTENT: processed_prompt}, *messages]
 
     def validate_input(self, input_type: InputMediaType, content: Any) -> bool:
         """
@@ -186,12 +219,16 @@ class BaseLLM(ABC):
             InputValidationError: If input is invalid
         """
         if input_type not in self.config.supported_input_types:
-            raise InputValidationError(MSG_UNSUPPORTED_INPUT_TYPE.format(input_type=input_type))
+            raise InputValidationError(
+                MSG_UNSUPPORTED_INPUT_TYPE.format(input_type=input_type)
+            )
 
         # Basic validation - can be extended by subclasses
         if input_type == InputMediaType.TEXT and not isinstance(content, str):
             raise InputValidationError(MSG_TEXT_INPUT_MUST_BE_STRING)
-        elif input_type == InputMediaType.IMAGE and not isinstance(content, (str, bytes)):
+        elif input_type == InputMediaType.IMAGE and not isinstance(
+            content, (str, bytes)
+        ):
             raise InputValidationError(MSG_IMAGE_INPUT_MUST_BE_STRING_OR_BYTES)
 
         return True
@@ -212,10 +249,17 @@ class BaseLLM(ABC):
             STREAMING: capabilities.supports_streaming,
             JSON_OUTPUT: self.config.json_output,
             TEMPERATURE_RANGE: (
-                (0, 2) if self.config.provider.value == PROVIDER_AZURE_OPENAI else
-                (0, 1) if self.config.provider.value == PROVIDER_BEDROCK else
-                (0, 2) if self.config.provider.value == PROVIDER_GEMINI else
                 (0, 2)
+                if self.config.provider.value == PROVIDER_AZURE_OPENAI
+                else (
+                    (0, 1)
+                    if self.config.provider.value == PROVIDER_BEDROCK
+                    else (
+                        (0, 2)
+                        if self.config.provider.value == PROVIDER_GEMINI
+                        else (0, 2)
+                    )
+                )
             ),
             MAX_TOKENS_LIMIT: capabilities.max_output_tokens,
             MAX_CONTEXT_LENGTH: capabilities.max_context_length,
@@ -223,7 +267,9 @@ class BaseLLM(ABC):
             SUPPORTS_FUNCTION_CALLING: capabilities.supports_function_calling,
         }
 
-    def _track_usage(self, content: str, duration_ms: int, streaming: bool = False) -> Dict[str, Any]:
+    def _track_usage(
+        self, content: str, duration_ms: int, streaming: bool = False
+    ) -> Dict[str, Any]:
         """
         Track usage metrics for LLM requests.
 
@@ -238,7 +284,7 @@ class BaseLLM(ABC):
         usage = {
             TOKENS_IN: 0,  # Will be calculated by subclasses if needed
             TOKENS_OUT: len(content.split()),  # Rough token estimation
-            COST_USD: 0.0,  # Will be calculated by subclasses
+            COST_USD: 0.0,  # Will be calculated by subclasses if needed
             MODEL_NAME: self.config.model_name,
             PROVIDER: self.config.provider.value,
             DURATION_MS: duration_ms,
@@ -254,42 +300,46 @@ class BaseLLM(ABC):
         Returns:
             True if connection is successful, False otherwise
         """
-        try:    
+        try:
             await self.get_answer([{ROLE: ROLE_USER, CONTENT: PING}])
             return True
         except Exception:
             return False
 
-    def register_tools(self, tools: List[Any], handlers: Optional[Dict[str, Callable]] = None) -> None:
+    def register_tools(
+        self, tools: List[Any], handlers: Optional[Dict[str, Callable]] = None
+    ) -> None:
         """
         Register tools for function calling.
-        
+
         Args:
             tools: List of tool specifications (ToolSpec objects)
             handlers: Optional mapping of tool names to handler functions
         """
         from .tool_integration import convert_tools_for_provider
-        
+
         if not self.model_capabilities.supports_function_calling:
             raise ProviderError(
-                MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING.format(model_name=self.config.model_name)
+                MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING.format(
+                    model_name=self.config.model_name
+                )
             )
-        
+
         # Convert tools to provider format
         converted_tools = convert_tools_for_provider(tools, self.config.provider)
-        
+
         # Store tools and handlers
         for tool, converted in zip(tools, converted_tools):
             tool_name = tool.tool_name
             self._available_tools[tool_name] = converted
-            
+
             if handlers and tool_name in handlers:
                 self._tool_handlers[tool_name] = handlers[tool_name]
 
     def get_registered_tools(self) -> Dict[str, Any]:
         """
         Get all registered tools in provider-specific format.
-        
+
         Returns:
             Dictionary of tool names to provider-specific tool definitions
         """
@@ -298,47 +348,49 @@ class BaseLLM(ABC):
     async def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
         """
         Execute a tool by name with given arguments.
-        
+
         Args:
             tool_name: Name of the tool to execute
             arguments: Tool arguments
-            
+
         Returns:
             Tool execution result
-            
+
         Raises:
             ProviderError: If tool not found or execution fails
         """
         if tool_name not in self._available_tools:
             raise ProviderError(MSG_TOOL_NOT_FOUND.format(tool_name=tool_name))
-        
+
         if tool_name not in self._tool_handlers:
             raise ProviderError(
                 MSG_NO_HANDLER_REGISTERED_FOR_TOOL.format(tool_name=tool_name)
             )
-        
+
         try:
             handler = self._tool_handlers[tool_name]
-            result = await handler(**arguments) if asyncio.iscoroutinefunction(handler) else handler(**arguments)
+            result = (
+                await handler(**arguments)
+                if asyncio.iscoroutinefunction(handler)
+                else handler(**arguments)
+            )
             return result
         except Exception as e:
-            raise ProviderError(
-                MSG_TOOL_EXECUTION_FAILED.format(error=str(e))
-            )
+            raise ProviderError(MSG_TOOL_EXECUTION_FAILED.format(error=str(e)))
 
     def format_tool_result(self, result: Any, tool_name: str) -> Dict[str, Any]:
         """
         Format tool execution result for provider.
-        
+
         Args:
             result: Tool execution result
             tool_name: Name of the tool
-            
+
         Returns:
             Provider-specific result format
         """
         from .tool_integration import convert_tool_result_for_provider
-        
+
         return convert_tool_result_for_provider(result, tool_name, self.config.provider)
 
     async def _get_answer_impl(self, messages: List[Dict[str, Any]], **kwargs) -> str:
@@ -356,7 +408,9 @@ class BaseLLM(ABC):
         """
         raise NotImplementedError(EXC_ANSWER_NOT_IMPLEMENTED)
 
-    async def _get_stream_impl(self, messages: List[Dict[str, Any]], **kwargs) -> AsyncIterator[str]:
+    async def _get_stream_impl(
+        self, messages: List[Dict[str, Any]], **kwargs
+    ) -> AsyncIterator[str]:
         """
         Implementation-specific method for getting streaming LLM response.
 

@@ -26,9 +26,8 @@ from .defaults import (
     MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED,
     MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED,
     MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS,
-    MSG_MISSING_API_KEY_AZURE_OPENAI,
-    MSG_MISSING_MODEL_NAME_AZURE_OPENAI,
-    MSG_MISSING_API_KEY_GEMINI,
+    MSG_MISSING_API_KEY,
+    MSG_MISSING_MODEL_NAME,
     MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI,
     MSG_REGION_REQUIRED_BEDROCK,
     MSG_MODEL_ID_REQUIRED_BEDROCK,
@@ -56,12 +55,17 @@ class BaseLLMConfig:
     max_retries: int = DEFAULT_LLM_MAX_RETRIES
 
     # Input/output handling
-    supported_input_types: Set[InputMediaType] = field(default_factory=lambda: DEFAULT_SUPPORTED_INPUT_TYPES)
-    supported_output_types: Set[OutputMediaType] = field(default_factory=lambda: DEFAULT_SUPPORTED_OUTPUT_TYPES)
+    supported_input_types: Set[InputMediaType] = field(
+        default_factory=lambda: DEFAULT_SUPPORTED_INPUT_TYPES
+    )
+    supported_output_types: Set[OutputMediaType] = field(
+        default_factory=lambda: DEFAULT_SUPPORTED_OUTPUT_TYPES
+    )
     streaming_supported: bool = DEFAULT_STREAMING_SUPPORTED
 
     # Extended config
     prompt: Optional[str] = None
+    dynamic_variables: Optional[Dict[str, Any]] = None
     json_output: bool = False
     json_schema: Optional[Dict[str, Any]] = None
     json_class: Optional[Union[Type[BaseModel], Type[Any]]] = None
@@ -85,7 +89,7 @@ class BaseLLMConfig:
                 raise ConfigurationError(MSG_INVALID_TEMPERATURE_RANGE_GEMINI)
         else:
             raise ConfigurationError(f"Unsupported provider: {self.provider}")
-        
+
         # Validate max tokens - Basic validation
         if self.max_tokens <= 0:
             raise ConfigurationError(MSG_INVALID_MAX_TOKENS_POSITIVE)
@@ -99,14 +103,12 @@ class BaseLLMConfig:
         if self.json_output and not (self.json_schema or self.json_class):
             raise ConfigurationError(MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS)
         # Validate api key
-        if self.provider == LLMProvider.AZURE_OPENAI:
-            if not self.api_key:
-                raise ConfigurationError(MSG_MISSING_API_KEY_AZURE_OPENAI)
-            if not self.model_name:
-                raise ConfigurationError(MSG_MISSING_MODEL_NAME_AZURE_OPENAI)
-        elif self.provider == LLMProvider.GEMINI:
-            if not self.api_key:
-                raise ConfigurationError(MSG_MISSING_API_KEY_GEMINI)
+        if not self.api_key:
+            raise ConfigurationError(
+                MSG_MISSING_API_KEY.format(provider=self.provider.value)
+            )
+        if not self.model_name:
+            raise ConfigurationError(MSG_MISSING_MODEL_NAME)
 
 
 @dataclass
@@ -120,7 +122,9 @@ class AzureOpenAIConfig(BaseLLMConfig):
         """Validate Azure OpenAI specific configuration"""
         super().validate_config()
         if not self.endpoint and not self.deployment_name:
-            raise ConfigurationError(MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI)
+            raise ConfigurationError(
+                MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI
+            )
 
 
 @dataclass

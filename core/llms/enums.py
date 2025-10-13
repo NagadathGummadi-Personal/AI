@@ -27,6 +27,7 @@ from .constants import (
 
 class InputMediaType(str, Enum):
     """Enumeration for LLM input types"""
+
     TEXT = CONTENT_TYPE_TEXT
     IMAGE = CONTENT_TYPE_IMAGE
     AUDIO = CONTENT_TYPE_AUDIO
@@ -37,6 +38,7 @@ class InputMediaType(str, Enum):
 
 class OutputMediaType(str, Enum):
     """Enumeration for LLM output media types"""
+
     TEXT = MEDIA_TYPE_TEXT
     AUDIO = MEDIA_TYPE_AUDIO
     IMAGE = MEDIA_TYPE_IMAGE
@@ -46,6 +48,7 @@ class OutputMediaType(str, Enum):
 
 class LLMProvider(str, Enum):
     """Enumeration for LLM providers"""
+
     AZURE_OPENAI = PROVIDER_AZURE_OPENAI
     BEDROCK = PROVIDER_BEDROCK
     GEMINI = PROVIDER_GEMINI
@@ -53,6 +56,7 @@ class LLMProvider(str, Enum):
 
 class LLMType(str, Enum):
     """Enumeration for LLM types"""
+
     CHAT = LLM_TYPE_CHAT
     COMPLETION = LLM_TYPE_COMPLETION
     EMBEDDING = LLM_TYPE_EMBEDDING
@@ -61,6 +65,7 @@ class LLMType(str, Enum):
 
 class MessageRole(str, Enum):
     """Enumeration for message roles in chat conversations"""
+
     SYSTEM = ROLE_SYSTEM
     USER = ROLE_USER
     ASSISTANT = ROLE_ASSISTANT

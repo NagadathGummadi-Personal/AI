@@ -10,12 +10,10 @@ from .connectors.bedrock.converter import convert_to_bedrock_request
 from .connectors.gemini.converter import convert_to_gemini_request
 from .models import get_model_capabilities
 
+
 # Unified converter function
 def convert_request(
-    messages: List[Dict[str, Any]],
-    model_name: str,
-    provider_type: str = None,
-    **kwargs
+    messages: List[Dict[str, Any]], model_name: str, provider_type: str = None, **kwargs
 ) -> Dict[str, Any]:
     """
     Convert unified request format to provider-specific format.

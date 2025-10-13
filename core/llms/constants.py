@@ -100,6 +100,7 @@ MODEL_PARAMETER_DEFAULTS = "MODEL_PARAMETER_DEFAULTS"
 
 # Azure OpenAI model names
 AZURE_OPENAI_GPT_4O = "gpt-4o"
+AZURE_OPENAI_GPT_4_1 = "gpt-4.1"
 AZURE_OPENAI_GPT_4_1_MINI = "gpt-4.1-mini"
 AZURE_OPENAI_GPT_4O_MINI = "gpt-4o-mini"
 AZURE_OPENAI_GPT_4_TURBO = "gpt-4-turbo"
@@ -189,8 +190,12 @@ MSG_INPUT_VALIDATION_FAILED = "Input validation failed for {input_type}: {error}
 MSG_UNSUPPORTED_INPUT_TYPE = "Unsupported input type: {input_type}"
 MSG_UNSUPPORTED_OUTPUT_TYPE = "Unsupported output type: {output_type}"
 MSG_TEXT_INPUT_MUST_BE_STRING = "Text input must be a string"
-MSG_IMAGE_INPUT_MUST_BE_STRING_OR_BYTES = "Image input must be a string (URL/path) or bytes"
-MSG_JSON_SCHEMA_REQUIRED = "JSON output enabled but no json_schema or json_class provided"
+MSG_IMAGE_INPUT_MUST_BE_STRING_OR_BYTES = (
+    "Image input must be a string (URL/path) or bytes"
+)
+MSG_JSON_SCHEMA_REQUIRED = (
+    "JSON output enabled but no json_schema or json_class provided"
+)
 MSG_INVALID_TEMPERATURE = "Temperature must be between 0 and 2"
 MSG_INVALID_MAX_TOKENS = "Max tokens must be positive"
 MSG_MISSING_API_KEY = "API key is required for provider {provider}"
@@ -203,13 +208,19 @@ MSG_INVALID_TEMPERATURE_RANGE_GEMINI = "Temperature must be between 0 and 2"
 MSG_INVALID_MAX_TOKENS_POSITIVE = "Max tokens must be positive"
 MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED = "At least one input type must be supported"
 MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED = "At least one output type must be supported"
-MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS = "json_output=True requires json_schema or json_class"
-MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI = "Either endpoint or deployment_name must be provided for Azure OpenAI"
+MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS = (
+    "json_output=True requires json_schema or json_class"
+)
+MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI = (
+    "Either endpoint or deployment_name must be provided for Azure OpenAI"
+)
 MSG_REGION_REQUIRED_BEDROCK = "Region is required for Bedrock"
 MSG_MODEL_ID_REQUIRED_BEDROCK = "Model ID is required for Bedrock"
 MSG_PROJECT_ID_REQUIRED_GEMINI = "Project ID is required for Gemini"
 MSG_PROVIDER_NOT_SUPPORTED = "Provider {provider} is not supported"
-MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING = "Model {model_name} does not support function calling"
+MSG_MODEL_DOES_NOT_SUPPORT_FUNCTION_CALLING = (
+    "Model {model_name} does not support function calling"
+)
 MSG_NO_HANDLER_REGISTERED_FOR_TOOL = "No handler registered for tool: {tool_name}"
 MSG_INVALID_JSON_OUTPUT = "Invalid JSON output: {e}"
 
@@ -224,9 +235,11 @@ MSG_UNSUPPORTED_PARAMETER_TYPE = "Unsupported parameter type: {param_type}"
 MSG_TOOL_CONVERSION_FAILED = "Failed to convert tool spec: {error}"
 MSG_TOOL_EXECUTION_FAILED = "Tool execution failed: {error}"
 MSG_TOOL_NOT_FOUND = "Tool not found: {tool_name}"
+MSG_NO_ATTRIBUTE = "module '{module}' has no attribute '{name}'"
 
 # Generic exception messages
 EXC_LLM_NOT_IMPLEMENTED = "LLM implementation not available"
+EXC_ANSWER_NOT_IMPLEMENTED = "Answer method not implemented"
 EXC_STREAMING_NOT_IMPLEMENTED = "Streaming not implemented for this provider"
 EXC_EMBEDDING_NOT_IMPLEMENTED = "Embedding not implemented for this provider"
 EXC_MULTIMODAL_NOT_IMPLEMENTED = "Multimodal input not implemented for this provider"

@@ -10,6 +10,7 @@ from .enums import InputMediaType
 
 class LLMResponse:
     """Response object from LLM operations"""
+
     def __init__(self, content: Any, usage: Optional[Dict[str, Any]] = None):
         self.content = content
         self.usage = usage or {}
@@ -17,6 +18,7 @@ class LLMResponse:
 
 class LLMStreamChunk:
     """Streaming chunk from LLM operations"""
+
     def __init__(self, content: str, is_final: bool = False):
         self.content = content
         self.is_final = is_final
@@ -42,7 +44,9 @@ class ILLM(Protocol):
         ...
 
     @abstractmethod
-    async def get_stream(self, messages: List[Dict[str, Any]], **kwargs) -> AsyncIterator[LLMStreamChunk]:
+    async def get_stream(
+        self, messages: List[Dict[str, Any]], **kwargs
+    ) -> AsyncIterator[LLMStreamChunk]:
         """
         Get a streaming response from the LLM
 
@@ -91,6 +95,7 @@ class ILLM(Protocol):
             Dictionary with provider info, supported inputs/outputs, streaming support
         """
         ...
+
 
 # !TODO: Remove this interface
 @runtime_checkable

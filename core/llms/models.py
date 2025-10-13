@@ -18,6 +18,7 @@ from .constants import (
     GEMINI_MODEL,
     MODEL_CAPABILITIES,
     MODEL_PARAMETER_DEFAULTS,
+    MSG_NO_ATTRIBUTE,
 )
 
 
@@ -52,56 +53,62 @@ class ModelCapabilities:
 def _get_all_model_capabilities() -> Dict[str, ModelCapabilities]:
     """Lazy loading of all model capabilities from provider modules."""
     all_capabilities = {}
-    
+
     # Load Azure OpenAI models
     try:
         from .connectors.azure.models import AZURE_MODEL_CAPABILITIES
+
         all_capabilities.update(AZURE_MODEL_CAPABILITIES)
     except ImportError:
         pass
-    
+
     # Load Bedrock models
     try:
         from .connectors.bedrock.models import BEDROCK_MODEL_CAPABILITIES
+
         all_capabilities.update(BEDROCK_MODEL_CAPABILITIES)
     except ImportError:
         pass
-    
+
     # Load Gemini models
     try:
         from .connectors.gemini.models import GEMINI_MODEL_CAPABILITIES
+
         all_capabilities.update(GEMINI_MODEL_CAPABILITIES)
     except ImportError:
         pass
-    
+
     return all_capabilities
 
 
 def _get_all_model_parameter_defaults() -> Dict[str, Dict[str, Any]]:
     """Lazy loading of all model parameter defaults from provider modules."""
     all_defaults = {}
-    
+
     # Load Azure OpenAI defaults
     try:
         from .connectors.azure.models import AZURE_MODEL_PARAMETER_DEFAULTS
+
         all_defaults.update(AZURE_MODEL_PARAMETER_DEFAULTS)
     except ImportError:
         pass
-    
+
     # Load Bedrock defaults
     try:
         from .connectors.bedrock.models import BEDROCK_MODEL_PARAMETER_DEFAULTS
+
         all_defaults.update(BEDROCK_MODEL_PARAMETER_DEFAULTS)
     except ImportError:
         pass
-    
+
     # Load Gemini defaults
     try:
         from .connectors.gemini.models import GEMINI_MODEL_PARAMETER_DEFAULTS
+
         all_defaults.update(GEMINI_MODEL_PARAMETER_DEFAULTS)
     except ImportError:
         pass
-    
+
     return all_defaults
 
 
@@ -111,21 +118,21 @@ def get_model_capabilities(model_name: str) -> Optional[ModelCapabilities]:
     return all_capabilities.get(model_name)
 
 
-
-
 # Re-export model enums and capabilities for backward compatibility
 def __getattr__(name):
     """Lazy import of model enums and capabilities for backward compatibility."""
-    
 
     if name == AZURE_OPENAI_MODEL:
         from .connectors.azure.models import AzureOpenAIModel
+
         return AzureOpenAIModel
     elif name == BEDROCK_MODEL:
         from .connectors.bedrock.models import BedrockModel
+
         return BedrockModel
     elif name == GEMINI_MODEL:
         from .connectors.gemini.models import GeminiModel
+
         return GeminiModel
     elif name == MODEL_CAPABILITIES:
         # For backward compatibility
@@ -133,7 +140,7 @@ def __getattr__(name):
     elif name == MODEL_PARAMETER_DEFAULTS:
         # For backward compatibility
         return _get_all_model_parameter_defaults()
-    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+    raise AttributeError(MSG_NO_ATTRIBUTE.format(name=name, module=__name__))
 
 
 # Import model enums at module level for better IDE support and type checking

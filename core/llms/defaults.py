@@ -39,6 +39,22 @@ from .constants import (
     SUCCESS,
     ERROR,
     IS_FINAL,
+    MSG_INVALID_TEMPERATURE_RANGE_AZURE_OPENAI,
+    MSG_INVALID_TEMPERATURE_RANGE_BEDROCK,
+    MSG_INVALID_TEMPERATURE_RANGE_GEMINI,
+    MSG_INVALID_MAX_TOKENS_POSITIVE,
+    MSG_AT_LEAST_ONE_INPUT_TYPE_SUPPORTED,
+    MSG_AT_LEAST_ONE_OUTPUT_TYPE_SUPPORTED,
+    MSG_JSON_OUTPUT_REQUIRES_JSON_SCHEMA_OR_JSON_CLASS,
+    MSG_MISSING_API_KEY,
+    MSG_MISSING_MODEL_NAME,
+    MSG_ENDPOINT_OR_DEPLOYMENT_NAME_REQUIRED_AZURE_OPENAI,
+    MSG_REGION_REQUIRED_BEDROCK,
+    MSG_MODEL_ID_REQUIRED_BEDROCK,
+    MSG_PROJECT_ID_REQUIRED_GEMINI,
+    MSG_PROVIDER_NOT_SUPPORTED,
+    EXC_ANSWER_NOT_IMPLEMENTED,
+    EXC_STREAMING_NOT_IMPLEMENTED,
 )
 
 # LLM Configuration defaults
@@ -83,7 +99,9 @@ def DEFAULT_LLM_CONTEXT_DATA(spec, ctx):
     }
 
 
-def DEFAULT_LLM_USAGE_DATA(tokens_in: int = 0, tokens_out: int = 0, cost_usd: float = 0.0):
+def DEFAULT_LLM_USAGE_DATA(
+    tokens_in: int = 0, tokens_out: int = 0, cost_usd: float = 0.0
+):
     """Standard usage data structure for LLM requests."""
     return {
         TOKENS_IN: tokens_in,
@@ -110,7 +128,9 @@ def DEFAULT_LLM_ERROR_RESPONSE(error: str = "Mock LLM error"):
     }
 
 
-def DEFAULT_LLM_STREAM_CHUNK(content: str = "Mock stream chunk", is_final: bool = False):
+def DEFAULT_LLM_STREAM_CHUNK(
+    content: str = "Mock stream chunk", is_final: bool = False
+):
     """Default streaming chunk for testing."""
     return {
         CONTENT: content,
