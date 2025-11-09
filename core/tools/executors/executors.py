@@ -416,7 +416,7 @@ class DbToolExecutor(BaseToolExecutor, IToolExecutor):
     The specific executor is selected at initialization time based on
     spec.driver value.
     """
-    
+
     def __init__(self, spec: DbToolSpec):
         """
         Initialize database executor by selecting appropriate driver-specific executor.

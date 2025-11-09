@@ -1,6 +1,6 @@
 {
   "backend": "json",
-  "level": "WARNING",
+  "level": "INFO",
   "log_directory": "./logs",
   "redaction": {
     "enabled": true,
@@ -57,11 +57,11 @@
   "handlers": {
     "console": {
       "type": "console",
-      "level": "ERROR"
+      "level": "INFO"
     },
     "file": {
       "type": "rotating_file",
-      "level": "WARNING",
+      "level": "INFO",
       "filename": "prod_application.log",
       "max_bytes": 52428800,
       "backup_count": 10
@@ -83,5 +83,5 @@
     "warn_threshold_seconds": 10.0,
     "error_threshold_seconds": 60.0
   },
-  "notes": "Production environment configuration optimized for performance and security. Features: delayed logging enabled for high throughput, conservative duration thresholds, comprehensive redaction patterns for data protection, JSON backend for structured logging, rotating file handlers for log management"
+  "notes": "Production environment configuration with full INFO-level logging enabled. Features: delayed logging enabled for high throughput, INFO level logging for comprehensive observability, comprehensive redaction patterns for data protection, JSON backend for structured logging, rotating file handlers for log management"
 } 

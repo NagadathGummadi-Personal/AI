@@ -59,12 +59,15 @@ DB_DEFAULT_QUERY = DB_DEFAULT_QUERY_STRING
 
 # -------- Context data builders --------
 def DEFAULT_TOOL_CONTEXT_DATA(spec, ctx):
-    """Standard context dict for tool executions."""
+    """Standard context dict for tool executions.
+    
+    Checks if fields are defined at spec level first, then falls back to ctx.
+    """
     return {
-        USER_ID: ctx.user_id,
-        SESSION_ID: ctx.session_id,
+        USER_ID: getattr(spec, 'user_id', None) or ctx.user_id,
+        SESSION_ID: getattr(spec, 'session_id', None) or ctx.session_id,
         TOOL_NAME: spec.tool_name,
-        TRACE_ID: ctx.trace_id,
+        TRACE_ID: getattr(spec, 'trace_id', None) or ctx.trace_id,
     }
 
 
