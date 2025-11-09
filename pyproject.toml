@@ -50,7 +50,13 @@ markers = [
     "duration: tests for DurationLogger module",
     "delayed: tests for DelayedLogger module",
     "config: tests for ConfigManager module",
+    "asyncio: marks tests as async tests",
+    "tools: tests for tool executors and implementations",
 ]
+
+# Asyncio configuration
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 # Minimum Python version
 minversion = "6.0"

@@ -6,11 +6,10 @@ tool executors with common patterns and boilerplate.
 """
 
 # Standard library
-import hashlib
 import json
 import time
 import asyncio
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import Any, Awaitable, Callable, Dict, Optional
 from urllib.parse import urlencode, urlparse, urlunparse, parse_qsl
 from urllib.request import Request, urlopen
 
@@ -34,19 +33,8 @@ from ..constants import (
     LOG_HTTP_STARTING,
     LOG_HTTP_COMPLETED,
     LOG_HTTP_FAILED,
-    LOG_DB_STARTING,
-    LOG_DB_COMPLETED,
-    LOG_DB_FAILED,
-    # HTTP_EXECUTION_STATUS_COMPLETED,
-    # HTTP_EXECUTION_STATUS_FAILED,
-    # DB_EXECUTION_STATUS_FAILED,
-    # TOOL_EXECUTION_STATUS_FAILED,
-    # TOOL_EXECUTION_STATUS_COMPLETED,
-    # DB_EXECUTION_STATUS_COMPLETED,
-
     UTF_8,
     IDEMPOTENCY_CACHE_PREFIX,
-    EXC_DB_EXECUTION_NOT_IMPLEMENTED,
     TOOL_EXECUTION_TIME,
     TOOL_EXECUTIONS,
     STATUS,
@@ -55,91 +43,18 @@ from ..constants import (
     ERROR,
     EXECUTION_FAILED,
     HTTP,
-    DB,
-    EMPTY_STRING,
 )
 from ..defaults import (
     DEFAULT_TOOL_CONTEXT_DATA,
     DEFAULT_HTTP_CONTEXT_DATA,
-    DEFAULT_DB_CONTEXT_DATA,
     HTTP_DEFAULT_ERROR_STATUS_WARNING,
-    DB_DEFAULT_SUCCESS_RESULT_CONTENT,
-    DB_DEFAULT_ERROR_STATUS_WARNING,
 )
-from .usage_calculators.token_calculators import calculate_tokens_in, calculate_tokens_out
-from .usage_calculators.cost_calculator import calculate_cost_usd
-from .usage_calculators.generic_calculator import (
-    calculate_attempts,
-    calculate_retries,
-    check_cached_hit,
-    check_idempotency_reused,
-    check_circuit_opened,
-)
-from ..spec.tool_context import ToolContext, ToolUsage
+from ..spec.tool_context import ToolContext
 from ..spec.tool_result import ToolResult
 from ..spec.tool_types import DbToolSpec, HttpToolSpec, ToolSpec
-#LoggerAdaptor
 from utils.logging.LoggerAdaptor import LoggerAdaptor
-class BaseToolExecutor:
-    """Base class for tool executors with common functionality"""
-
-    def __init__(self, spec: ToolSpec):
-        self.spec = spec
-
-    def _generate_idempotency_key(self, args: Dict[str, Any], ctx: ToolContext) -> str:
-        """Generate idempotency key from arguments and context"""
-        if self.spec.idempotency.key_fields:
-            key_data = {k: args.get(k) for k in self.spec.idempotency.key_fields if k in args}
-        else:
-            key_data = args
-
-        key_components = [
-            self.spec.id,
-            str(ctx.user_id or EMPTY_STRING),
-            str(ctx.session_id or EMPTY_STRING),
-            json.dumps(key_data, sort_keys=True)
-        ]
-
-        return hashlib.sha256("|".join(key_components).encode()).hexdigest()
-
-    def _calculate_usage(self, start_time: float, input_args: Dict[str, Any], output_content: Any) -> ToolUsage:
-        """Calculate usage statistics for the tool execution"""
-        # end_time retained for potential future use; presently not needed
-        # Basic calculations - in real implementation, you'd have more sophisticated metrics
-        input_bytes = len(json.dumps(input_args).encode(UTF_8))
-        output_bytes = len(json.dumps(output_content).encode(UTF_8)) if output_content else 0
-
-        return ToolUsage(
-            input_bytes=input_bytes,
-            output_bytes=output_bytes,
-            tokens_in=calculate_tokens_in(),
-            tokens_out=calculate_tokens_out(),
-            cost_usd=calculate_cost_usd(),
-            attempts=calculate_attempts(),
-            retries=calculate_retries(),
-            cached_hit=check_cached_hit(),
-            idempotency_reused=check_idempotency_reused(),
-            circuit_opened=check_circuit_opened(),
-        )
-
-    def _create_result(
-        self,
-        content: Any,
-        usage: Optional[ToolUsage] = None,
-        warnings: Optional[List[str]] = None,
-        logs: Optional[List[str]] = None,
-        artifacts: Optional[Dict[str, bytes]] = None
-    ) -> ToolResult:
-        """Create a standardized ToolResult"""
-        return ToolResult(
-            return_type=self.spec.return_type,
-            return_target=self.spec.return_target,
-            content=content,
-            artifacts=artifacts,
-            usage=usage,
-            warnings=warnings or [],
-            logs=logs or []
-        )
+# Import the ONE true BaseToolExecutor
+from .base_executor import BaseToolExecutor
 
 
 class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
@@ -486,55 +401,70 @@ class HttpToolExecutor(BaseToolExecutor, IToolExecutor):
 
 
 class DbToolExecutor(BaseToolExecutor, IToolExecutor):
-    """Executor for database-based tools"""
-
+    """
+    Database tool executor factory.
+    
+    This executor acts as a factory that delegates to the appropriate
+    database-specific executor based on the driver type.
+    
+    Supported drivers:
+        - dynamodb: DynamoDBExecutor
+        - postgresql/postgres: PostgreSQLExecutor (future)
+        - mysql: MySQLExecutor (future)
+        - sqlite: SQLiteExecutor (future)
+    
+    The specific executor is selected at initialization time based on
+    spec.driver value.
+    """
+    
     def __init__(self, spec: DbToolSpec):
+        """
+        Initialize database executor by selecting appropriate driver-specific executor.
+        
+        Args:
+            spec: Database tool specification
+            
+        Raises:
+            ValueError: If driver is not supported
+        """
         super().__init__(spec)
         self.spec: DbToolSpec = spec
-        # Initialize logger for DB tool execution
-        self.logger = LoggerAdaptor.get_logger(f"{DB}.{spec.tool_name}") if LoggerAdaptor else None
-
-    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
-        """Execute the database tool"""
-        start_time = time.time()
-
-        # Set up logging context
-        context_data = DEFAULT_DB_CONTEXT_DATA(self.spec, ctx)
-
-        # Log execution start
-        self.logger.info(LOG_DB_STARTING, **context_data)
-
-        try:
-            # In a real implementation, this would execute SQL queries
-            from ..config import is_dev
-            if not is_dev():
-                raise NotImplementedError(EXC_DB_EXECUTION_NOT_IMPLEMENTED)
-            result_content = DB_DEFAULT_SUCCESS_RESULT_CONTENT(self.spec, args)
-
-            execution_time = time.time() - start_time
-
-            # Log successful completion
-            self.logger.info(LOG_DB_COMPLETED,
-                rows_affected=1,
-                execution_time_ms=round(execution_time * 1000, 2),
-                **context_data)
-
-            usage = self._calculate_usage(start_time, args, result_content)
-            result = self._create_result(result_content, usage)
-
-            return result
-
-        except Exception as e:
-            execution_time = time.time() - start_time
-            self.logger.error(LOG_DB_FAILED,
-                error=str(e),
-                execution_time_ms=round(execution_time * 1000, 2),
-                **context_data)
-
-            usage = self._calculate_usage(start_time, args, None)
-            error_result = self._create_result(
-                content={ERROR: str(e)},
-                usage=usage,
-                warnings=[DB_DEFAULT_ERROR_STATUS_WARNING(self.spec, str(e))]
+        
+        # Import specific DB executors
+        from .db import DynamoDBExecutor
+        
+        # Map drivers to executor classes
+        driver_executors = {
+            'dynamodb': DynamoDBExecutor,
+            # Future executors
+            # 'postgresql': PostgreSQLExecutor,
+            # 'postgres': PostgreSQLExecutor,
+            # 'mysql': MySQLExecutor,
+            # 'sqlite': SQLiteExecutor,
+        }
+        
+        # Get the appropriate executor class
+        driver_lower = spec.driver.lower()
+        executor_class = driver_executors.get(driver_lower)
+        
+        if not executor_class:
+            raise ValueError(
+                f"Unsupported database driver: {spec.driver}. "
+                f"Supported drivers: {', '.join(driver_executors.keys())}"
             )
-            return error_result
+        
+        # Create the specific executor instance
+        self._executor = executor_class(spec)
+    
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
+        """
+        Execute the database operation using the driver-specific executor.
+        
+        Args:
+            args: Tool execution arguments
+            ctx: Tool execution context
+            
+        Returns:
+            ToolResult from the driver-specific executor
+        """
+        return await self._executor.execute(args, ctx)

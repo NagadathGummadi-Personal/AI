@@ -166,3 +166,308 @@
 {"user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
 {"error": "Unknown operation: invalid", "execution_time_ms": "105.38", "user_id": "demo_user_123", "session_id": "demo_session_456", "tool_name": "calculator", "trace_id": "demo_trace_789"}
 {"error": "User unauthorized_user is not authorized to execute tool calculator", "execution_time_ms": "0.0", "user_id": "unauthorized_user", "session_id": "session_123", "tool_name": "calculator", "trace_id": "trace_456"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.01", "user_id": "user-test-001", "session_id": "session-0e4f0cfc-dc8e-43e9-9e60-b580586fc2eb", "tool_name": "division", "trace_id": "trace-c336accf-6e1c-44e7-b090-ec4368f2a8ca"}
+{"user_id": "user-minimal-001", "session_id": "session-68af5c01-4907-4560-8a60-ed07f3212918", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-68af5c01-4907-4560-8a60-ed07f3212918", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-68af5c01-4907-4560-8a60-ed07f3212918", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-87e2f4fb-7660-4f74-8211-15d94e33ca4f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-87e2f4fb-7660-4f74-8211-15d94e33ca4f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-87e2f4fb-7660-4f74-8211-15d94e33ca4f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "405.3", "user_id": "user-test-001", "session_id": "session-0471624f-b09c-43c5-aa8d-3aab279e9308", "tool_name": "dynamodb_add_item", "trace_id": "trace-0ca2c02f-106c-4ad9-8a8a-5b06aae0c3b0", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "3.72", "user_id": "user-test-001", "session_id": "session-3cc14376-2758-42d2-b3d8-52d95b7f882e", "tool_name": "dynamodb_add_item", "trace_id": "trace-82693830-f165-4b71-9357-d29a25c223d3", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "4.0", "user_id": "user-test-001", "session_id": "session-950b5a62-59a5-4925-96a3-9a06c807d120", "tool_name": "dynamodb_add_item", "trace_id": "trace-6347c366-b640-4a74-a85a-10caf8036994", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-05a6b39f-2094-4d29-aae0-3cd64d418a4d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-05a6b39f-2094-4d29-aae0-3cd64d418a4d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-05a6b39f-2094-4d29-aae0-3cd64d418a4d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "4.0", "user_id": "user-minimal-001", "session_id": "session-05a6b39f-2094-4d29-aae0-3cd64d418a4d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "3.57", "user_id": "user-test-001", "session_id": "session-e4177a1a-6af3-435d-9fb5-7a431908f73b", "tool_name": "dynamodb_add_item", "trace_id": "trace-1721b0ac-5b9f-4943-bb5d-ad396ac9b3e1", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "4.07", "user_id": "user-test-001", "session_id": "session-e4177a1a-6af3-435d-9fb5-7a431908f73b", "tool_name": "dynamodb_add_item", "trace_id": "trace-1721b0ac-5b9f-4943-bb5d-ad396ac9b3e1", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Float types are not supported. Use Decimal types instead.", "execution_time_ms": "3.09", "user_id": "user-test-001", "session_id": "session-e4177a1a-6af3-435d-9fb5-7a431908f73b", "tool_name": "dynamodb_add_item", "trace_id": "trace-1721b0ac-5b9f-4943-bb5d-ad396ac9b3e1", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-b9132124-dce7-496d-a084-0fa916e3806f", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-b9132124-dce7-496d-a084-0fa916e3806f", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-b9132124-dce7-496d-a084-0fa916e3806f", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.34", "user_id": "user-test-001", "session_id": "session-8b5fedb8-b8ff-4bfe-858c-8af7b6434d96", "tool_name": "division", "trace_id": "trace-0ac3e866-d232-4312-93ac-de7f126f37fa"}
+{"user_id": "user-minimal-001", "session_id": "session-22a166f0-3244-423f-b93d-5f91289bf84e", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-22a166f0-3244-423f-b93d-5f91289bf84e", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-22a166f0-3244-423f-b93d-5f91289bf84e", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-f7e70f16-6a44-4015-93c1-c20849b1d0e1", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-f7e70f16-6a44-4015-93c1-c20849b1d0e1", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-f7e70f16-6a44-4015-93c1-c20849b1d0e1", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-83ce0b28-a049-44e6-bec1-69873b39cdce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-83ce0b28-a049-44e6-bec1-69873b39cdce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-83ce0b28-a049-44e6-bec1-69873b39cdce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-76926368-b28f-4546-94fb-7c5f3f637b86", "tool_name": "division", "trace_id": "trace-eb5bf410-f283-4fd8-8032-eb78e88537d1"}
+{"user_id": "user-minimal-001", "session_id": "session-97e4ef8f-a565-4d0f-a55c-9b0f091dfa95", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-97e4ef8f-a565-4d0f-a55c-9b0f091dfa95", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-97e4ef8f-a565-4d0f-a55c-9b0f091dfa95", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-325c9560-54ef-487d-a1fc-170f809bc7cc", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-325c9560-54ef-487d-a1fc-170f809bc7cc", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-325c9560-54ef-487d-a1fc-170f809bc7cc", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-23550c4a-4262-4cf9-8baa-f5ecfc5e4c49", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-23550c4a-4262-4cf9-8baa-f5ecfc5e4c49", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-23550c4a-4262-4cf9-8baa-f5ecfc5e4c49", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-72f5b0cc-673a-4dca-b1a9-bc8634379292", "tool_name": "division", "trace_id": "trace-ea197af2-5cf3-48b2-ae18-6ea2096beef9"}
+{"user_id": "user-minimal-001", "session_id": "session-bcc1fad0-ce87-4bde-ae8c-eeb84c81ba76", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-bcc1fad0-ce87-4bde-ae8c-eeb84c81ba76", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-bcc1fad0-ce87-4bde-ae8c-eeb84c81ba76", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-15e3bf9b-e63a-4f73-9f63-134da207122c", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-15e3bf9b-e63a-4f73-9f63-134da207122c", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-15e3bf9b-e63a-4f73-9f63-134da207122c", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-a377f235-3fd9-4e46-bf97-aeb64c7bf77c", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a377f235-3fd9-4e46-bf97-aeb64c7bf77c", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a377f235-3fd9-4e46-bf97-aeb64c7bf77c", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{}
+{}
+{"user_id": "user-minimal-001", "session_id": "session-b2481249-8a28-4f1d-ac73-80ab4f1100f9", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-b2481249-8a28-4f1d-ac73-80ab4f1100f9", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-b2481249-8a28-4f1d-ac73-80ab4f1100f9", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-1459ee7b-1b5a-40be-8fc3-f8e1fb89fd19", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-1459ee7b-1b5a-40be-8fc3-f8e1fb89fd19", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-1459ee7b-1b5a-40be-8fc3-f8e1fb89fd19", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-2a9df7be-3b8d-4008-8437-2ce416ce5897", "tool_name": "division", "trace_id": "trace-dc0fb470-6f6b-446e-9cd0-b49faf601c36"}
+{"user_id": "user-minimal-001", "session_id": "session-1752b21b-da3b-42e5-b42d-e8612d2dc418", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-1752b21b-da3b-42e5-b42d-e8612d2dc418", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-1752b21b-da3b-42e5-b42d-e8612d2dc418", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-fb691593-360a-492c-9331-c600809dc010", "tool_name": "division", "trace_id": "trace-1c48ee59-107d-4baa-8cbf-a6b00431fd78"}
+{"user_id": "user-minimal-001", "session_id": "session-094fccb4-f74c-4eeb-add7-e8a277a8caa0", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-094fccb4-f74c-4eeb-add7-e8a277a8caa0", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-094fccb4-f74c-4eeb-add7-e8a277a8caa0", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-7332ed74-a513-451f-b869-ef964efd6e1d", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-7332ed74-a513-451f-b869-ef964efd6e1d", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-7332ed74-a513-451f-b869-ef964efd6e1d", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-c763ff66-c937-433d-8bc3-79288616bc10", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-c763ff66-c937-433d-8bc3-79288616bc10", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-c763ff66-c937-433d-8bc3-79288616bc10", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-ee696a34-7b41-4930-82f2-ec09bb1fbba6", "tool_name": "division", "trace_id": "trace-848a3582-7e63-4bd5-a548-320be80cc089"}
+{"user_id": "user-minimal-001", "session_id": "session-e2930445-26c4-48a1-b522-5983ace16680", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-e2930445-26c4-48a1-b522-5983ace16680", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-e2930445-26c4-48a1-b522-5983ace16680", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-a718acdd-5fd5-43d4-ab39-b0ed6e1e71c6", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-a718acdd-5fd5-43d4-ab39-b0ed6e1e71c6", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-a718acdd-5fd5-43d4-ab39-b0ed6e1e71c6", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-56cd55b5-9b3b-477e-a173-a06364e8a377", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-56cd55b5-9b3b-477e-a173-a06364e8a377", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-56cd55b5-9b3b-477e-a173-a06364e8a377", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-db8c902d-55ad-4332-b3e1-8e3eca3099d1", "tool_name": "division", "trace_id": "trace-047e6b2c-660b-4e61-b9ba-da26f8c794d0"}
+{"user_id": "user-minimal-001", "session_id": "session-d2d9b0bc-a875-4e11-b2bb-d4727ea1e039", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-d2d9b0bc-a875-4e11-b2bb-d4727ea1e039", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-d2d9b0bc-a875-4e11-b2bb-d4727ea1e039", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-23a355f4-f2b4-472d-9062-e0e517136875", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-23a355f4-f2b4-472d-9062-e0e517136875", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-23a355f4-f2b4-472d-9062-e0e517136875", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-b3f647ab-4e58-4592-9c0d-1ec069a50267", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-b3f647ab-4e58-4592-9c0d-1ec069a50267", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-b3f647ab-4e58-4592-9c0d-1ec069a50267", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.28", "user_id": "user-test-001", "session_id": "session-f7ad45c0-0d33-41fe-ab50-0716edbec509", "tool_name": "division", "trace_id": "trace-c7106ab9-eb6d-41e6-b92b-f04978bc9553"}
+{"user_id": "user-minimal-001", "session_id": "session-6e7ab764-dc30-4b54-aac3-0d21d16ba34b", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-6e7ab764-dc30-4b54-aac3-0d21d16ba34b", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-6e7ab764-dc30-4b54-aac3-0d21d16ba34b", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-5a76ccf1-7a50-4496-b777-a742996bf56f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-5a76ccf1-7a50-4496-b777-a742996bf56f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-5a76ccf1-7a50-4496-b777-a742996bf56f", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-daa893e2-2591-429f-b92e-934772ae3e11", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-daa893e2-2591-429f-b92e-934772ae3e11", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-daa893e2-2591-429f-b92e-934772ae3e11", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-dd92b67a-d9d8-4c88-9c88-d67034cd2efc", "tool_name": "division", "trace_id": "trace-04776f3f-3609-4764-a175-56e2809ad164"}
+{"user_id": "user-minimal-001", "session_id": "session-26b1eb7d-2938-44af-a7fc-262cddb5826a", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-26b1eb7d-2938-44af-a7fc-262cddb5826a", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-26b1eb7d-2938-44af-a7fc-262cddb5826a", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-d2acc898-1e89-41ee-962d-cfec6e6aef2b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-d2acc898-1e89-41ee-962d-cfec6e6aef2b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-d2acc898-1e89-41ee-962d-cfec6e6aef2b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-3bbd66f3-cab1-4bd2-b187-2d3beef0e36b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-3bbd66f3-cab1-4bd2-b187-2d3beef0e36b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-3bbd66f3-cab1-4bd2-b187-2d3beef0e36b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-67b68273-2eda-4d43-a836-03ddb4dd51c7", "tool_name": "division", "trace_id": "trace-507aeab9-735c-46f7-9b1f-c7e1f143bbf2"}
+{"user_id": "user-minimal-001", "session_id": "session-b532af25-097a-4b37-b147-6e7defc67ca7", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-b532af25-097a-4b37-b147-6e7defc67ca7", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-b532af25-097a-4b37-b147-6e7defc67ca7", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-89d19a56-606c-4427-abab-59560125fae4", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-89d19a56-606c-4427-abab-59560125fae4", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-89d19a56-606c-4427-abab-59560125fae4", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-a97a0ce1-2fe2-404e-9bad-9618e2197aba", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a97a0ce1-2fe2-404e-9bad-9618e2197aba", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a97a0ce1-2fe2-404e-9bad-9618e2197aba", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-ee389a4e-2428-44eb-9e90-f1e112e88f09", "tool_name": "division", "trace_id": "trace-46aed87e-8632-4409-b8b4-afc331ade939"}
+{"user_id": "user-minimal-001", "session_id": "session-61998a75-b1eb-4492-ad7a-59c58a401d7c", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-61998a75-b1eb-4492-ad7a-59c58a401d7c", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-61998a75-b1eb-4492-ad7a-59c58a401d7c", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-0691b7bf-8ff1-4bce-9a1e-cada66efac0b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-0691b7bf-8ff1-4bce-9a1e-cada66efac0b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-0691b7bf-8ff1-4bce-9a1e-cada66efac0b", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-84c77b9a-7688-4caf-9c90-62355799a046", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-84c77b9a-7688-4caf-9c90-62355799a046", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-84c77b9a-7688-4caf-9c90-62355799a046", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-5b15d35a-18de-4426-b8f2-751ae9f56fdf", "tool_name": "division", "trace_id": "trace-19054d63-9229-47e8-8221-16d0db531fdb"}
+{"user_id": "user-minimal-001", "session_id": "session-cbb5e75d-29e4-4bdd-840b-c23d5f86747f", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-cbb5e75d-29e4-4bdd-840b-c23d5f86747f", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-cbb5e75d-29e4-4bdd-840b-c23d5f86747f", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-799b8c60-abf3-4fa6-831f-118ca22aa094", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-799b8c60-abf3-4fa6-831f-118ca22aa094", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-799b8c60-abf3-4fa6-831f-118ca22aa094", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-01447c15-6678-4c99-889a-fda8e25ab1e6", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-01447c15-6678-4c99-889a-fda8e25ab1e6", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-01447c15-6678-4c99-889a-fda8e25ab1e6", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-adc142a4-62b5-467f-81f4-b89abf9c0017", "tool_name": "division", "trace_id": "trace-66ee9ff9-312e-4766-b135-5cee2432771b"}
+{"user_id": "user-minimal-001", "session_id": "session-f9fdb043-716e-49aa-9d9e-b881cdc4b544", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-f9fdb043-716e-49aa-9d9e-b881cdc4b544", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-f9fdb043-716e-49aa-9d9e-b881cdc4b544", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-8812998a-8e56-433a-88d3-58f8cad3e670", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-8812998a-8e56-433a-88d3-58f8cad3e670", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-8812998a-8e56-433a-88d3-58f8cad3e670", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-a730ce40-469d-4617-8dfd-864ae8538a48", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a730ce40-469d-4617-8dfd-864ae8538a48", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-a730ce40-469d-4617-8dfd-864ae8538a48", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "First attempt fails", "execution_time_ms": "0.0", "user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-3c8066cd-32ea-45bf-9f17-d248fa42178c", "tool_name": "division", "trace_id": "trace-c6af2d2d-cfe8-452e-a461-ef6ff685ce87"}
+{"user_id": "user-minimal-001", "session_id": "session-6244f9a4-4354-4981-a5f3-2250c066d723", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-6244f9a4-4354-4981-a5f3-2250c066d723", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-6244f9a4-4354-4981-a5f3-2250c066d723", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-d6b6d939-25c2-480d-909f-9e963edf86ff", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-d6b6d939-25c2-480d-909f-9e963edf86ff", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-d6b6d939-25c2-480d-909f-9e963edf86ff", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-ffacbc7d-173f-4a1c-bf15-c9c478e4fb7d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-ffacbc7d-173f-4a1c-bf15-c9c478e4fb7d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-ffacbc7d-173f-4a1c-bf15-c9c478e4fb7d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-4da9e182-5c21-49c0-badc-196505d58c0c", "tool_name": "dynamodb_add_item", "trace_id": "trace-ac19a920-8b73-42b5-b187-863a6e85ce5d", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-2b3a6955-365a-4099-8e73-8c83e861745a", "tool_name": "division", "trace_id": "trace-c4b996a5-b03b-42c2-9c07-9dabdfc1bf8a"}
+{"user_id": "user-minimal-001", "session_id": "session-a6d265ec-0cad-43e9-8156-429188cbc426", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-a6d265ec-0cad-43e9-8156-429188cbc426", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-a6d265ec-0cad-43e9-8156-429188cbc426", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "1.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-e7c98d68-0bf6-489c-84b8-ed8065835061", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-e7c98d68-0bf6-489c-84b8-ed8065835061", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-e7c98d68-0bf6-489c-84b8-ed8065835061", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-36034142-3680-44d4-af15-e553da8b5043", "tool_name": "dynamodb_add_item", "trace_id": "trace-b7340c5d-0154-4426-9f3b-bdf846ae98a1", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "1.08", "user_id": "user-test-001", "session_id": "session-f7a23d0d-d0b9-4e6b-889c-f09340556b85", "tool_name": "dynamodb_add_item", "trace_id": "trace-0fb6aad3-88b3-48c3-b8f1-cd050ab48d3f", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-f720e65d-c138-4866-91a0-26d8a78570bb", "tool_name": "dynamodb_add_item", "trace_id": "trace-ffcdfe11-6d13-495c-bcba-4843001e184b", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-3db6763a-4dc8-4100-8626-d9bca3fd65ce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-3db6763a-4dc8-4100-8626-d9bca3fd65ce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-3db6763a-4dc8-4100-8626-d9bca3fd65ce", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "1.02", "user_id": "user-test-001", "session_id": "session-2c7938a6-5a88-4fe3-ab66-2dce22c8b47c", "tool_name": "dynamodb_add_item", "trace_id": "trace-e603915a-c659-4224-9e0a-e292860c298f", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-2c7938a6-5a88-4fe3-ab66-2dce22c8b47c", "tool_name": "dynamodb_add_item", "trace_id": "trace-e603915a-c659-4224-9e0a-e292860c298f", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-2c7938a6-5a88-4fe3-ab66-2dce22c8b47c", "tool_name": "dynamodb_add_item", "trace_id": "trace-e603915a-c659-4224-9e0a-e292860c298f", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-46926bca-1e0d-40c7-ac06-8a902012f01a", "tool_name": "dynamodb_add_item", "trace_id": "trace-ea4d6af5-b8a3-4bd2-812c-f61694aa43f0", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-29afa4be-8b37-4bd2-b1ec-26107998f683", "tool_name": "division", "trace_id": "trace-a9705d6d-b6af-4180-a045-52bbaff614f5"}
+{"user_id": "user-minimal-001", "session_id": "session-22285e06-0dd9-4c3c-bef2-aa52afee0799", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-22285e06-0dd9-4c3c-bef2-aa52afee0799", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-22285e06-0dd9-4c3c-bef2-aa52afee0799", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-cb2c016e-53cb-4d12-8603-aa44239dfd49", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-cb2c016e-53cb-4d12-8603-aa44239dfd49", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-cb2c016e-53cb-4d12-8603-aa44239dfd49", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-96c39181-97c6-4787-a3a9-fc87acdea784", "tool_name": "dynamodb_add_item", "trace_id": "trace-a86b3875-cb70-418d-ab27-c31abf06e418", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-04fd2869-4adf-43ab-939c-ebb92f92909e", "tool_name": "dynamodb_add_item", "trace_id": "trace-022ae991-e873-451e-a513-79c5f64f57d6", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-08cf5865-8679-4c74-a600-e2320b9ef919", "tool_name": "dynamodb_add_item", "trace_id": "trace-033359e5-55f0-44b6-9d77-f8856674b17e", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-03204451-7d5c-4486-9620-c1e28b6d661d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-03204451-7d5c-4486-9620-c1e28b6d661d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-03204451-7d5c-4486-9620-c1e28b6d661d", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-723f638b-128b-4d7a-8ba7-9301b575013a", "tool_name": "dynamodb_add_item", "trace_id": "trace-d2ffb441-0e90-41f3-8098-4063e5b238a2", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "1.01", "user_id": "user-test-001", "session_id": "session-723f638b-128b-4d7a-8ba7-9301b575013a", "tool_name": "dynamodb_add_item", "trace_id": "trace-d2ffb441-0e90-41f3-8098-4063e5b238a2", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-723f638b-128b-4d7a-8ba7-9301b575013a", "tool_name": "dynamodb_add_item", "trace_id": "trace-d2ffb441-0e90-41f3-8098-4063e5b238a2", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"error": "'DynamoDbToolSpec' object has no attribute 'database'", "execution_time_ms": "1.01", "user_id": "user-test-001", "session_id": "session-ef62ebb1-417c-4014-b128-ca878ed0e11c", "tool_name": "dynamodb_add_item", "trace_id": "trace-4826517c-8392-4ade-bd97-ce501ec0f86d", "db_host": "None", "db_port": "None", "db_database": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-903fa4e0-1917-45b4-bbba-854328678267", "tool_name": "division", "trace_id": "trace-710d5aab-f079-4e22-84c5-fcbe7d559eb8"}
+{"user_id": "user-minimal-001", "session_id": "session-e46467ac-eb4b-452a-9606-3a13ba8f0aff", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-e46467ac-eb4b-452a-9606-3a13ba8f0aff", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-e46467ac-eb4b-452a-9606-3a13ba8f0aff", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-f9f020ba-d4dc-4267-8099-07ad058d345a", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-f9f020ba-d4dc-4267-8099-07ad058d345a", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-f9f020ba-d4dc-4267-8099-07ad058d345a", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-3956d4b4-a5ff-48f8-9e16-de60c06c5230", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-3956d4b4-a5ff-48f8-9e16-de60c06c5230", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-3956d4b4-a5ff-48f8-9e16-de60c06c5230", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "policy_test", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"user_id": "test_user", "session_id": "None", "tool_name": "all_policies", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-f770a633-6e99-4e24-9c30-9b5d2e4efcd4", "tool_name": "division", "trace_id": "trace-1d9a4372-f017-4d7f-b1b5-359552d46811"}
+{"user_id": "user-minimal-001", "session_id": "session-a382300e-2052-4b50-be44-3376503fc60e", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-a382300e-2052-4b50-be44-3376503fc60e", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-a382300e-2052-4b50-be44-3376503fc60e", "tool_name": "division", "trace_id": "None"}
+{"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.0", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"user_id": "user-minimal-001", "session_id": "session-eaab9c14-3931-4f22-90d6-f0b5265dfd29", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-eaab9c14-3931-4f22-90d6-f0b5265dfd29", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-eaab9c14-3931-4f22-90d6-f0b5265dfd29", "tool_name": "api_items", "trace_id": "None", "http_method": "GET", "http_url": "https://kdahhpfkwb.execute-api.us-west-2.amazonaws.com/api/items"}
+{"user_id": "user-minimal-001", "session_id": "session-86ef092f-9a96-49bb-8f8e-b81c4784bf4b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-86ef092f-9a96-49bb-8f8e-b81c4784bf4b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}
+{"user_id": "user-minimal-001", "session_id": "session-86ef092f-9a96-49bb-8f8e-b81c4784bf4b", "tool_name": "dynamodb_add_item", "trace_id": "None", "db_host": "None", "db_port": "None", "db_database": "api-test-items"}

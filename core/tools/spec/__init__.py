@@ -23,6 +23,10 @@ from .tool_types import (
     FunctionToolSpec,
     HttpToolSpec,
     DbToolSpec,
+    DynamoDbToolSpec,
+    PostgreSqlToolSpec,
+    MySqlToolSpec,
+    SqliteToolSpec,
 )
 
 __all__ = [
@@ -49,6 +53,10 @@ __all__ = [
     "FunctionToolSpec",
     "HttpToolSpec",
     "DbToolSpec",
+    "DynamoDbToolSpec",
+    "PostgreSqlToolSpec",
+    "MySqlToolSpec",
+    "SqliteToolSpec",
 ]
 
 

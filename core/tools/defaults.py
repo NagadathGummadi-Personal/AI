@@ -37,7 +37,7 @@ from .constants import (
     UNAVAILABLE,
     TOOL_ERROR,
     POST,
-    POSTGRESQL,
+    DYNAMODB,
 )
 # Re-export env-aware usage calculators
 
@@ -79,10 +79,12 @@ def DEFAULT_HTTP_CONTEXT_DATA(spec, ctx):
 
 def DEFAULT_DB_CONTEXT_DATA(spec, ctx):
     data = DEFAULT_TOOL_CONTEXT_DATA(spec, ctx)
+    # Handle both table_name (DynamoDB) and database (PostgreSQL, MySQL, etc.)
+    db_name = getattr(spec, 'table_name', None) or getattr(spec, 'database', None)
     data.update({
-        DB_HOST: getattr(spec, HOST, None),
-        DB_PORT: getattr(spec, PORT, None),
-        DB_DATABASE: getattr(spec, DATABASE, None),
+        DB_HOST: getattr(spec, 'host', None),
+        DB_PORT: getattr(spec, 'port', None),
+        DB_DATABASE: db_name,
     })
     return data
 
@@ -105,13 +107,16 @@ def HTTP_DEFAULT_ERROR_STATUS_WARNING(spec, error: str) -> str:
 
 
 def DB_DEFAULT_SUCCESS_RESULT_CONTENT(spec, args):
+    # Handle both table_name (DynamoDB) and database (PostgreSQL, MySQL, etc.)
+    db_name = getattr(spec, 'table_name', None) or getattr(spec, 'database', None)
+    
     return {
         ROWS_AFFECTED: DB_DEFAULT_ROWS_AFFECTED,
         QUERY: args.get(QUERY, DB_DEFAULT_QUERY),
         CONNECTION: {
-            HOST : spec.host,
-            PORT: spec.port,
-            DATABASE: spec.database,
+            HOST : getattr(spec, 'host', None),
+            PORT: getattr(spec, 'port', None),
+            DATABASE: db_name,
         },
     }
 
@@ -143,6 +148,6 @@ IDEMPOTENCY_DEFAULT_BYPASS_ON_MISSING_KEY = False
 
 # HTTP/DB defaults
 HTTP_DEFAULT_METHOD = POST
-DB_DEFAULT_DRIVER = POSTGRESQL
+DB_DEFAULT_DRIVER = DYNAMODB
 
 
