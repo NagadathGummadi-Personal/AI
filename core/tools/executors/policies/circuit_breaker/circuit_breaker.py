@@ -57,7 +57,7 @@ class ICircuitBreakerPolicy(ABC):
             tool_name: Name of the tool
             
         Returns:
-            State string: 'closed', 'open', or 'half_open'
+            State string: CircuitBreakerState.CLOSED, CircuitBreakerState.OPEN, or CircuitBreakerState.HALF_OPEN
         """
         pass
     

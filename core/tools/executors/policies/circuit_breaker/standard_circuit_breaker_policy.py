@@ -6,6 +6,8 @@ Uses pybreaker library with fixed thresholds for failure detection.
 
 from typing import Any, Callable, Dict, Awaitable
 from .circuit_breaker import ICircuitBreakerPolicy
+from ....enum import CircuitBreakerState
+from ....constants import CIRCUIT_BREAKER_OPEN_ERROR
 
 
 class StandardCircuitBreakerPolicy(ICircuitBreakerPolicy):
@@ -87,8 +89,8 @@ class StandardCircuitBreakerPolicy(ICircuitBreakerPolicy):
         breaker = self._get_breaker(tool_name)
         
         # Check if circuit is open
-        if breaker.state.value == 'open':
-            raise Exception(f"Circuit breaker is open for {tool_name}")
+        if breaker.state.value == CircuitBreakerState.OPEN:
+            raise Exception(CIRCUIT_BREAKER_OPEN_ERROR.format(TOOL_NAME=tool_name))
         
         try:
             result = await func()
@@ -97,16 +99,26 @@ class StandardCircuitBreakerPolicy(ICircuitBreakerPolicy):
         except Exception as e:
             breaker.record_failure()
             # Check if circuit opened after this failure
-            if breaker.state.value == 'open':
-                raise Exception(f"Circuit breaker is open for {tool_name}") from e
+            if breaker.state.value == CircuitBreakerState.OPEN:
+                raise Exception(CIRCUIT_BREAKER_OPEN_ERROR.format(TOOL_NAME=tool_name)) from e
             raise
     
     def get_state(self, tool_name: str) -> str:
         """Get circuit breaker state."""
         if tool_name not in self._breakers:
-            return 'closed'
+            return CircuitBreakerState.CLOSED
         breaker = self._breakers[tool_name]
-        return breaker.state.value
+        # Convert breaker state value to enum (breaker.state.value is a string)
+        state_value = breaker.state.value
+        # Map string values to enum values
+        if state_value == CircuitBreakerState.OPEN:
+            return CircuitBreakerState.OPEN
+        elif state_value == CircuitBreakerState.CLOSED:
+            return CircuitBreakerState.CLOSED
+        elif state_value == CircuitBreakerState.HALF_OPEN:
+            return CircuitBreakerState.HALF_OPEN
+        # Fallback: return as-is if unknown state
+        return state_value
     
     def reset(self, tool_name: str):
         """Reset circuit breaker."""

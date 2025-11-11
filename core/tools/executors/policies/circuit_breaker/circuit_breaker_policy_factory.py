@@ -8,6 +8,15 @@ from .standard_circuit_breaker_policy import StandardCircuitBreakerPolicy
 from .adaptive_circuit_breaker_policy import AdaptiveCircuitBreakerPolicy
 from .noop_circuit_breaker_policy import NoOpCircuitBreakerPolicy
 
+from ....constants import (
+    STANDARD,
+    ADAPTIVE,
+    NOOP,
+    UNKNOWN_CIRCUIT_BREAKER_POLICY_ERROR,
+    COMMA,
+    SPACE
+)
+
 
 class CircuitBreakerPolicyFactory:
     """
@@ -24,13 +33,13 @@ class CircuitBreakerPolicyFactory:
     """
     
     _policies: Dict[str, ICircuitBreakerPolicy] = {
-        'standard': StandardCircuitBreakerPolicy(),
-        'adaptive': AdaptiveCircuitBreakerPolicy(),
-        'noop': NoOpCircuitBreakerPolicy(),
+        STANDARD: StandardCircuitBreakerPolicy(),
+        ADAPTIVE: AdaptiveCircuitBreakerPolicy(),
+        NOOP: NoOpCircuitBreakerPolicy(),
     }
     
     @classmethod
-    def get_policy(cls, name: str = 'standard') -> ICircuitBreakerPolicy:
+    def get_policy(cls, name: str = STANDARD) -> ICircuitBreakerPolicy:
         """
         Get a circuit breaker policy by name.
         
@@ -47,8 +56,10 @@ class CircuitBreakerPolicyFactory:
         
         if not policy:
             raise ValueError(
-                f"Unknown circuit breaker policy: {name}. "
-                f"Available: {', '.join(cls._policies.keys())}"
+                UNKNOWN_CIRCUIT_BREAKER_POLICY_ERROR.format(
+                    POLICY_NAME=name,
+                    AVAILABLE_POLICIES=((COMMA+SPACE).join(cls._policies.keys()))
+                )
             )
         
         return policy

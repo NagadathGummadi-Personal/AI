@@ -221,3 +221,22 @@ FIXED = "fixed"
 EXPONENTIAL = "exponential"
 UNKNOWN_RETRY_POLICY_ERROR = "Unknown retry policy: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"
 RETRY_FUNC_NOT_CALLABLE_ERROR = "retry_func must be callable"
+
+#Circuit Breaker Policy constants
+STANDARD = "standard"
+ADAPTIVE = "adaptive"
+NOOP = "noop"
+CIRCUIT_BREAKER_STATE_CLOSED = "closed"
+CIRCUIT_BREAKER_STATE_OPEN = "open"
+CIRCUIT_BREAKER_STATE_HALF_OPEN = "half_open"
+UNKNOWN_CIRCUIT_BREAKER_POLICY_ERROR = "Unknown circuit breaker policy: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"
+CIRCUIT_BREAKER_OPEN_ERROR = "Circuit breaker is open for {TOOL_NAME}"
+FAILURES = 'failures'
+SUCCESSES = 'successes'
+RECENT_RESULTS = 'recent_results'
+IS_OPEN = 'is_open'
+OPENED_AT = 'opened_at'
+CURRENT_THRESHOLD = 'current_threshold'
+FAILURES = 'failures'
+SUCCESSES = 'successes'
+RECENT_RESULTS = 'recent_results'

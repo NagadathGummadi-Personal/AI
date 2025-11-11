@@ -6,6 +6,7 @@ Disables circuit breaking for development/testing or gradual rollouts.
 
 from typing import Any, Callable, Awaitable
 from .circuit_breaker import ICircuitBreakerPolicy
+from ....enum import CircuitBreakerState
 
 
 class NoOpCircuitBreakerPolicy(ICircuitBreakerPolicy):
@@ -34,7 +35,7 @@ class NoOpCircuitBreakerPolicy(ICircuitBreakerPolicy):
     
     def get_state(self, tool_name: str) -> str:
         """Always returns 'closed'."""
-        return 'closed'
+        return CircuitBreakerState.CLOSED
     
     def reset(self, tool_name: str):
         """No-op reset."""

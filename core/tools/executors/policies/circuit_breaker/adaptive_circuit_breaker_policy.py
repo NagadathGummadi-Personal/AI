@@ -7,6 +7,17 @@ Adjusts thresholds based on error rates and service health.
 import time
 from typing import Any, Callable, Dict, Awaitable
 from .circuit_breaker import ICircuitBreakerPolicy
+from ....enum import CircuitBreakerState
+from ....constants import (
+    CIRCUIT_BREAKER_OPEN_ERROR,
+    FAILURES,
+    SUCCESSES,
+    RECENT_RESULTS,
+    IS_OPEN,
+    OPENED_AT,
+    CURRENT_THRESHOLD
+)
+
 
 
 class AdaptiveCircuitBreakerPolicy(ICircuitBreakerPolicy):
@@ -66,18 +77,18 @@ class AdaptiveCircuitBreakerPolicy(ICircuitBreakerPolicy):
         """Get or create state for a tool."""
         if tool_name not in self._states:
             self._states[tool_name] = {
-                'failures': 0,
-                'successes': 0,
-                'recent_results': [],  # Boolean list of recent results
-                'is_open': False,
-                'opened_at': None,
-                'current_threshold': self.base_threshold
+                FAILURES: 0,
+                SUCCESSES: 0,
+                RECENT_RESULTS: [],  # Boolean list of recent results
+                IS_OPEN: False,
+                OPENED_AT: None,
+                CURRENT_THRESHOLD: self.base_threshold
             }
         return self._states[tool_name]
     
     def _calculate_error_rate(self, state: Dict[str, Any]) -> float:
         """Calculate current error rate."""
-        recent = state['recent_results']
+        recent = state[RECENT_RESULTS]
         if not recent:
             return 0.0
         errors = sum(1 for r in recent if not r)
@@ -89,14 +100,14 @@ class AdaptiveCircuitBreakerPolicy(ICircuitBreakerPolicy):
         
         if error_rate < self.error_rate_threshold / 2:
             # Service is healthy, increase threshold
-            state['current_threshold'] = min(
-                state['current_threshold'] + 1,
+            state[CURRENT_THRESHOLD] = min(
+                state[CURRENT_THRESHOLD] + 1,
                 self.max_threshold
             )
         elif error_rate > self.error_rate_threshold:
             # Service is unhealthy, decrease threshold
-            state['current_threshold'] = max(
-                state['current_threshold'] - 1,
+            state[CURRENT_THRESHOLD] = max(
+                state[CURRENT_THRESHOLD] - 1,
                 self.base_threshold
             )
     
@@ -109,44 +120,44 @@ class AdaptiveCircuitBreakerPolicy(ICircuitBreakerPolicy):
         state = self._get_state(tool_name)
         
         # Check if circuit is open
-        if state['is_open']:
+        if state[IS_OPEN]:
             # Check if recovery timeout has passed
-            if time.time() - state['opened_at'] > 30:  # Recovery timeout
-                state['is_open'] = False
-                state['failures'] = 0
+            if time.time() - state[OPENED_AT] > 30:  # Recovery timeout
+                state[IS_OPEN] = False
+                state[FAILURES] = 0
             else:
-                raise Exception(f"Circuit breaker is open for {tool_name}")
+                raise Exception(CIRCUIT_BREAKER_OPEN_ERROR.format(TOOL_NAME=tool_name))
         
         try:
             result = await func()
             
             # Record success
-            state['successes'] += 1
-            state['failures'] = 0
-            state['recent_results'].append(True)
+            state[SUCCESSES] += 1
+            state[FAILURES] = 0
+            state[RECENT_RESULTS].append(True)
             
             # Trim window
-            if len(state['recent_results']) > self.window_size:
-                state['recent_results'].pop(0)
+            if len(state[RECENT_RESULTS]) > self.window_size:
+                state[RECENT_RESULTS].pop(0)
             
             # Adjust threshold
             self._adjust_threshold(state)
             
             return result
             
-        except Exception as e:
+        except Exception:
             # Record failure
-            state['failures'] += 1
-            state['recent_results'].append(False)
+            state[FAILURES] += 1
+            state[RECENT_RESULTS].append(False)
             
             # Trim window
-            if len(state['recent_results']) > self.window_size:
-                state['recent_results'].pop(0)
+            if len(state[RECENT_RESULTS]) > self.window_size:
+                state[RECENT_RESULTS].pop(0)
             
             # Check if threshold exceeded
-            if state['failures'] >= state['current_threshold']:
-                state['is_open'] = True
-                state['opened_at'] = time.time()
+            if state[FAILURES] >= state[CURRENT_THRESHOLD]:
+                state[IS_OPEN] = True
+                state[OPENED_AT] = time.time()
             
             # Adjust threshold
             self._adjust_threshold(state)
@@ -156,17 +167,17 @@ class AdaptiveCircuitBreakerPolicy(ICircuitBreakerPolicy):
     def get_state(self, tool_name: str) -> str:
         """Get circuit state."""
         state = self._get_state(tool_name)
-        return 'open' if state['is_open'] else 'closed'
+        return CircuitBreakerState.OPEN if state[IS_OPEN] else CircuitBreakerState.CLOSED
     
     def reset(self, tool_name: str):
         """Reset circuit breaker."""
         if tool_name in self._states:
             self._states[tool_name] = {
-                'failures': 0,
-                'successes': 0,
-                'recent_results': [],
-                'is_open': False,
-                'opened_at': None,
-                'current_threshold': self.base_threshold
+                FAILURES: 0,
+                SUCCESSES: 0,
+                RECENT_RESULTS: [],
+                IS_OPEN: False,
+                OPENED_AT: None,
+                CURRENT_THRESHOLD: self.base_threshold
             }
 

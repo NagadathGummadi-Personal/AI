@@ -21,6 +21,9 @@ from .constants import (
     NETWORK,
     RATE_LIMIT,
     TRANSIENT,
+    CIRCUIT_BREAKER_STATE_CLOSED,
+    CIRCUIT_BREAKER_STATE_OPEN,
+    CIRCUIT_BREAKER_STATE_HALF_OPEN,
 )
 
 class ToolReturnType(str, Enum):
@@ -54,10 +57,18 @@ class ParameterType(str, Enum):
     OBJECT = OBJECT
 
 # Enum for retry policy
-class RetryableErrorType(Enum):
+class RetryableErrorType(str, Enum):
     """Types of errors that are typically retryable."""
     TIMEOUT = TIMEOUT
     UNAVAILABLE = UNAVAILABLE
     NETWORK = NETWORK
     RATE_LIMIT = RATE_LIMIT
     TRANSIENT = TRANSIENT
+
+
+# Enum for circuit breaker states
+class CircuitBreakerState(str, Enum):
+    """Circuit breaker states."""
+    CLOSED = CIRCUIT_BREAKER_STATE_CLOSED
+    OPEN = CIRCUIT_BREAKER_STATE_OPEN
+    HALF_OPEN = CIRCUIT_BREAKER_STATE_HALF_OPEN
