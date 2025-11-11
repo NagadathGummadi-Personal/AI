@@ -52,9 +52,13 @@ Example:
     class UUIDIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
         def generate_key(self, args, ctx, spec):
             return str(uuid.uuid4())
-    
-    # Use in tool spec
-    spec.idempotency_key_generator = UUIDIdempotencyKeyGenerator()
+
+    # Register custom generator
+    IdempotencyKeyGeneratorFactory.register('uuid', UUIDIdempotencyKeyGenerator())
+
+    # Use registered generator by name
+    generator = IdempotencyKeyGeneratorFactory.get_generator('uuid')
+    key = generator.generate_key(args, ctx, spec)
 """
 
 

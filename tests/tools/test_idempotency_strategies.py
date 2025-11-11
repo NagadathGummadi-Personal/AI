@@ -34,7 +34,7 @@ from core.tools.executors.idempotency import (
 from core.tools.spec.tool_types import FunctionToolSpec
 from core.tools.spec.tool_context import ToolContext
 from core.tools.spec.tool_config import IdempotencyConfig
-from core.tools.enum import ToolType, ToolReturnType, ToolReturnTarget
+from core.tools.enum import ToolType
 
 
 @pytest.mark.unit

@@ -114,7 +114,7 @@ class BaseToolExecutor:
             return self.spec.idempotency_key_generator.generate_key(args, ctx, self.spec)
         
         # Default implementation (for backward compatibility)
-        from .idempotency.idempotency_key_generator import DefaultIdempotencyKeyGenerator
+        from .idempotency.default_idempotency_key_gen import DefaultIdempotencyKeyGenerator
         default_generator = DefaultIdempotencyKeyGenerator()
         return default_generator.generate_key(args, ctx, self.spec)
 
