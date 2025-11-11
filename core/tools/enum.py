@@ -16,6 +16,11 @@ from .constants import (
     BOOLEAN,
     ARRAY,
     OBJECT,
+    TIMEOUT,
+    UNAVAILABLE,
+    NETWORK,
+    RATE_LIMIT,
+    TRANSIENT,
 )
 
 class ToolReturnType(str, Enum):
@@ -47,3 +52,12 @@ class ParameterType(str, Enum):
     BOOLEAN = BOOLEAN
     ARRAY = ARRAY
     OBJECT = OBJECT
+
+# Enum for retry policy
+class RetryableErrorType(Enum):
+    """Types of errors that are typically retryable."""
+    TIMEOUT = TIMEOUT
+    UNAVAILABLE = UNAVAILABLE
+    NETWORK = NETWORK
+    RATE_LIMIT = RATE_LIMIT
+    TRANSIENT = TRANSIENT

@@ -207,3 +207,17 @@ INTEGER = 'integer'
 BOOLEAN = 'boolean'
 ARRAY = 'array'
 OBJECT = 'object'
+
+#Policy constants
+TIMEOUT = "timeout"
+UNAVAILABLE = "unavailable"
+NETWORK = "network"
+RATE_LIMIT = "rate_limit"
+TRANSIENT = "transient"
+
+#Retry Policy constants
+NONE = "none"
+FIXED = "fixed"
+EXPONENTIAL = "exponential"
+UNKNOWN_RETRY_POLICY_ERROR = "Unknown retry policy: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"
+RETRY_FUNC_NOT_CALLABLE_ERROR = "retry_func must be callable"
