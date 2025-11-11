@@ -1,5 +1,5 @@
 from typing import Callable, Awaitable, Any, Optional, List, Type
-from .retry import IRetryPolicy
+from .retry_policy import IRetryPolicy
 import asyncio
 import random
 

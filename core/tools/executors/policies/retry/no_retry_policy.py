@@ -1,5 +1,5 @@
 from typing import Callable, Awaitable, Any
-from .retry import IRetryPolicy
+from .retry_policy import IRetryPolicy
 
 class NoRetryPolicy(IRetryPolicy):
     """
