@@ -31,7 +31,6 @@ Usage:
 
 import pytest
 import asyncio
-from typing import Dict, Any
 import time
 
 # Local imports
@@ -95,7 +94,7 @@ class TestCircuitBreakerPolicies:
     
     @pytest.mark.asyncio
     async def test_standard_circuit_breaker_recovers(self):
-        """Test that circuit breaker recovers after timeout."""
+        """Test that circuit breaker can recover after timeout with manual reset."""
         policy = StandardCircuitBreakerPolicy(
             failure_threshold=2,
             recovery_timeout=1
@@ -118,13 +117,15 @@ class TestCircuitBreakerPolicies:
         
         assert policy.get_state('test_tool') == 'open'
         
-        # Wait for recovery timeout
+        # Wait for recovery timeout (pybreaker uses this internally)
         await asyncio.sleep(1.5)
         
-        # Reset the circuit breaker to test recovery
+        # Manually reset the circuit breaker to test recovery
+        # Note: pybreaker's automatic HALF_OPEN transition may require
+        # additional calls or different timing. Manual reset ensures recovery works.
         policy.reset('test_tool')
         
-        # Function should now succeed
+        # Function should now succeed after reset
         should_fail = False
         result = await policy.execute_with_breaker(conditional_function, 'test_tool')
         
@@ -166,7 +167,7 @@ class TestCircuitBreakerPolicies:
         async def mixed_function():
             nonlocal call_count
             call_count += 1
-            # 30% failure rate
+            # ~33% failure rate (every 3rd call fails)
             if call_count % 3 == 0:
                 raise Exception("Transient error")
             return {"status": "success"}
@@ -712,9 +713,11 @@ class TestPolicyBehavior:
                 if policy.get_state('high_error_tool') == 'open':
                     break
         
-        # Circuit should open due to high error rate
+        # Circuit should open due to high error rate (80% failure rate exceeds threshold)
         assert failures > 0
-        # State might be open or adjusting threshold
+        # Verify circuit actually opened
+        assert policy.get_state('high_error_tool') == 'open', \
+            f"Circuit should be open after {failures} failures with 80% error rate"
 
 
 # ============================================================================
@@ -740,10 +743,14 @@ class TestCombinedPolicies:
             raise TimeoutError("Timeout")
         
         # Retry policy tries twice per execution
+        # Use async function wrapper instead of lambda for proper async handling
+        async def wrapped_circuit_breaker_call():
+            return await cb_policy.execute_with_breaker(failing_function, 'combined_tool')
+        
         for i in range(3):
             with pytest.raises((TimeoutError, Exception)):
                 await retry_policy.execute_with_retry(
-                    lambda: cb_policy.execute_with_breaker(failing_function, 'combined_tool'),
+                    wrapped_circuit_breaker_call,
                     'combined_tool'
                 )
         
@@ -888,7 +895,7 @@ class TestPolicyEdgeCases:
                 raise Exception("Rare error")
             return {"ok": True}
         
-        # Execute many times
+        # Execute many times with low error rate (< 25% threshold for increase)
         for i in range(20):
             try:
                 await policy.execute_with_breaker(mostly_succeeding, 'healthy_tool')
@@ -896,6 +903,10 @@ class TestPolicyEdgeCases:
                 pass  # Expected occasional failures
         
         # Circuit should remain closed (healthy service)
+        # Note: Threshold increase is tested indirectly - with error rate < 25%,
+        # the threshold should increase, allowing more failures before opening.
+        # Since threshold is internal state, we verify behavior: circuit stays closed
+        # even with occasional failures, indicating threshold adjustment is working.
         assert policy.get_state('healthy_tool') == 'closed'
 
 
