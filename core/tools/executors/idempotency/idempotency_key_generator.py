@@ -57,7 +57,7 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict
 
-from ...constants import EMPTY_STRING
+from ...constants import EMPTY_STRING, USER_ID, SESSION_ID, SEPARATOR, SHA256_HASH_ALGORITHM, DEFAULT_IDEMPOTENCY_KEY_GENERATOR, FIELD_BASED_IDEMPOTENCY_KEY_GENERATOR, HASH_BASED_IDEMPOTENCY_KEY_GENERATOR, COMMA, UNKNOWN_IDEMPOTENCY_KEY_GENERATOR, SPACE, KEY_FUNCTION_NOT_CALLABLE
 
 
 class IIdempotencyKeyGenerator(ABC):
@@ -140,13 +140,13 @@ class DefaultIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
         # Build key components
         key_components = [
             spec.id,
-            str(getattr(ctx, 'user_id', None) or EMPTY_STRING),
-            str(getattr(ctx, 'session_id', None) or EMPTY_STRING),
+            str(getattr(ctx, USER_ID, None) or EMPTY_STRING),
+            str(getattr(ctx, SESSION_ID, None) or EMPTY_STRING),
             json.dumps(key_data, sort_keys=True)
         ]
         
         # Generate hash
-        combined = "|".join(key_components)
+        combined = SEPARATOR.join(key_components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
 
@@ -205,7 +205,7 @@ class FieldBasedIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
         ]
         
         # Generate hash
-        combined = "|".join(key_components)
+        combined = SEPARATOR.join(key_components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
 
@@ -239,7 +239,7 @@ class HashBasedIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
     
     def __init__(
         self,
-        algorithm: str = 'sha256',
+        algorithm: str = SHA256_HASH_ALGORITHM,
         include_user_context: bool = True,
         include_session_context: bool = True
     ):
@@ -277,15 +277,15 @@ class HashBasedIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
         key_components = [spec.id]
         
         if self.include_user_context:
-            key_components.append(str(getattr(ctx, 'user_id', None) or EMPTY_STRING))
+            key_components.append(str(getattr(ctx, USER_ID, None) or EMPTY_STRING))
         
         if self.include_session_context:
-            key_components.append(str(getattr(ctx, 'session_id', None) or EMPTY_STRING))
+            key_components.append(str(getattr(ctx, SESSION_ID, None) or EMPTY_STRING))
         
         key_components.append(json.dumps(key_data, sort_keys=True))
         
         # Generate hash using specified algorithm
-        combined = "|".join(key_components)
+        combined = SEPARATOR.join(key_components)
         hash_obj = hashlib.new(self.algorithm, combined.encode())
         return hash_obj.hexdigest()
 
@@ -336,7 +336,7 @@ class CustomIdempotencyKeyGenerator(IIdempotencyKeyGenerator):
             TypeError: If key_function is not callable
         """
         if not callable(key_function):
-            raise TypeError("key_function must be callable")
+            raise TypeError(KEY_FUNCTION_NOT_CALLABLE)
         
         self.key_function = key_function
     
@@ -380,13 +380,13 @@ class IdempotencyKeyGeneratorFactory:
     """
     
     _generators: Dict[str, IIdempotencyKeyGenerator] = {
-        'default': DefaultIdempotencyKeyGenerator(),
-        'field_based': FieldBasedIdempotencyKeyGenerator(),
-        'hash_based': HashBasedIdempotencyKeyGenerator(),
+        DEFAULT_IDEMPOTENCY_KEY_GENERATOR: DefaultIdempotencyKeyGenerator(),
+        FIELD_BASED_IDEMPOTENCY_KEY_GENERATOR: FieldBasedIdempotencyKeyGenerator(),
+        HASH_BASED_IDEMPOTENCY_KEY_GENERATOR: HashBasedIdempotencyKeyGenerator(),
     }
     
     @classmethod
-    def get_generator(cls, name: str = 'default') -> IIdempotencyKeyGenerator:
+    def get_generator(cls, name: str = DEFAULT_IDEMPOTENCY_KEY_GENERATOR) -> IIdempotencyKeyGenerator:
         """
         Get an idempotency key generator by name.
         
@@ -403,8 +403,7 @@ class IdempotencyKeyGeneratorFactory:
         
         if not generator:
             raise ValueError(
-                f"Unknown idempotency key generator: {name}. "
-                f"Available: {', '.join(cls._generators.keys())}"
+                UNKNOWN_IDEMPOTENCY_KEY_GENERATOR.format(GENERATOR_NAME=name, AVAILABLE_GENERATORS=((COMMA+SPACE).join(cls._generators.keys())))
             )
         
         return generator

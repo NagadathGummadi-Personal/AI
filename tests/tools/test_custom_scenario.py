@@ -4,6 +4,7 @@ Comprehensive Custom Tool Scenario Test
 Tests all customization points:
 - Custom Security Policy (email-based authorization)
 - Custom Validator (positive numbers only)
+- Custom Executor (with custom execution logic)
 - Custom Memory operations
 - Circuit breaker behavior
 - Retry logic
@@ -13,17 +14,18 @@ Tests all customization points:
 import pytest
 import asyncio
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Callable, Awaitable
 
 from core.tools.spec import (
     FunctionToolSpec, 
     ToolContext, 
     IdempotencyConfig
 )
-from core.tools.interfaces import IToolSecurity, IToolValidator
+from core.tools.interfaces import IToolSecurity, IToolValidator, IToolExecutor
 from core.tools.spec.tool_types import ToolSpec
-from core.tools.executors import FunctionToolExecutor
+from core.tools.executors import FunctionToolExecutor, BaseToolExecutor
 from core.tools.spec.tool_parameters import NumericParameter
+from core.tools.spec.tool_result import ToolResult
 from core.tools.enum import ToolType
 from tests.tools.mocks import MockMemory, MockMetrics
 from core.tools.executors.policies import (
@@ -80,6 +82,150 @@ class PositiveNumberValidator(IToolValidator):
                         f"Parameter '{param_name}' must be greater than 0. "
                         f"Got: {param_value}"
                     )
+
+
+# ============================================================================
+# CUSTOM EXECUTOR - Logging Executor with Custom Behavior
+# ============================================================================
+
+class LoggingFunctionExecutor(BaseToolExecutor, IToolExecutor):
+    """
+    Custom executor that wraps FunctionToolExecutor with additional logging.
+    
+    Demonstrates how to create custom executors that extend base functionality
+    while maintaining compatibility with the IToolExecutor interface.
+    
+    This executor:
+    - Adds pre/post execution logging
+    - Tracks execution count
+    - Adds custom metadata to results
+    """
+    
+    def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
+        """
+        Initialize custom executor.
+        
+        Args:
+            spec: Tool specification
+            func: Async function to execute
+        """
+        super().__init__(spec)
+        self.func = func
+        self.execution_count = 0
+        self.execution_history = []
+    
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
+        """
+        Execute the function with custom logging and tracking.
+        
+        This demonstrates how to:
+        1. Use BaseToolExecutor's helper methods (_generate_idempotency_key, etc.)
+        2. Add custom pre/post execution logic
+        3. Wrap existing executors or implement from scratch
+        4. Maintain IToolExecutor interface compliance
+        """
+        import time
+        start_time = time.time()
+        self.execution_count += 1
+        
+        # Custom pre-execution logging
+        execution_id = f"{self.spec.tool_name}-{self.execution_count}"
+        self.execution_history.append({
+            'id': execution_id,
+            'args': args,
+            'timestamp': start_time
+        })
+        
+        print(f"[CustomExecutor] Starting execution #{self.execution_count}: {execution_id}")
+        print(f"[CustomExecutor] Args: {args}")
+        
+        try:
+            # Execute the function (similar to FunctionToolExecutor)
+            # In a real scenario, you might delegate to FunctionToolExecutor
+            # or implement your own execution logic
+            
+            # Validate if validator is available
+            if ctx.validator:
+                await ctx.validator.validate(args, self.spec)
+            
+            # Authorize if security is available
+            if ctx.security:
+                await ctx.security.authorize(ctx, self.spec)
+                await ctx.security.check_egress(args, self.spec)
+            
+            # Execute the function
+            result_content = await self.func(args)
+            
+            execution_time = time.time() - start_time
+            
+            # Add custom metadata
+            if isinstance(result_content, dict):
+                result_content['_executor_metadata'] = {
+                    'execution_id': execution_id,
+                    'execution_count': self.execution_count,
+                    'executor_type': 'LoggingFunctionExecutor'
+                }
+            
+            # Calculate usage using base class helper
+            usage = self._calculate_usage(start_time, args, result_content)
+            
+            # Create result using base class helper
+            result = self._create_result(result_content, usage)
+            
+            print(f"[CustomExecutor] Completed execution #{self.execution_count} in {execution_time:.3f}s")
+            
+            return result
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            
+            # Calculate usage for error case
+            usage = self._calculate_usage(start_time, args, None)
+            
+            # Create error result
+            error_result = self._create_result(
+                content={'error': str(e)},
+                usage=usage,
+                warnings=[f"Execution failed: {str(e)}"]
+            )
+            
+            print(f"[CustomExecutor] Failed execution #{self.execution_count}: {str(e)}")
+            
+            return error_result
+
+
+class SimpleCustomExecutor(BaseToolExecutor, IToolExecutor):
+    """
+    Minimal custom executor example.
+    
+    Shows the simplest possible custom executor implementation.
+    Useful when you need complete control over execution flow.
+    """
+    
+    def __init__(self, spec: ToolSpec, custom_handler: Callable[[Dict[str, Any], ToolContext], Awaitable[Any]]):
+        super().__init__(spec)
+        self.handler = custom_handler
+    
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
+        """Execute using custom handler"""
+        import time
+        start_time = time.time()
+        
+        try:
+            # Call custom handler
+            result_content = await self.handler(args, ctx)
+            
+            # Use base class helpers
+            usage = self._calculate_usage(start_time, args, result_content)
+            return self._create_result(result_content, usage)
+            
+        except Exception as e:
+            usage = self._calculate_usage(start_time, args, None)
+            return self._create_result(
+                content={'error': str(e)},
+                usage=usage,
+                warnings=[str(e)]
+            )
 
 
 # ============================================================================
@@ -652,6 +798,196 @@ class TestCustomToolScenario:
         print("\n[PASS] Combined retry + circuit breaker test passed!")
         print(f"   Retry policy handled {result['total_attempts']} attempts")
         print("   Circuit breaker remained closed")
+    
+    async def test_custom_executor_with_logging(self):
+        """Test custom executor with logging and execution tracking."""
+        
+        spec = FunctionToolSpec(
+            id="custom-executor-v1",
+            tool_name="multiply_with_logging",
+            description="Multiply with custom executor",
+            tool_type=ToolType.FUNCTION,
+            parameters=[
+                NumericParameter(name="num1", description="First number", required=True),
+                NumericParameter(name="num2", description="Second number", required=True),
+            ]
+        )
+        
+        ctx = ToolContext(
+            user_id="nagadathg@zenoti.com",
+            session_id="5678",
+            memory=self.memory,
+            metrics=self.metrics,
+            validator=PositiveNumberValidator(),
+            security=EmailBasedSecurity(allowed_email="nagadathg@zenoti.com")
+        )
+        
+        # Use custom executor instead of standard FunctionToolExecutor
+        executor = LoggingFunctionExecutor(spec, self.multiplication_tool_impl)
+        
+        # Execute tool
+        args = {"num1": 4, "num2": 5, "session_id": "5678"}
+        result = await executor.execute(args, ctx)
+        
+        # Assertions
+        assert result.content['product'] == 20
+        assert result.content['call_count'] == 1
+        
+        # Verify custom metadata was added
+        assert '_executor_metadata' in result.content
+        assert result.content['_executor_metadata']['executor_type'] == 'LoggingFunctionExecutor'
+        assert result.content['_executor_metadata']['execution_count'] == 1
+        
+        # Verify execution history was tracked
+        assert len(executor.execution_history) == 1
+        assert executor.execution_count == 1
+        
+        # Execute again to verify tracking
+        result2 = await executor.execute(args, ctx)
+        assert executor.execution_count == 2
+        assert len(executor.execution_history) == 2
+        assert result2.content['_executor_metadata']['execution_count'] == 2
+        
+        print("\n[PASS] Custom executor with logging test passed!")
+        print(f"   Executions tracked: {executor.execution_count}")
+        print(f"   History entries: {len(executor.execution_history)}")
+    
+    async def test_standard_vs_custom_executor_comparison(self):
+        """Compare standard FunctionToolExecutor vs custom LoggingFunctionExecutor."""
+        
+        spec = FunctionToolSpec(
+            id="comparison-v1",
+            tool_name="compare_executors",
+            description="Compare executors",
+            tool_type=ToolType.FUNCTION,
+            parameters=[
+                NumericParameter(name="num1", description="First number", required=True),
+                NumericParameter(name="num2", description="Second number", required=True),
+            ]
+        )
+        
+        ctx = ToolContext(
+            user_id="nagadathg@zenoti.com",
+            session_id="5678",
+            memory=self.memory,
+            metrics=self.metrics,
+            validator=PositiveNumberValidator(),
+            security=EmailBasedSecurity(allowed_email="nagadathg@zenoti.com")
+        )
+        
+        args = {"num1": 6, "num2": 7, "session_id": "5678"}
+        
+        # Test with standard executor
+        standard_executor = FunctionToolExecutor(spec, self.multiplication_tool_impl)
+        standard_result = await standard_executor.execute(args, ctx)
+        
+        # Test with custom executor
+        custom_executor = LoggingFunctionExecutor(spec, self.multiplication_tool_impl)
+        custom_result = await custom_executor.execute(args, ctx)
+        
+        # Both should produce same core result
+        assert standard_result.content['product'] == custom_result.content['product']
+        assert standard_result.content['product'] == 42
+        
+        # Custom executor adds extra metadata
+        assert '_executor_metadata' in custom_result.content
+        assert '_executor_metadata' not in standard_result.content
+        
+        # Both return ToolResult with same structure
+        assert standard_result.return_type == custom_result.return_type
+        assert standard_result.return_target == custom_result.return_target
+        
+        print("\n[PASS] Standard vs custom executor comparison test passed!")
+        print("   Both executors produce same core results")
+        print("   Custom executor adds additional metadata")
+    
+    async def test_simple_custom_executor(self):
+        """Test minimal custom executor implementation."""
+        
+        spec = FunctionToolSpec(
+            id="simple-executor-v1",
+            tool_name="simple_test",
+            description="Test simple custom executor",
+            tool_type=ToolType.FUNCTION,
+            parameters=[
+                NumericParameter(name="value", description="Test value", required=True),
+            ]
+        )
+        
+        ctx = ToolContext(
+            user_id="nagadathg@zenoti.com",
+            session_id="5678",
+            memory=self.memory,
+            metrics=self.metrics
+        )
+        
+        # Define custom handler that receives both args and ctx
+        async def custom_handler(args: Dict[str, Any], ctx: ToolContext) -> Dict[str, Any]:
+            value = args['value']
+            return {
+                'doubled': value * 2,
+                'user': ctx.user_id,
+                'session': ctx.session_id
+            }
+        
+        # Use simple custom executor
+        executor = SimpleCustomExecutor(spec, custom_handler)
+        result = await executor.execute({"value": 10}, ctx)
+        
+        # Verify result
+        assert result.content['doubled'] == 20
+        assert result.content['user'] == "nagadathg@zenoti.com"
+        assert result.content['session'] == "5678"
+        
+        # Verify result structure
+        assert result.usage is not None
+        assert isinstance(result, ToolResult)
+        
+        print("\n[PASS] Simple custom executor test passed!")
+        print(f"   Result: {result.content}")
+    
+    async def test_executor_interface_compliance(self):
+        """Verify custom executors properly implement IToolExecutor interface."""
+        
+        spec = FunctionToolSpec(
+            id="interface-test-v1",
+            tool_name="interface_test",
+            description="Test interface compliance",
+            tool_type=ToolType.FUNCTION,
+            parameters=[
+                NumericParameter(name="x", description="Test param", required=True),
+            ]
+        )
+        
+        ctx = ToolContext(
+            user_id="nagadathg@zenoti.com",
+            session_id="5678",
+            memory=self.memory
+        )
+        
+        # Verify LoggingFunctionExecutor implements IToolExecutor
+        executor1 = LoggingFunctionExecutor(spec, self.multiplication_tool_impl)
+        assert isinstance(executor1, IToolExecutor)
+        assert isinstance(executor1, BaseToolExecutor)
+        
+        # Verify SimpleCustomExecutor implements IToolExecutor
+        async def handler(args, ctx):
+            return {'result': args['x'] * 2}
+        
+        executor2 = SimpleCustomExecutor(spec, handler)
+        assert isinstance(executor2, IToolExecutor)
+        assert isinstance(executor2, BaseToolExecutor)
+        
+        # Both should execute successfully
+        result1 = await executor1.execute({"x": 5, "num1": 5, "num2": 1}, ctx)
+        result2 = await executor2.execute({"x": 5}, ctx)
+        
+        # Both should return ToolResult
+        assert isinstance(result1, ToolResult)
+        assert isinstance(result2, ToolResult)
+        
+        print("\n[PASS] Executor interface compliance test passed!")
+        print("   All custom executors properly implement IToolExecutor")
 
 
 if __name__ == "__main__":
