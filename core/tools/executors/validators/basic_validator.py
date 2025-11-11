@@ -1,17 +1,14 @@
 """
-Validator Implementations for Tools Specification System
+Basic Validator Implementation.
 
-This module provides concrete implementations of the IToolValidator interface,
-including the BasicValidator with comprehensive parameter validation.
+Provides comprehensive parameter validation for tool specifications.
 """
 
 import json
 import re
 from typing import Any, Dict
 
-# Local imports
 from ...spec.tool_types import ToolSpec
-# Tool Parameters
 from ...spec.tool_parameters import (
     ToolParameter,
     StringParameter,
@@ -20,7 +17,6 @@ from ...spec.tool_parameters import (
     ArrayParameter,
     ObjectParameter,
 )
-# Tool Errors
 from ...spec.tool_result import ToolError
 from ...constants import (
     ERROR_VALIDATION,
@@ -28,8 +24,6 @@ from ...constants import (
     PARAMETER_TYPE_NUMBER,
     PARAMETER_TYPE_INTEGER,
     PARAMETER_TYPE_BOOLEAN,
-    # PARAMETER_TYPE_ARRAY,
-    # PARAMETER_TYPE_OBJECT,
     BOOLEAN_TRUE_STRINGS,
     PARAMETER_PY_TYPES,
     MSG_UNKNOWN_PARAMETERS,
@@ -37,13 +31,29 @@ from ...constants import (
     MSG_PARAMETER_FAILED_VALIDATION,
 )
 
-class BasicValidator:
-    """Basic implementation of IToolValidator with comprehensive validation"""
 
+class BasicValidator:
+    """
+    Basic implementation of IValidator with comprehensive validation.
+    
+    Provides validation for:
+    - Unknown parameters
+    - Missing required parameters
+    - Parameter type validation
+    - String constraints (length, pattern, enum)
+    - Numeric constraints (min, max)
+    - Array constraints (min_items, max_items, unique_items)
+    - Boolean validation
+    
+    Usage:
+        validator = BasicValidator()
+        await validator.validate(args, spec)
+    """
+    
     PY_TYPES = PARAMETER_PY_TYPES
 
     async def validate(self, args: Dict[str, Any], spec: ToolSpec) -> None:
-        """Validate tool arguments against the specification"""
+        """Validate tool arguments against the specification."""
         allowed_names = {p.name for p in spec.parameters}
         unknown = set(args.keys()) - allowed_names
         if unknown:
@@ -70,7 +80,7 @@ class BasicValidator:
                     )
 
     def _validate_param(self, value: Any, p: ToolParameter) -> bool:
-        """Validate a single parameter value"""
+        """Validate a single parameter value."""
         # Handle different parameter types
         if isinstance(p, StringParameter):
             return self._validate_string_param(value, p)
@@ -87,7 +97,7 @@ class BasicValidator:
             return True
 
     def _validate_string_param(self, value: Any, p: StringParameter) -> bool:
-        """Validate string parameter"""
+        """Validate string parameter."""
         # Enum validation
         if p.enum is not None and value not in p.enum:
             return False
@@ -117,7 +127,7 @@ class BasicValidator:
         return True
 
     def _validate_numeric_param(self, value: Any, p: NumericParameter) -> bool:
-        """Validate numeric parameter"""
+        """Validate numeric parameter."""
         # Type validation
         if not isinstance(value, (int, float)):
             return False
@@ -133,11 +143,11 @@ class BasicValidator:
         return True
 
     def _validate_boolean_param(self, value: Any, p: BooleanParameter) -> bool:
-        """Validate boolean parameter"""
+        """Validate boolean parameter."""
         return isinstance(value, bool)
 
     def _validate_array_param(self, value: Any, p: ArrayParameter) -> bool:
-        """Validate array parameter"""
+        """Validate array parameter."""
         if not isinstance(value, (list, tuple)):
             return False
 
@@ -158,7 +168,7 @@ class BasicValidator:
         return True
 
     def _validate_object_param(self, value: Any, p: ObjectParameter) -> bool:
-        """Validate object parameter"""
+        """Validate object parameter."""
         if not isinstance(value, dict):
             return False
 
@@ -167,7 +177,7 @@ class BasicValidator:
         return True
 
     def _try_coerce(self, value: Any, target_type: str) -> Any | None:
-        """Attempt to coerce a value to the target type"""
+        """Attempt to coerce a value to the target type."""
         try:
             if target_type == PARAMETER_TYPE_STRING:
                 return str(value)
@@ -184,3 +194,4 @@ class BasicValidator:
         except (ValueError, TypeError):
             return None
         return None
+

@@ -237,6 +237,7 @@ RECENT_RESULTS = 'recent_results'
 IS_OPEN = 'is_open'
 OPENED_AT = 'opened_at'
 CURRENT_THRESHOLD = 'current_threshold'
-FAILURES = 'failures'
-SUCCESSES = 'successes'
-RECENT_RESULTS = 'recent_results'
+
+#Validator constants
+BASIC = "basic"
+UNKNOWN_VALIDATOR_ERROR = "Unknown validator: {VALIDATOR_NAME}. Available: {AVAILABLE_VALIDATORS}"

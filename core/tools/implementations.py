@@ -32,12 +32,9 @@ class NoOpExecutor:
         raise NotImplementedError("NoOpExecutor should be replaced with actual implementation")
 
 
-class NoOpValidator:
-    """No-op implementation of IToolValidator"""
-
-    async def validate(self, args: Dict[str, Any], spec: ToolSpec) -> None:
-        """Validate parameters (no-op implementation)"""
-        pass
+# NoOpValidator moved to core.tools.executors.validators.noop_validator
+# Import it from there if needed:
+# from .executors.validators import NoOpValidator
 
 
 class NoOpSecurity:
