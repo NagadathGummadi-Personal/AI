@@ -44,7 +44,7 @@ from typing import Dict, Any
 import uuid
 
 # Local imports
-from core.tools.executors.executors import (
+from core.tools.executors import (
     FunctionToolExecutor,
     HttpToolExecutor,
     DbToolExecutor

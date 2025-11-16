@@ -24,12 +24,9 @@ from .constants import (
 from .spec.tool_types import ToolSpec
 
 
-class NoOpExecutor:
-    """No-op implementation of IToolExecutor"""
-
-    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
-        """Execute the tool (no-op implementation)"""
-        raise NotImplementedError("NoOpExecutor should be replaced with actual implementation")
+# NoOpExecutor moved to core.tools.executors.noop_executor
+# Import it from there if needed:
+# from .executors import NoOpExecutor
 
 
 # NoOpValidator moved to core.tools.executors.validators.noop_validator
