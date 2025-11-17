@@ -49,11 +49,12 @@ from typing import Any, Dict
 
 # Local imports
 from ..base_executor import BaseToolExecutor
-from ...interfaces.tool_interfaces import IToolExecutor
-from ...spec.tool_types import DbToolSpec
-from ...spec.tool_context import ToolContext
-from ...spec.tool_result import ToolResult
-from ...constants import (
+from ....interfaces.tool_interfaces import IToolExecutor
+from .db_executor import IDbExecutor
+from ....spec.tool_types import DbToolSpec
+from ....spec.tool_context import ToolContext
+from ....spec.tool_result import ToolResult
+from ....constants import (
     LOG_DB_STARTING,
     LOG_DB_COMPLETED,
     LOG_DB_FAILED,
@@ -76,14 +77,14 @@ from ...constants import (
     ERROR,
     DB,
 )
-from ...defaults import (
+from ....defaults import (
     DEFAULT_DB_CONTEXT_DATA,
     DB_DEFAULT_ERROR_STATUS_WARNING,
 )
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
-class BaseDbExecutor(BaseToolExecutor, IToolExecutor):
+class BaseDbExecutor(BaseToolExecutor, IDbExecutor, IToolExecutor):
     """
     Base class for database tool executors.
     
@@ -309,3 +310,5 @@ class BaseDbExecutor(BaseToolExecutor, IToolExecutor):
                 warnings=[DB_DEFAULT_ERROR_STATUS_WARNING(self.spec, str(e))]
             )
             return error_result
+
+

@@ -173,7 +173,10 @@ class DelayedLogger:
 
             # Apply redaction if enabled (assuming logger has redaction_manager)
             if hasattr(self.logger, 'redaction_manager') and self.logger.redaction_manager:
-                message, kwargs = self.logger.redaction_manager.redact(message, **kwargs)
+                message = self.logger.redaction_manager.redact_message(message)
+                # Redact kwargs values if they are strings
+                kwargs = {k: (self.logger.redaction_manager.redact_message(v) if isinstance(v, str) else v) 
+                         for k, v in kwargs.items()}
 
             # Log using the appropriate backend
             if backend == LoggingFormat.JSON.value:

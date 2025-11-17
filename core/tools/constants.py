@@ -231,6 +231,7 @@ CIRCUIT_BREAKER_STATE_OPEN = "open"
 CIRCUIT_BREAKER_STATE_HALF_OPEN = "half_open"
 UNKNOWN_CIRCUIT_BREAKER_POLICY_ERROR = "Unknown circuit breaker policy: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"
 CIRCUIT_BREAKER_OPEN_ERROR = "Circuit breaker is open for {TOOL_NAME}"
+UNKNOWN_DB_EXECUTOR_ERROR = "Unsupported database driver: {DRIVER}. Available drivers: {AVAILABLE_DRIVERS}"
 FAILURES = 'failures'
 SUCCESSES = 'successes'
 RECENT_RESULTS = 'recent_results'

@@ -59,12 +59,13 @@ import asyncio
 from typing import Any, Awaitable, Callable, Dict
 
 # Local imports
-from .base_executor import BaseToolExecutor
-from ..interfaces.tool_interfaces import IToolExecutor
-from ..spec.tool_types import ToolSpec
-from ..spec.tool_context import ToolContext
-from ..spec.tool_result import ToolResult
-from ..constants import (
+from ..base_executor import BaseToolExecutor
+from ....interfaces.tool_interfaces import IToolExecutor
+from .function_executor_interface import IFunctionExecutor
+from ....spec.tool_types import ToolSpec
+from ....spec.tool_context import ToolContext
+from ....spec.tool_result import ToolResult
+from ....constants import (
     LOG_STARTING_EXECUTION,
     LOG_PARAMETERS,
     LOG_VALIDATING,
@@ -88,11 +89,11 @@ from ..constants import (
     ERROR,
     EXECUTION_FAILED,
 )
-from ..defaults import DEFAULT_TOOL_CONTEXT_DATA
+from ....defaults import DEFAULT_TOOL_CONTEXT_DATA
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
-class FunctionToolExecutor(BaseToolExecutor, IToolExecutor):
+class FunctionToolExecutor(BaseToolExecutor, IFunctionExecutor, IToolExecutor):
     """
     Executor for function-based tools.
     

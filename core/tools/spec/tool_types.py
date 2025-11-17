@@ -18,7 +18,7 @@ from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
 
 # Type checking imports
 if TYPE_CHECKING:
-    from ..executors.idempotency.idempotency_key_generator import IIdempotencyKeyGenerator
+    from ..runtimes.idempotency.idempotency_key_generator import IIdempotencyKeyGenerator
 
 class ToolSpec(BaseModel):
     """

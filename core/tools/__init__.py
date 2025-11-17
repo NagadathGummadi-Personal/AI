@@ -50,12 +50,12 @@ from .interfaces import (
 )
 
 # Implementations / executors / validators
-from .executors.validators import BasicValidator
-from .executors import (
+from .runtimes.validators import BasicValidator
+from .runtimes.executors import (
     BaseToolExecutor,
     FunctionToolExecutor,
     HttpToolExecutor,
-    DbToolExecutor,
+    ExecutorFactory,
 )
 
 __all__ = [
@@ -90,5 +90,5 @@ __all__ = [
     "BaseToolExecutor",
     "FunctionToolExecutor",
     "HttpToolExecutor",
-    "DbToolExecutor"
+    "ExecutorFactory",
 ]

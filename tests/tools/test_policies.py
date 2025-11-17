@@ -34,7 +34,7 @@ import asyncio
 import time
 
 # Local imports
-from core.tools.executors.policies import (
+from core.tools.runtimes.policies import (
     ICircuitBreakerPolicy,
     StandardCircuitBreakerPolicy,
     AdaptiveCircuitBreakerPolicy,
@@ -49,7 +49,7 @@ from core.tools.executors.policies import (
 )
 from core.tools.spec.tool_types import FunctionToolSpec
 from core.tools.spec.tool_context import ToolContext
-from core.tools.executors.function_executor import FunctionToolExecutor
+from core.tools.runtimes.executors import FunctionToolExecutor
 from core.tools.enum import ToolType
 
 
@@ -554,7 +554,7 @@ class TestPolicyIntegration:
     
     def test_tool_spec_with_all_policies(self):
         """Test tool spec with all policies configured."""
-        from core.tools.executors.idempotency import FieldBasedIdempotencyKeyGenerator
+        from core.tools.runtimes.idempotency import FieldBasedIdempotencyKeyGenerator
         
         spec = FunctionToolSpec(
             id="full-policy-tool",
@@ -761,7 +761,7 @@ class TestCombinedPolicies:
     @pytest.mark.asyncio
     async def test_all_policies_together(self):
         """Test all policies (idempotency, circuit breaker, retry) together."""
-        from core.tools.executors.idempotency import DefaultIdempotencyKeyGenerator
+        from core.tools.runtimes.idempotency import DefaultIdempotencyKeyGenerator
         from tests.tools.mocks import MockMemory
         
         # Create policies

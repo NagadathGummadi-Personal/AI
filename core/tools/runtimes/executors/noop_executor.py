@@ -6,9 +6,9 @@ Placeholder executor for development/testing.
 
 from typing import Any, Dict
 
-from ..spec.tool_types import ToolSpec
-from ..spec.tool_context import ToolContext
-from ..spec.tool_result import ToolResult
+from ...spec.tool_types import ToolSpec
+from ...spec.tool_context import ToolContext
+from ...spec.tool_result import ToolResult
 
 
 class NoOpExecutor:

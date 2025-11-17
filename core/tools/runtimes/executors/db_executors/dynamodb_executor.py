@@ -24,22 +24,23 @@ Supported Operations:
 - delete_item: Delete an item
 
 Usage:
-    from core.tools.executors.db import DynamoDBExecutor
-    from core.tools.spec.tool_types import DbToolSpec
+    from core.tools.executors.db_executors import DynamoDBExecutor
+    from core.tools.spec.tool_types import DynamoDbToolSpec
     
-    spec = DbToolSpec(
+    spec = DynamoDbToolSpec(
         id="dynamodb-tool-v1",
         tool_name="add_item",
         description="Add item to DynamoDB",
-        driver="dynamodb",
-        database="my-table",
-        # ... other config
+        region="us-west-2",
+        table_name="my-table",
+        parameters=[
+            ObjectParameter(name="item", description="Item to add", required=True)
+        ]
     )
     
     executor = DynamoDBExecutor(spec)
     result = await executor.execute({
         'operation': 'put_item',
-        'table_name': 'my-table',
         'item': {'id': '123', 'name': 'Test', 'price': 99.99}
     }, ctx)
 
@@ -53,8 +54,8 @@ from typing import Any, Dict
 
 # Local imports
 from .base_db_executor import BaseDbExecutor
-from ...spec.tool_types import DbToolSpec
-from ...spec.tool_context import ToolContext
+from ....spec.tool_types import DbToolSpec
+from ....spec.tool_context import ToolContext
 from ..db_strategies import DbStrategyFactory
 
 
@@ -77,21 +78,18 @@ class DynamoDBExecutor(BaseDbExecutor):
         # Put item
         result = await executor.execute({
             'operation': 'put_item',
-            'table_name': 'users',
             'item': {'id': '123', 'name': 'John', 'age': 30}
         }, ctx)
         
         # Get item
         result = await executor.execute({
             'operation': 'get_item',
-            'table_name': 'users',
             'key': {'id': '123'}
         }, ctx)
         
         # Query
         result = await executor.execute({
             'operation': 'query',
-            'table_name': 'users',
             'query_params': {
                 'KeyConditionExpression': 'id = :id',
                 'ExpressionAttributeValues': {':id': '123'}
@@ -125,12 +123,12 @@ class DynamoDBExecutor(BaseDbExecutor):
         Args:
             args: Operation arguments including:
                 - operation: 'put_item', 'get_item', 'query', 'scan', etc.
-                - table_name: DynamoDB table name (optional, uses spec.database)
+                - table_name: DynamoDB table name (optional, uses spec.table_name)
                 - item: Item data for put_item
                 - key: Key for get_item/delete_item
                 - query_params: Parameters for query operation
                 - scan_params: Parameters for scan operation
-                - region: AWS region (optional, defaults to 'us-west-2')
+                - region: AWS region (optional, defaults to spec.region)
             ctx: Tool execution context
             timeout: Optional timeout in seconds
             
@@ -155,3 +153,5 @@ class DynamoDBExecutor(BaseDbExecutor):
             }
         """
         return await self.strategy.execute_operation(args, self.spec, timeout)
+
+

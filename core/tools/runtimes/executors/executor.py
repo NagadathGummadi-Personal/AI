@@ -8,8 +8,8 @@ from typing import Protocol, Dict, Any, runtime_checkable, TYPE_CHECKING
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
-    from ..spec.tool_result import ToolResult
-    from ..spec.tool_context import ToolContext
+    from ...spec.tool_result import ToolResult
+    from ...spec.tool_context import ToolContext
 
 
 @runtime_checkable

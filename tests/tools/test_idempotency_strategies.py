@@ -23,7 +23,7 @@ import pytest
 from typing import Dict, Any
 
 # Local imports
-from core.tools.executors.idempotency import (
+from core.tools.runtimes.idempotency import (
     IIdempotencyKeyGenerator,
     DefaultIdempotencyKeyGenerator,
     FieldBasedIdempotencyKeyGenerator,
@@ -409,7 +409,7 @@ class TestIntegration:
     
     def test_spec_without_generator_uses_default(self):
         """Test that spec without generator defaults to default strategy."""
-        from core.tools.executors.base_executor import BaseToolExecutor
+        from core.tools.runtimes.executors import BaseToolExecutor
         
         spec = FunctionToolSpec(
             id="default-tool-v1",

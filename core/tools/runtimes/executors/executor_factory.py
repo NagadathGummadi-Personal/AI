@@ -7,12 +7,12 @@ Provides a centralized way to create executors based on tool specifications.
 from typing import Union, Dict, Type
 
 from .base_executor import BaseToolExecutor
-from .function_executor import FunctionToolExecutor
-from .http_executor import HttpToolExecutor
-from .db_executor import DbToolExecutor
+from .function_executors import FunctionToolExecutor
+from .http_executors import HttpToolExecutor
+from .db_executors import DbExecutorFactory
 from .noop_executor import NoOpExecutor
-from ..spec.tool_types import ToolSpec, FunctionToolSpec, HttpToolSpec, DbToolSpec
-from ..enum import ToolType
+from ...spec.tool_types import ToolSpec, FunctionToolSpec, HttpToolSpec, DbToolSpec
+from ...enum import ToolType
 
 
 class ExecutorFactory:
@@ -22,13 +22,28 @@ class ExecutorFactory:
     The factory automatically selects the appropriate executor type based on
     the tool specification's type or class.
     
+    Architecture:
+    =============
+    This factory integrates with the modular executor structure:
+    - FunctionToolExecutor from function_executors/
+    - HttpToolExecutor from http_executors/
+    - DbExecutorFactory from db_executors/ (for database executors)
+    
     Usage:
         # Create executor from spec
         spec = FunctionToolSpec(...)
         executor = ExecutorFactory.create_executor(spec, my_function)
         
-        # Or use tool type
-        executor = ExecutorFactory.get_executor_for_type(ToolType.HTTP)
+        # Database executor (uses DbExecutorFactory internally)
+        spec = DynamoDbToolSpec(driver="dynamodb", ...)
+        executor = ExecutorFactory.create_executor(spec)
+        
+        # HTTP executor
+        spec = HttpToolSpec(...)
+        executor = ExecutorFactory.create_executor(spec)
+        
+        # Register custom executor
+        ExecutorFactory.register(ToolType.CUSTOM, CustomExecutor)
     """
     
     @classmethod
@@ -49,16 +64,36 @@ class ExecutorFactory:
             
         Raises:
             ValueError: If tool type is not supported or func is missing for function tools
+        
+        Example:
+            # Function executor
+            async def my_func(args):
+                return {'result': args['x'] + args['y']}
+            
+            spec = FunctionToolSpec(...)
+            executor = ExecutorFactory.create_executor(spec, my_func)
+            
+            # Database executor (automatically selects DynamoDBExecutor, etc.)
+            spec = DynamoDbToolSpec(driver="dynamodb", ...)
+            executor = ExecutorFactory.create_executor(spec)
+            
+            # HTTP executor
+            spec = HttpToolSpec(...)
+            executor = ExecutorFactory.create_executor(spec)
         """
         # Determine executor type based on spec class or tool_type
         if isinstance(spec, FunctionToolSpec) or spec.tool_type == ToolType.FUNCTION:
             if func is None:
                 raise ValueError("Function is required for FunctionToolSpec")
             return FunctionToolExecutor(spec, func)
+        
         elif isinstance(spec, HttpToolSpec) or spec.tool_type == ToolType.HTTP:
             return HttpToolExecutor(spec)
+        
         elif isinstance(spec, DbToolSpec) or spec.tool_type == ToolType.DB:
-            return DbToolExecutor(spec)
+            # Use DbExecutorFactory to get the appropriate database executor
+            return DbExecutorFactory.get_executor(spec)
+        
         else:
             raise ValueError(
                 f"Unsupported tool type: {spec.tool_type}. "
@@ -69,7 +104,7 @@ class ExecutorFactory:
     _executor_map: Dict[ToolType, Type[BaseToolExecutor]] = {
         ToolType.FUNCTION: FunctionToolExecutor,
         ToolType.HTTP: HttpToolExecutor,
-        ToolType.DB: DbToolExecutor,
+        # Note: DB executor type uses DbExecutorFactory, not a single class
     }
     
     @classmethod
@@ -85,7 +120,15 @@ class ExecutorFactory:
             
         Raises:
             ValueError: If tool type is not supported
+        
+        Note:
+            For DB tool type, returns None since databases use DbExecutorFactory
+            to select the appropriate executor class based on the driver.
         """
+        if tool_type == ToolType.DB:
+            # DB executors are selected via DbExecutorFactory based on driver
+            return None
+        
         executor_class = cls._executor_map.get(tool_type)
         
         if not executor_class:
@@ -106,12 +149,40 @@ class ExecutorFactory:
             executor_class: Executor class to use for this tool type
         
         Example:
-            class CustomExecutor(BaseToolExecutor):
-                async def execute(self, args, ctx):
-                    # Custom logic
-                    pass
+            from core.tools.runtimes.executors import BaseToolExecutor, ExecutorFactory
+            from core.tools.enum import ToolType
             
-            ExecutorFactory.register(ToolType.CUSTOM, CustomExecutor)
+            class GraphQLExecutor(BaseToolExecutor):
+                async def execute(self, args, ctx):
+                    # Custom GraphQL execution logic
+                    return ToolResult(content=result, tool_name=self.spec.tool_name)
+            
+            # Register custom executor
+            ExecutorFactory.register(ToolType.GRAPHQL, GraphQLExecutor)
+            
+            # Now it can be used
+            spec = GraphQLToolSpec(tool_type=ToolType.GRAPHQL, ...)
+            executor = ExecutorFactory.create_executor(spec)
+        
+        Note:
+            For database executors, use DbExecutorFactory.register() instead:
+                from core.tools.runtimes.executors.db_executors import DbExecutorFactory
+                DbExecutorFactory.register('mongodb', MongoDBExecutor)
         """
         cls._executor_map[tool_type] = executor_class
+    
+    @classmethod
+    def list_tool_types(cls) -> list[ToolType]:
+        """
+        List all registered tool types.
+        
+        Returns:
+            List of registered tool types
+        
+        Example:
+            types = ExecutorFactory.list_tool_types()
+            print(f"Available types: {types}")
+        """
+        return list(cls._executor_map.keys())
+
 

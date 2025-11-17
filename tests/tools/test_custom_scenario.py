@@ -23,12 +23,12 @@ from core.tools.spec import (
 )
 from core.tools.interfaces import IToolSecurity, IToolValidator, IToolExecutor
 from core.tools.spec.tool_types import ToolSpec
-from core.tools.executors import FunctionToolExecutor, BaseToolExecutor
+from core.tools.runtimes.executors import FunctionToolExecutor, BaseToolExecutor
 from core.tools.spec.tool_parameters import NumericParameter
 from core.tools.spec.tool_result import ToolResult
 from core.tools.enum import ToolType
 from tests.tools.mocks import MockMemory, MockMetrics
-from core.tools.executors.policies import (
+from core.tools.runtimes.policies import (
     FixedRetryPolicy,
     ExponentialBackoffRetryPolicy,
     StandardCircuitBreakerPolicy

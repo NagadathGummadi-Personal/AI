@@ -44,11 +44,11 @@ from typing import Dict, Any
 import uuid
 
 # Local imports
-from core.tools.executors import (
+from core.tools.runtimes.executors import (
     FunctionToolExecutor,
     HttpToolExecutor,
-    DbToolExecutor
 )
+from core.tools.runtimes.executors.db_executors import DbExecutorFactory
 from core.tools.spec.tool_context import ToolContext
 from core.tools.spec.tool_result import ToolError
 from tests.tools.mocks import (
@@ -472,7 +472,7 @@ class TestDynamoDBTool:
     async def test_dynamodb_put_item_success(self, base_context):
         """Test successful DynamoDB put_item operation"""
         spec = create_dynamodb_tool_spec()
-        executor = DbToolExecutor(spec)
+        executor = DbExecutorFactory.get_executor(spec)
         
         args = {
             'operation': 'put_item',
@@ -506,7 +506,7 @@ class TestDynamoDBTool:
     async def test_dynamodb_put_item_with_all_context(self, base_context):
         """Test DynamoDB with full context including all services"""
         spec = create_dynamodb_tool_spec()
-        executor = DbToolExecutor(spec)
+        executor = DbExecutorFactory.get_executor(spec)
         
         item_data = {
             'id': f'item-{uuid.uuid4()}',
@@ -549,7 +549,7 @@ class TestDynamoDBTool:
         spec.idempotency.persist_result = True
         spec.idempotency.key_fields = ['table_name', 'item']
         
-        executor = DbToolExecutor(spec)
+        executor = DbExecutorFactory.get_executor(spec)
         
         item_data = {
             'id': 'idempotent-item-001',
@@ -578,7 +578,7 @@ class TestDynamoDBTool:
     async def test_dynamodb_minimal_context(self, minimal_context):
         """Test DynamoDB tool with minimal context"""
         spec = create_dynamodb_tool_spec()
-        executor = DbToolExecutor(spec)
+        executor = DbExecutorFactory.get_executor(spec)
         
         args = {
             'operation': 'put_item',
@@ -598,7 +598,7 @@ class TestDynamoDBTool:
     async def test_dynamodb_multiple_items(self, base_context):
         """Test adding multiple items to DynamoDB"""
         spec = create_dynamodb_tool_spec()
-        executor = DbToolExecutor(spec)
+        executor = DbExecutorFactory.get_executor(spec)
         
         items = [
             {'id': f'item-{i}', 'name': f'Item {i}', 'price': i * 10.0}
@@ -667,7 +667,7 @@ class TestToolIntegration:
         
         # 3. DynamoDB tool
         db_spec = create_dynamodb_tool_spec()
-        db_executor = DbToolExecutor(db_spec)
+        db_executor = DbExecutorFactory.get_executor(db_spec)
         
         db_result = await db_executor.execute(
             {

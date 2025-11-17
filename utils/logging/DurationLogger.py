@@ -253,7 +253,6 @@ def log_duration(logger: Any, operation_name: str, **kwargs):
         yield
 
 
-@contextmanager
 def time_function(logger: Any, **kwargs):
     """
     Decorator factory for timing functions.

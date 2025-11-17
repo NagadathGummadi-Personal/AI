@@ -40,13 +40,13 @@ import json
 from typing import Any, Dict, List, Optional
 
 # Local imports
-from ..spec.tool_types import ToolSpec
-from ..spec.tool_context import ToolContext, ToolUsage
-from ..spec.tool_result import ToolResult
-from ..constants import UTF_8
-from .usage_calculators.token_calculators import calculate_tokens_in, calculate_tokens_out
-from .usage_calculators.cost_calculator import calculate_cost_usd
-from .usage_calculators.generic_calculator import (
+from ...spec.tool_types import ToolSpec
+from ...spec.tool_context import ToolContext, ToolUsage
+from ...spec.tool_result import ToolResult
+from ...constants import UTF_8
+from ..usage_calculators.token_calculators import calculate_tokens_in, calculate_tokens_out
+from ..usage_calculators.cost_calculator import calculate_cost_usd
+from ..usage_calculators.generic_calculator import (
     calculate_attempts,
     calculate_retries,
     check_cached_hit,
@@ -106,7 +106,7 @@ class BaseToolExecutor:
         
         Example:
             # Using custom generator
-            from core.tools.executors.idempotency import FieldBasedIdempotencyKeyGenerator
+            from core.tools.runtimes.idempotency import FieldBasedIdempotencyKeyGenerator
             spec.idempotency_key_generator = FieldBasedIdempotencyKeyGenerator()
         """
         # Use custom generator if specified, otherwise use default
@@ -114,7 +114,7 @@ class BaseToolExecutor:
             return self.spec.idempotency_key_generator.generate_key(args, ctx, self.spec)
         
         # Default implementation (for backward compatibility)
-        from .idempotency.default_idempotency_key_gen import DefaultIdempotencyKeyGenerator
+        from ..idempotency.default_idempotency_key_gen import DefaultIdempotencyKeyGenerator
         default_generator = DefaultIdempotencyKeyGenerator()
         return default_generator.generate_key(args, ctx, self.spec)
 
