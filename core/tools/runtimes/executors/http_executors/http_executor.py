@@ -15,6 +15,7 @@ from urllib.request import Request, urlopen
 
 # Local imports
 from ..base_executor import BaseToolExecutor
+from .base_http_executor import BaseHttpExecutor
 from ....interfaces.tool_interfaces import IToolExecutor
 from .http_executor_interface import IHttpExecutor
 from ....spec.tool_types import HttpToolSpec
@@ -48,7 +49,7 @@ from ....defaults import DEFAULT_HTTP_CONTEXT_DATA, HTTP_DEFAULT_ERROR_STATUS_WA
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
-class HttpToolExecutor(BaseToolExecutor, IHttpExecutor, IToolExecutor):
+class HttpToolExecutor(BaseHttpExecutor, IHttpExecutor, IToolExecutor):
     """
     Executor for HTTP-based tools.
     

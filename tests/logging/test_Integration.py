@@ -556,13 +556,14 @@ class TestErrorScenarios:
                 # Should fall back to immediate logging or handle error
                 # (Implementation-specific behavior)
         finally:
-            # Cleanup
-            try:
-                delayed_logger.shutdown()
-                if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
-                    delayed_logger._worker_thread.join(timeout=2.0)
-            except Exception:
-                pass
+            pass
+        # Cleanup
+        try:
+            delayed_logger.shutdown()
+            if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
+                delayed_logger._worker_thread.join(timeout=2.0)
+        except Exception:
+            pass
 
     def test_config_manager_handles_invalid_config(self, config_manager):
         """Test ConfigManager handles invalid configuration gracefully."""
@@ -630,18 +631,19 @@ class TestPerformanceScenarios:
                 # Verify all logging occurred
                 assert result1 == "fast"
                 assert mock_log.call_count >= 2  # At least direct + flushed delayed
-                
-                # Clear mock to free memory
+            
+                    # Clear mock to free memory
                 mock_log.reset_mock()
         finally:
             # Cleanup
-            try:
-                delayed_logger.shutdown()
+            pass
+        try:
+            delayed_logger.shutdown()
                 # Wait for thread to finish
-                if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
-                    delayed_logger._worker_thread.join(timeout=2.0)
-            except Exception:
-                pass
+            if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
+                delayed_logger._worker_thread.join(timeout=2.0)
+        except Exception:
+            pass
 
     def test_memory_efficient_configuration(self, config_manager):
         """Test that configuration loading is memory efficient."""

@@ -90,10 +90,14 @@ Note:
 """
 
 from .http_executor_interface import IHttpExecutor
+from .base_http_executor import BaseHttpExecutor
+from .http_executor_factory import HttpExecutorFactory
 from .http_executor import HttpToolExecutor
 
 __all__ = [
     "IHttpExecutor",
+    "BaseHttpExecutor",
+    "HttpExecutorFactory",
     "HttpToolExecutor",
 ]
 

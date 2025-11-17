@@ -85,10 +85,14 @@ Note:
 """
 
 from .function_executor_interface import IFunctionExecutor
+from .base_function_executor import BaseFunctionExecutor
+from .function_executor_factory import FunctionExecutorFactory
 from .function_executor import FunctionToolExecutor
 
 __all__ = [
     "IFunctionExecutor",
+    "BaseFunctionExecutor",
+    "FunctionExecutorFactory",
     "FunctionToolExecutor",
 ]
 

@@ -60,6 +60,7 @@ from typing import Any, Awaitable, Callable, Dict
 
 # Local imports
 from ..base_executor import BaseToolExecutor
+from .base_function_executor import BaseFunctionExecutor
 from ....interfaces.tool_interfaces import IToolExecutor
 from .function_executor_interface import IFunctionExecutor
 from ....spec.tool_types import ToolSpec
@@ -93,7 +94,7 @@ from ....defaults import DEFAULT_TOOL_CONTEXT_DATA
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
-class FunctionToolExecutor(BaseToolExecutor, IFunctionExecutor, IToolExecutor):
+class FunctionToolExecutor(BaseFunctionExecutor, IFunctionExecutor, IToolExecutor):
     """
     Executor for function-based tools.
     
@@ -135,8 +136,7 @@ class FunctionToolExecutor(BaseToolExecutor, IFunctionExecutor, IToolExecutor):
             spec: Tool specification
             func: Async function to execute (must accept Dict[str, Any])
         """
-        super().__init__(spec)
-        self.func = func
+        super().__init__(spec, func)
         self.logger = LoggerAdaptor.get_logger(f"{TOOL}.{spec.tool_name}")
     
     async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:

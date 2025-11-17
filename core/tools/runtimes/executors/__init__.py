@@ -95,10 +95,14 @@ from .db_executors import (
 )
 from .function_executors import (
     IFunctionExecutor,
+    BaseFunctionExecutor,
+    FunctionExecutorFactory,
     FunctionToolExecutor,
 )
 from .http_executors import (
     IHttpExecutor,
+    BaseHttpExecutor,
+    HttpExecutorFactory,
     HttpToolExecutor,
 )
 
@@ -115,9 +119,13 @@ __all__ = [
     "DynamoDBExecutor",
     # Function executors
     "IFunctionExecutor",
+    "BaseFunctionExecutor",
+    "FunctionExecutorFactory",
     "FunctionToolExecutor",
     # HTTP executors
     "IHttpExecutor",
+    "BaseHttpExecutor",
+    "HttpExecutorFactory",
     "HttpToolExecutor",
 ]
 

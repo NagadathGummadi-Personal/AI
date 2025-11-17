@@ -360,7 +360,7 @@ class TestDelayedLoggerThreading:
             # Reset the mock to clear any previous calls
             mock_logger._log_standard.reset_mock()
 
-            # Process the queue
+                # Process the queue
             dl.flush_delayed_logs()
 
             # Verify the queue is now empty
