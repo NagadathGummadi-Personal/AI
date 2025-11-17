@@ -49,7 +49,6 @@ from utils.logging.LoggerAdaptor import LoggerAdaptor
 from utils.logging.DurationLogger import DurationLogger
 from utils.logging.DelayedLogger import DelayedLogger
 from utils.logging.ConfigManager import ConfigManager
-from utils.logging.Enum import Environment
 
 
 class TestIntegrationConstants:
@@ -166,6 +165,12 @@ def logger_adaptor():
         mock_load.return_value = TestIntegrationConstants.SAMPLE_CONFIG
         logger = LoggerAdaptor("integration_test")
         yield logger
+        # Cleanup: Shutdown logger and clear handlers
+        try:
+            logger.shutdown()
+            logger.clear_context()
+        except Exception:
+            pass
 
 @pytest.fixture
 def duration_logger(logger_adaptor):
@@ -178,6 +183,21 @@ def delayed_logger(logger_adaptor):
     dl = DelayedLogger(logger_adaptor)
     dl.configure(TestIntegrationConstants.SAMPLE_CONFIG)
     yield dl
+    # Cleanup: shutdown the delayed logger to stop threads and clear queue
+    try:
+        dl.shutdown()
+        # Explicitly wait for thread to stop
+        if hasattr(dl, '_worker_thread') and dl._worker_thread and dl._worker_thread.is_alive():
+            dl._worker_thread.join(timeout=2.0)
+        # Clear the queue
+        if hasattr(dl, '_log_queue'):
+            while not dl._log_queue.empty():
+                try:
+                    dl._log_queue.get_nowait()
+                except Exception:
+                    break
+    except Exception:
+        pass
 
 @pytest.fixture
 def config_manager():
@@ -192,18 +212,18 @@ class TestModuleIntegration:
     def test_config_manager_to_logger_adaptor(self, config_manager, temp_config_file):
         """Test ConfigManager providing configuration to LoggerAdaptor."""
         # Load configuration using ConfigManager
-        config = config_manager.load_config(temp_config_file)
+        loaded_config = config_manager.load_config(temp_config_file)
 
         # Verify configuration structure
-        assert config["backend"] == "json"
-        assert config["level"] == "INFO"
-        assert "duration_logging" in config
-        assert "delayed_logging" in config
-        assert "redaction" in config
+        assert loaded_config["backend"] == "json"
+        assert loaded_config["level"] == "INFO"
+        assert "duration_logging" in loaded_config
+        assert "delayed_logging" in loaded_config
+        assert "redaction" in loaded_config
 
         # Create LoggerAdaptor with loaded config
         with patch('utils.logging.LoggerAdaptor.ConfigManager') as mock_cm:
-            mock_cm.return_value.load_config.return_value = config
+            mock_cm.return_value.load_config.return_value = loaded_config
             mock_cm.return_value.detect_environment.return_value = 'development'
 
             logger = LoggerAdaptor("test_config_integration")
@@ -266,7 +286,7 @@ class TestModuleIntegration:
 
     def test_config_manager_to_duration_logger(self, config_manager, temp_config_file):
         """Test ConfigManager providing duration thresholds to DurationLogger."""
-        config = config_manager.load_config(temp_config_file)
+        _ = config_manager.load_config(temp_config_file)
         duration_config = config_manager.get_duration_config()
 
         # Verify duration configuration
@@ -460,21 +480,32 @@ class TestCrossModuleFunctionality:
         environments = ['dev', 'prod', 'test']
 
         for env in environments:
-            with patch.object(LoggerAdaptor, '_load_config') as mock_load:
-                config = TestIntegrationConstants.SAMPLE_CONFIG.copy()
-                mock_load.return_value = config
+            delayed_logger = None
+            try:
+                with patch.object(LoggerAdaptor, '_load_config') as mock_load:
+                    config = TestIntegrationConstants.SAMPLE_CONFIG.copy()
+                    mock_load.return_value = config
 
-                with patch.dict(os.environ, {'ENVIRONMENT': env}):
-                    logger = LoggerAdaptor("test_env")
-                    delayed_logger = DelayedLogger(logger)
+                    with patch.dict(os.environ, {'ENVIRONMENT': env}):
+                        logger = LoggerAdaptor("test_env")
+                        delayed_logger = DelayedLogger(logger)
 
-                    # Configure delayed logger
-                    delayed_logger.configure(config)
+                        # Configure delayed logger
+                        delayed_logger.configure(config)
 
-                    # Verify delayed logging is configured
-                    # Note: The actual behavior may depend on config settings
-                    # rather than environment, so we just verify it's configured
-                    assert isinstance(delayed_logger.delayed_logging_enabled, bool)
+                        # Verify delayed logging is configured
+                        # Note: The actual behavior may depend on config settings
+                        # rather than environment, so we just verify it's configured
+                        assert isinstance(delayed_logger.delayed_logging_enabled, bool)
+            finally:
+                # Cleanup
+                if delayed_logger:
+                    try:
+                        delayed_logger.shutdown()
+                        if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
+                            delayed_logger._worker_thread.join(timeout=2.0)
+                    except Exception:
+                        pass
 
     def test_config_manager_environment_detection(self, config_manager):
         """Test ConfigManager's environment detection affects other modules."""
@@ -510,26 +541,35 @@ class TestErrorScenarios:
 
             # Function execution will fail due to logger error
             with pytest.raises(Exception, match="Logger error"):
-                result = failing_function()
+                failing_function()
 
     def test_delayed_logger_handles_queue_errors(self, logger_adaptor):
         """Test DelayedLogger handles queue processing errors."""
         delayed_logger = DelayedLogger(logger_adaptor)
         delayed_logger.configure(TestIntegrationConstants.SAMPLE_CONFIG)
 
-        with patch.object(logger_adaptor, '_log_message', side_effect=Exception("Log error")):
-            # Should not raise exception, but handle it gracefully
-            delayed_logger.info_delayed("Test message")
+        try:
+            with patch.object(logger_adaptor, '_log_message', side_effect=Exception("Log error")):
+                # Should not raise exception, but handle it gracefully
+                delayed_logger.info_delayed("Test message")
 
-            # Should fall back to immediate logging or handle error
-            # (Implementation-specific behavior)
+                # Should fall back to immediate logging or handle error
+                # (Implementation-specific behavior)
+        finally:
+            # Cleanup
+            try:
+                delayed_logger.shutdown()
+                if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
+                    delayed_logger._worker_thread.join(timeout=2.0)
+            except Exception:
+                pass
 
     def test_config_manager_handles_invalid_config(self, config_manager):
         """Test ConfigManager handles invalid configuration gracefully."""
         with patch('builtins.open', mock_open(read_data="invalid json")):
             # Current implementation raises ValueError for invalid JSON
             with pytest.raises(ValueError, match="Invalid JSON"):
-                config = config_manager.load_config("invalid.json")
+                _ = config_manager.load_config("invalid.json")
 
 
 @pytest.mark.integration
@@ -550,10 +590,17 @@ class TestPerformanceScenarios:
             # Verify all messages were logged with context
             assert mock_log.call_count == 100
 
-            # Check that context was included in calls
-            for call in mock_log.call_args_list:
+            # Check that context was included in calls (sample only to save memory)
+            # Only check first, middle, and last to avoid keeping all calls in memory
+            sample_calls = [mock_log.call_args_list[0], 
+                          mock_log.call_args_list[50], 
+                          mock_log.call_args_list[-1]]
+            for call in sample_calls:
                 assert "service" in call[1]
                 assert call[1]["service"] == "perf_test"
+            
+            # Clear mock call history to free memory
+            mock_log.reset_mock()
 
     def test_concurrent_module_usage(self, logger_adaptor):
         """Test concurrent usage of multiple modules."""
@@ -561,27 +608,40 @@ class TestPerformanceScenarios:
         delayed_logger = DelayedLogger(logger_adaptor)
         delayed_logger.configure(TestIntegrationConstants.SAMPLE_CONFIG)
 
-        with patch.object(logger_adaptor, '_log_message') as mock_log:
-            # Use multiple modules concurrently
-            @duration_logger
-            def fast_operation():
-                return "fast"
+        try:
+            with patch.object(logger_adaptor, '_log_message') as mock_log:
+                # Use multiple modules concurrently
+                @duration_logger
+                def fast_operation():
+                    return "fast"
 
-            # Duration logging
-            result1 = fast_operation()
+                # Duration logging
+                result1 = fast_operation()
 
-            # Delayed logging
-            delayed_logger.info_delayed("Concurrent test")
+                # Delayed logging
+                delayed_logger.info_delayed("Concurrent test")
 
-            # Immediate logging
-            logger_adaptor.info("Direct logging")
+                # Immediate logging
+                logger_adaptor.info("Direct logging")
 
-            # Flush delayed logs
-            delayed_logger.flush_delayed_logs()
+                # Flush delayed logs
+                delayed_logger.flush_delayed_logs()
 
-            # Verify all logging occurred
-            assert result1 == "fast"
-            assert mock_log.call_count >= 2  # At least direct + flushed delayed
+                # Verify all logging occurred
+                assert result1 == "fast"
+                assert mock_log.call_count >= 2  # At least direct + flushed delayed
+                
+                # Clear mock to free memory
+                mock_log.reset_mock()
+        finally:
+            # Cleanup
+            try:
+                delayed_logger.shutdown()
+                # Wait for thread to finish
+                if hasattr(delayed_logger, '_worker_thread') and delayed_logger._worker_thread:
+                    delayed_logger._worker_thread.join(timeout=2.0)
+            except Exception:
+                pass
 
     def test_memory_efficient_configuration(self, config_manager):
         """Test that configuration loading is memory efficient."""

@@ -45,7 +45,23 @@ class TestDelayedLogger:
     @pytest.fixture
     def delayed_logger(self, mock_logger):
         """Provide a DelayedLogger instance for testing."""
-        return DelayedLogger(mock_logger)
+        dl = DelayedLogger(mock_logger)
+        yield dl
+        # Cleanup: shutdown the delayed logger to stop threads and clear queue
+        try:
+            dl.shutdown()
+            # Explicitly wait for thread to stop
+            if hasattr(dl, '_worker_thread') and dl._worker_thread and dl._worker_thread.is_alive():
+                dl._worker_thread.join(timeout=2.0)
+            # Clear the queue
+            if hasattr(dl, '_log_queue'):
+                while not dl._log_queue.empty():
+                    try:
+                        dl._log_queue.get_nowait()
+                    except Exception:
+                        break
+        except Exception:
+            pass
 
     def test_delayed_logger_initialization(self, mock_logger):
         """Test DelayedLogger initialization."""
@@ -323,22 +339,49 @@ class TestDelayedLoggerThreading:
         dl.delayed_logging_enabled = True
         dl._initialize_queue()  # Initialize the queue
 
-        # Mock the queue and processing
-        with patch.object(dl, '_log_queue') as mock_queue:
-            with patch.object(dl, '_process_delayed_log_entry') as mock_process:
-                # Simulate adding an entry
-                log_entry = {
-                    'level': 'INFO',
-                    'message': 'Test message',
-                    'kwargs': {'user_id': '123'},
-                    'backend': 'standard'
-                }
+        try:
+            # Configure the mock logger to not have redaction (to avoid mock complications)
+            mock_logger.redaction_manager = None
+            
+            # Create a real log entry
+            log_entry = {
+                'level': 'INFO',
+                'message': 'Test message',
+                'kwargs': {'user_id': '123'},
+                'backend': 'standard'
+            }
 
-                # This would normally be added by _log_message_delayed
-                dl._log_queue.put(log_entry)
+            # Add entry to the REAL queue (not mocked)
+            dl._log_queue.put(log_entry)
+            
+            # Verify the queue has one item
+            assert dl._log_queue.qsize() == 1
 
-                # Process the queue
-                dl.flush_delayed_logs()
+            # Reset the mock to clear any previous calls
+            mock_logger._log_standard.reset_mock()
 
-                # The log entry should be processed
-                assert True  # If we get here without error, the test passed
+            # Process the queue
+            dl.flush_delayed_logs()
+
+            # Verify the queue is now empty
+            assert dl._log_queue.qsize() == 0
+            
+            # Verify the log was processed
+            assert mock_logger._log_standard.called
+            assert mock_logger._log_standard.call_count == 1
+            
+            # Check the first call's arguments
+            call_args = mock_logger._log_standard.call_args_list[0]
+            # Call args format: ((level, message), {kwargs})
+            assert call_args[0][0] == 'INFO'
+            assert call_args[0][1] == 'Test message'
+            # Check kwargs contain user_id
+            assert call_args[1].get('user_id') == '123'
+        finally:
+            # Cleanup
+            try:
+                dl.shutdown()
+                if hasattr(dl, '_worker_thread') and dl._worker_thread:
+                    dl._worker_thread.join(timeout=2.0)
+            except Exception:
+                pass

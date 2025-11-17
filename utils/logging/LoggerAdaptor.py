@@ -73,6 +73,24 @@ class LoggerAdaptor:
 
     _instances = {}
     _config = None
+    
+    @classmethod
+    def clear_instances(cls):
+        """
+        Clear all cached logger instances.
+        
+        This is useful for testing or when you want to force recreation
+        of logger instances with new configurations.
+        """
+        # Shutdown all instances first
+        for instance in cls._instances.values():
+            try:
+                instance.shutdown()
+            except Exception:
+                pass
+        
+        # Clear the instances dict
+        cls._instances.clear()
 
     def __init__(self, name: str = "default", environment: str = None, config: dict[str, Any] = None):
         # Initialize configuration manager first
@@ -523,9 +541,23 @@ class LoggerAdaptor:
         self._initialize_logger()
 
     def shutdown(self):
-        """Shutdown the logger."""
-        # Shutdown functionality can be extended by individual components if needed
-        pass
+        """Shutdown the logger and cleanup resources."""
+        # Remove all handlers and close them
+        if self.logger:
+            for handler in self.logger.handlers[:]:
+                try:
+                    handler.flush()
+                    handler.close()
+                    self.logger.removeHandler(handler)
+                except Exception:
+                    pass
+        
+        # Clear context
+        self.context.clear()
+        
+        # Clear redaction manager
+        if self.redaction_manager:
+            self.redaction_manager = None
 
     @property
     def level(self) -> str:

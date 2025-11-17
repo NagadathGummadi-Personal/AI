@@ -10,7 +10,6 @@ from .base_executor import BaseToolExecutor
 from .function_executors import FunctionToolExecutor
 from .http_executors import HttpToolExecutor
 from .db_executors import DbExecutorFactory
-from .noop_executor import NoOpExecutor
 from ...spec.tool_types import ToolSpec, FunctionToolSpec, HttpToolSpec, DbToolSpec
 from ...enum import ToolType
 
