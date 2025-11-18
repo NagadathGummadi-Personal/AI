@@ -24,7 +24,7 @@ Folder Structure:
 
 Core Components:
 ================
-- IExecutor: Base executor interface
+- IToolExecutor: Base executor interface (from tool_interfaces)
 - BaseToolExecutor: Base implementation with common patterns
 - ExecutorFactory: Factory for creating executors
 - Various executor implementations (Function, HTTP, DB)
@@ -50,7 +50,7 @@ from base classes or implementing interfaces.
 
 # Re-export from executors module
 from .executors import (
-    IExecutor,
+    IToolExecutor,
     BaseToolExecutor,
     ExecutorFactory,
     NoOpExecutor,
@@ -87,7 +87,7 @@ from .limiters import NoOpLimiter, LimiterFactory
 
 __all__ = [
     # Core
-    "IExecutor",
+    "IToolExecutor",
     "BaseToolExecutor",
     "ExecutorFactory",
     "NoOpExecutor",

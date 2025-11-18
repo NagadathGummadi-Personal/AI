@@ -372,3 +372,18 @@
 {"error": "Division by zero is not allowed", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-9cbdc412-1cff-45fd-9dbb-f79953808807", "tool_name": "division", "trace_id": "trace-fcd1b3e6-af83-4328-aff8-bd45cbdc6d5d"}
 {"error": "Invalid parameters", "execution_time_ms": "0.0", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
 {"error": "User not authorized", "execution_time_ms": "1.01", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.75", "user_id": "user-test-001", "session_id": "session-2ad51b21-7bcc-471b-b3b8-c80124dee229", "tool_name": "division", "trace_id": "trace-ed743586-bf0a-4b88-b0c4-6a9c9c25ef1c"}
+{"error": "Invalid parameters", "execution_time_ms": "0.32", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.43", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.91", "user_id": "user-test-001", "session_id": "session-1390aae3-c8f0-455e-bb16-c5b117b49ded", "tool_name": "division", "trace_id": "trace-2227fb01-1920-4cc3-9832-8a1a9ec66d57"}
+{"error": "Invalid parameters", "execution_time_ms": "0.35", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.49", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "0.9", "user_id": "user-test-001", "session_id": "session-b14b7010-31c2-4124-a259-4abdcf6d085b", "tool_name": "division", "trace_id": "trace-c583fbf5-4f1d-4fd5-8954-bc1780cc3beb"}
+{"error": "Invalid parameters", "execution_time_ms": "0.44", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.49", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Division by zero is not allowed", "execution_time_ms": "1.0", "user_id": "user-test-001", "session_id": "session-faa86870-90d6-40bb-9c74-f64416e13a68", "tool_name": "division", "trace_id": "trace-12559f21-413d-4839-ac62-88655cb6f576"}
+{"error": "Invalid parameters", "execution_time_ms": "0.43", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "User not authorized", "execution_time_ms": "0.56", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+{"error": "Access denied. User '[EMAIL_REDACTED]' is not authorized. Only '[EMAIL_REDACTED]' is allowed to execute 'multiply'.", "execution_time_ms": "0.0", "user_id": "[EMAIL_REDACTED]", "session_id": "9999", "tool_name": "multiply", "trace_id": "None"}
+{"error": "Parameter 'num1' must be greater than 0. Got: -5", "execution_time_ms": "0.0", "user_id": "[EMAIL_REDACTED]", "session_id": "5678", "tool_name": "multiply", "trace_id": "None"}
+{"error": "Parameter 'num2' must be greater than 0. Got: 0", "execution_time_ms": "0.0", "user_id": "[EMAIL_REDACTED]", "session_id": "5678", "tool_name": "multiply", "trace_id": "None"}

@@ -6,7 +6,6 @@ a modular architecture with separate folders for each executor category.
 
 Folder Structure:
 =================
-- executor.py: IExecutor interface (base protocol)
 - base_executor.py: BaseToolExecutor base class
 - executor_factory.py: ExecutorFactory for creating executors
 - noop_executor.py: NoOpExecutor placeholder
@@ -23,7 +22,7 @@ Each executor type follows a consistent pattern:
 Available Components:
 =====================
 Core:
-- IExecutor: Base executor protocol
+- IToolExecutor: Base executor protocol (from tool_interfaces)
 - BaseToolExecutor: Base implementation with common functionality
 - ExecutorFactory: Main factory for creating executors
 - NoOpExecutor: Placeholder executor
@@ -77,7 +76,7 @@ and following the patterns established in the base implementations.
 """
 
 # Core components
-from .executor import IExecutor
+from ...interfaces.tool_interfaces import IToolExecutor
 from .base_executor import BaseToolExecutor
 from .executor_factory import ExecutorFactory
 from .noop_executor import NoOpExecutor
@@ -101,7 +100,7 @@ from .http_executors import (
 
 __all__ = [
     # Core
-    "IExecutor",
+    "IToolExecutor",
     "BaseToolExecutor",
     "ExecutorFactory",
     "NoOpExecutor",

@@ -40,6 +40,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 # Local imports
+from ...interfaces.tool_interfaces import IToolExecutor
 from ...spec.tool_types import ToolSpec
 from ...spec.tool_context import ToolContext, ToolUsage
 from ...spec.tool_result import ToolResult
@@ -55,25 +56,39 @@ from ..usage_calculators.generic_calculator import (
 )
 
 
-class BaseToolExecutor:
+class BaseToolExecutor(IToolExecutor):
     """
-    Base class for tool executors with common functionality.
+    Base utility class for tool executors with common functionality.
     
-    Provides shared methods for idempotency, usage tracking, and result creation
-    that are used by all concrete executor implementations.
+    Provides shared utility methods for idempotency, usage tracking, and result
+    creation that are used by all executor implementations. This class implements
+    IToolExecutor's contract through its subclass hierarchy:
+    
+    - BaseFunctionExecutor implements execute() and defines abstract _execute_function()
+    - BaseHttpExecutor implements execute() and defines abstract _execute_http_request()
+    - BaseDbExecutor implements execute() and defines abstract _execute_db_operation()
     
     Attributes:
         spec: Tool specification containing configuration and metadata
     
-    Methods:
+    Utility Methods:
         _generate_idempotency_key: Generate unique key for idempotent operations
         _calculate_usage: Calculate usage statistics for execution
         _create_result: Create standardized ToolResult object
     
-    Subclasses:
-        FunctionToolExecutor: Executes function-based tools
-        HttpToolExecutor: Executes HTTP-based tools
-        DbToolExecutor: Executes database-based tools
+    Subclass Hierarchy:
+        BaseToolExecutor (utility methods only)
+        ├── BaseFunctionExecutor (implements execute, abstract _execute_function)
+        │   └── FunctionToolExecutor (implements _execute_function)
+        ├── BaseHttpExecutor (implements execute, abstract _execute_http_request)
+        │   └── HttpToolExecutor (implements _execute_http_request)
+        └── BaseDbExecutor (implements execute, abstract _execute_db_operation)
+            └── DynamoDBExecutor (implements _execute_db_operation)
+    
+    Note:
+        This class provides only utility methods. The execute() method is implemented
+        by the intermediate classes (BaseFunctionExecutor, BaseHttpExecutor, BaseDbExecutor).
+        Direct instantiation is possible but not useful - always use concrete executors.
     """
 
     def __init__(self, spec: ToolSpec):
@@ -194,5 +209,7 @@ class BaseToolExecutor:
             warnings=warnings or [],
             logs=logs or []
         )
+    
+    
 
 

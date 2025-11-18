@@ -43,7 +43,7 @@ import asyncio
 from typing import Dict, Any
 
 # Local imports
-from core.tools.implementations import (
+from core.tools import (
     NoOpSecurity,
     BasicSecurity,
     NoOpPolicy,
@@ -52,8 +52,8 @@ from core.tools.implementations import (
     NoOpMetrics,
     NoOpTracer,
     NoOpLimiter,
+    NoOpValidator,
 )
-from core.tools.runtimes.validators import NoOpValidator
 from core.tools.runtimes.executors import NoOpExecutor
 from core.tools.spec import (
     ToolContext,
@@ -564,8 +564,8 @@ class TestImplementationsIntegration:
         assert result2.content["status"] == "noop"
     
     def test_all_noop_classes_importable(self):
-        """Test that all no-op classes can be imported from implementations module"""
-        from core.tools.implementations import (
+        """Test that all no-op classes can be imported from core.tools module"""
+        from core.tools import (
             NoOpSecurity,
             BasicSecurity,
             NoOpPolicy,

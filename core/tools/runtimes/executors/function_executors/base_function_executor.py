@@ -56,6 +56,32 @@ from ..base_executor import BaseToolExecutor
 from ....spec.tool_types import ToolSpec
 from ....spec.tool_context import ToolContext
 from ....spec.tool_result import ToolResult
+from ....constants import (
+    LOG_STARTING_EXECUTION,
+    LOG_PARAMETERS,
+    LOG_VALIDATING,
+    LOG_VALIDATION_PASSED,
+    LOG_VALIDATION_SKIPPED,
+    LOG_AUTH_CHECK,
+    LOG_AUTH_PASSED,
+    LOG_AUTH_SKIPPED,
+    LOG_EGRESS_CHECK,
+    LOG_EGRESS_PASSED,
+    LOG_EGRESS_SKIPPED,
+    LOG_IDEMPOTENCY_CACHE_HIT,
+    LOG_EXECUTION_COMPLETED,
+    LOG_EXECUTION_FAILED,
+    IDEMPOTENCY_CACHE_PREFIX,
+    TOOL_EXECUTION_TIME,
+    TOOL_EXECUTIONS,
+    STATUS,
+    SUCCESS,
+    TOOL,
+    ERROR,
+    EXECUTION_FAILED,
+)
+from ....defaults import DEFAULT_TOOL_CONTEXT_DATA
+from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
 class BaseFunctionExecutor(BaseToolExecutor):
@@ -70,14 +96,13 @@ class BaseFunctionExecutor(BaseToolExecutor):
         func: The async function to execute
     """
     
-    def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any], ToolContext], Awaitable[Any]]):
+    def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
         """
         Initialize the base function executor.
         
         Args:
             spec: Tool specification
-            func: Async function to execute. Must accept (args: Dict, ctx: ToolContext)
-                 and return Any
+            func: Async function to execute. Must accept (args: Dict) and return Any
         
         Raises:
             TypeError: If func is not callable
@@ -88,102 +113,147 @@ class BaseFunctionExecutor(BaseToolExecutor):
             raise TypeError(f"Function must be callable, got {type(func)}")
         
         self.func = func
+        self.logger = LoggerAdaptor.get_logger(f"{TOOL}.{spec.tool_name}")
     
-    async def _execute_impl(
-        self,
-        args: Dict[str, Any],
-        ctx: ToolContext
-    ) -> ToolResult:
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """
-        Execute the function-based tool.
+        Execute the function tool with full lifecycle management.
         
-        This is the main execution flow that:
-        1. Logs execution start
-        2. Executes the function with timeout
-        3. Handles errors and formats results
-        4. Collects metrics
+        This is the Template Method that provides the complete execution flow:
+        1. Log execution start
+        2. Validate parameters (if validator available)
+        3. Authorize execution (if security available)
+        4. Check egress permissions (if security available)
+        5. Check idempotency cache (if enabled)
+        6. Execute user function (via _execute_function) with timeout/rate limiting
+        7. Record metrics and logs
+        8. Cache result (if idempotency enabled)
+        9. Handle errors gracefully
         
         Args:
-            args: Input arguments (already validated)
+            args: Function arguments
             ctx: Tool execution context
             
         Returns:
-            ToolResult with function execution results
-            
-        Raises:
-            ToolError: If function execution fails
+            ToolResult containing function output and metadata
         """
         start_time = time.time()
         
-        # Get timeout
-        timeout = self.spec.timeout_s or 30
+        # Set up logging context
+        context_data = DEFAULT_TOOL_CONTEXT_DATA(self.spec, ctx)
+        
+        # Log execution start with context
+        self.logger.info(LOG_STARTING_EXECUTION, **context_data)
+        
+        # Log parameter details
+        self.logger.debug(LOG_PARAMETERS, parameters=args, **context_data)
         
         try:
-            # Execute the function (delegates to subclass)
-            result = await self._execute_function(args, ctx, timeout)
+            # Validate parameters if validator is available
+            if ctx.validator:
+                self.logger.info(LOG_VALIDATING, **context_data)
+                await ctx.validator.validate(args, self.spec)
+                self.logger.info(LOG_VALIDATION_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_VALIDATION_SKIPPED, **context_data)
             
-            # Calculate duration
-            duration = time.time() - start_time
+            # Authorize execution if security is available
+            if ctx.security:
+                self.logger.info(LOG_AUTH_CHECK, **context_data)
+                await ctx.security.authorize(ctx, self.spec)
+                self.logger.info(LOG_AUTH_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_AUTH_SKIPPED, **context_data)
             
-            # Collect metrics
+            # Check egress permissions if security is available
+            if ctx.security:
+                self.logger.info(LOG_EGRESS_CHECK, **context_data)
+                await ctx.security.check_egress(args, self.spec)
+                self.logger.info(LOG_EGRESS_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_EGRESS_SKIPPED, **context_data)
+            
+            # Check idempotency if enabled
+            bypass_idempotency = False
+            if self.spec.idempotency.enabled and ctx.memory:
+                # If key_fields are defined and bypass_on_missing_key is True, and any key is missing, bypass idempotency
+                if self.spec.idempotency.key_fields and self.spec.idempotency.bypass_on_missing_key:
+                    missing = [k for k in self.spec.idempotency.key_fields if k not in args]
+                    if missing:
+                        bypass_idempotency = True
+                if not bypass_idempotency:
+                    idempotency_key = self._generate_idempotency_key(args, ctx)
+                    ctx.idempotency_key = idempotency_key
+                    # Try to get cached result
+                    if self.spec.idempotency.persist_result:
+                        cached_result = await ctx.memory.get(f"{IDEMPOTENCY_CACHE_PREFIX}:{idempotency_key}")
+                        if cached_result:
+                            self.logger.info(
+                                LOG_IDEMPOTENCY_CACHE_HIT,
+                                idempotency_key=idempotency_key,
+                                **context_data
+                            )
+                            return ToolResult(**cached_result)
+            
+            # Execute the actual function (delegate to subclass implementation)
+            timeout = self.spec.timeout_s or 30
+            result_content = await self._execute_function(args, ctx, timeout)
+            
+            execution_time = time.time() - start_time
+            
+            # Log successful completion
+            self.logger.info(LOG_EXECUTION_COMPLETED,
+                result=str(result_content),
+                execution_time_ms=round(execution_time * 1000, 2),
+                **context_data)
+            
+            # Log metrics if available
             if ctx.metrics:
-                await ctx.metrics.timing_ms(
-                    "function_execution_duration",
-                    int(duration * 1000),
-                    tags={
-                        "tool_name": self.spec.tool_name,
-                        "status": "success"
-                    }
-                )
-                await ctx.metrics.incr(
-                    "function_executions",
-                    tags={"tool_name": self.spec.tool_name, "status": "success"}
-                )
+                TAGS = {TOOL: self.spec.tool_name, STATUS: SUCCESS}
+                await ctx.metrics.timing_ms(TOOL_EXECUTION_TIME, int(execution_time * 1000), tags=TAGS)
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags=TAGS)
             
-            # Format and return result
-            return await self._format_result(result, ctx)
+            # Calculate usage metrics
+            usage = self._calculate_usage(start_time, args, result_content)
             
-        except asyncio.TimeoutError:
-            duration = time.time() - start_time
+            # Create result
+            result = self._create_result(result_content, usage)
             
-            # Collect timeout metrics
-            if ctx.metrics:
-                await ctx.metrics.incr(
-                    "function_executions",
-                    tags={"tool_name": self.spec.tool_name, "status": "timeout"}
+            # Cache result if idempotency is enabled and not bypassed
+            if (
+                self.spec.idempotency.enabled
+                and ctx.memory
+                and self.spec.idempotency.persist_result
+                and not bypass_idempotency
+                and getattr(ctx, "idempotency_key", None)
+            ):
+                await ctx.memory.set(
+                    f"{IDEMPOTENCY_CACHE_PREFIX}:{ctx.idempotency_key}",
+                    result.model_dump(),
+                    ttl_s=self.spec.idempotency.ttl_s
                 )
             
-            from ....spec.tool_types import ToolError
-            raise ToolError(
-                f"Function execution timed out after {duration:.2f}s (limit: {timeout}s)",
-                retryable=False,
-                code="FUNCTION_TIMEOUT"
-            )
-            
+            return result
+        
         except Exception as e:
-            duration = time.time() - start_time
+            execution_time = time.time() - start_time
+            self.logger.error(LOG_EXECUTION_FAILED,
+                error=str(e),
+                execution_time_ms=round(execution_time * 1000, 2),
+                **context_data)
             
-            # Collect error metrics
+            # Log error metrics if available
             if ctx.metrics:
-                await ctx.metrics.incr(
-                    "function_executions",
-                    tags={
-                        "tool_name": self.spec.tool_name,
-                        "status": "error",
-                        "error_type": type(e).__name__
-                    }
-                )
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags={TOOL: self.spec.tool_name, STATUS: ERROR})
             
-            # Re-raise ToolError as-is, wrap others
-            from ....spec.tool_types import ToolError
-            if isinstance(e, ToolError):
-                raise
-            
-            raise ToolError(
-                f"Function execution failed: {str(e)}",
-                retryable=self._is_retryable_error(e),
-                code="FUNCTION_EXECUTION_ERROR"
-            ) from e
+            # Create error result
+            usage = self._calculate_usage(start_time, args, None)
+            error_result = self._create_result(
+                content={ERROR: str(e)},
+                usage=usage,
+                warnings=[f"{EXECUTION_FAILED}: {str(e)}"]
+            )
+            return error_result
     
     @abstractmethod
     async def _execute_function(
