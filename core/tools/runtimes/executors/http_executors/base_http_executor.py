@@ -51,21 +51,20 @@ import asyncio
 from abc import abstractmethod
 from typing import Any, Dict, Optional, TYPE_CHECKING
 
-# Third-party (conditional import)
-try:
-    import aiohttp
-    AIOHTTP_AVAILABLE = True
-except ImportError:
-    AIOHTTP_AVAILABLE = False
-    # Create a dummy class for type checking
-    if TYPE_CHECKING:
-        import aiohttp
-
 # Local imports
 from ..base_executor import BaseToolExecutor
 from ....spec.tool_types import ToolSpec
 from ....spec.tool_context import ToolContext
 from ....spec.tool_result import ToolResult
+from ....constants import (
+    LOG_STARTING_EXECUTION, LOG_PARAMETERS, LOG_VALIDATING, LOG_VALIDATION_PASSED,
+    LOG_VALIDATION_SKIPPED, LOG_AUTH_CHECK, LOG_AUTH_PASSED, LOG_AUTH_SKIPPED,
+    LOG_EGRESS_CHECK, LOG_EGRESS_PASSED, LOG_EGRESS_SKIPPED, LOG_IDEMPOTENCY_CACHE_HIT,
+    LOG_EXECUTION_COMPLETED, LOG_EXECUTION_FAILED, IDEMPOTENCY_CACHE_PREFIX,
+    TOOL_EXECUTION_TIME, TOOL_EXECUTIONS, STATUS, SUCCESS, TOOL, ERROR, EXECUTION_FAILED,
+)
+from ....defaults import DEFAULT_TOOL_CONTEXT_DATA
+from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
 class BaseHttpExecutor(BaseToolExecutor):
@@ -73,11 +72,8 @@ class BaseHttpExecutor(BaseToolExecutor):
     Base executor for HTTP-based tools.
     
     Provides common functionality for making HTTP requests
-    with observability, error handling, and metrics collection.
-    
-    Attributes:
-        spec: Tool specification
-        session: Shared aiohttp session (optional)
+    with observability, error handling, and metrics collection using
+    the Template Method pattern.
     """
     
     def __init__(self, spec: ToolSpec):
@@ -86,119 +82,126 @@ class BaseHttpExecutor(BaseToolExecutor):
         
         Args:
             spec: Tool specification
-            
-        Raises:
-            ImportError: If aiohttp is not installed
         """
-        if not AIOHTTP_AVAILABLE:
-            raise ImportError(
-                "aiohttp is required for HTTP executors. "
-                "Install it with: pip install aiohttp"
-            )
-        
         super().__init__(spec)
-        self._session: Optional['aiohttp.ClientSession'] = None
+        self.logger = LoggerAdaptor.get_logger(f"{TOOL}.{spec.tool_name}")
     
-    async def _execute_impl(
-        self,
-        args: Dict[str, Any],
-        ctx: ToolContext
-    ) -> ToolResult:
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """
-        Execute the HTTP-based tool.
+        Execute the HTTP tool with full lifecycle management.
         
-        This is the main execution flow that:
-        1. Logs execution start
-        2. Executes the HTTP request with timeout
-        3. Handles errors and formats responses
-        4. Collects metrics
+        This is the Template Method that provides the complete execution flow:
+        1. Log execution start
+        2. Validate parameters (if validator available)
+        3. Authorize execution (if security available)
+        4. Check egress permissions (if security available)
+        5. Check idempotency cache (if enabled)
+        6. Execute HTTP request (via _execute_http_request) with timeout/rate limiting
+        7. Record metrics and logs
+        8. Cache result (if idempotency enabled)
+        9. Handle errors gracefully
         
         Args:
-            args: Input arguments (already validated)
+            args: HTTP request arguments
             ctx: Tool execution context
             
         Returns:
-            ToolResult with HTTP response
-            
-        Raises:
-            ToolError: If HTTP request fails
+            ToolResult containing HTTP response and metadata
         """
         start_time = time.time()
-        
-        # Get timeout
-        timeout = self.spec.timeout_s or 30
+        context_data = DEFAULT_TOOL_CONTEXT_DATA(self.spec, ctx)
+        self.logger.info(LOG_STARTING_EXECUTION, **context_data)
+        self.logger.debug(LOG_PARAMETERS, parameters=args, **context_data)
         
         try:
-            # Execute the HTTP request (delegates to subclass)
-            response = await self._execute_http_request(args, ctx, timeout)
+            if ctx.validator:
+                self.logger.info(LOG_VALIDATING, **context_data)
+                await ctx.validator.validate(args, self.spec)
+                self.logger.info(LOG_VALIDATION_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_VALIDATION_SKIPPED, **context_data)
             
-            # Calculate duration
-            duration = time.time() - start_time
+            if ctx.security:
+                self.logger.info(LOG_AUTH_CHECK, **context_data)
+                await ctx.security.authorize(ctx, self.spec)
+                self.logger.info(LOG_AUTH_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_AUTH_SKIPPED, **context_data)
             
-            # Collect metrics
+            if ctx.security:
+                self.logger.info(LOG_EGRESS_CHECK, **context_data)
+                await ctx.security.check_egress(args, self.spec)
+                self.logger.info(LOG_EGRESS_PASSED, **context_data)
+            else:
+                self.logger.warning(LOG_EGRESS_SKIPPED, **context_data)
+            
+            bypass_idempotency = False
+            if self.spec.idempotency.enabled and ctx.memory:
+                if self.spec.idempotency.key_fields and self.spec.idempotency.bypass_on_missing_key:
+                    missing = [k for k in self.spec.idempotency.key_fields if k not in args]
+                    if missing:
+                        bypass_idempotency = True
+                if not bypass_idempotency:
+                    idempotency_key = self._generate_idempotency_key(args, ctx)
+                    ctx.idempotency_key = idempotency_key
+                    if self.spec.idempotency.persist_result:
+                        cached_result = await ctx.memory.get(f"{IDEMPOTENCY_CACHE_PREFIX}:{idempotency_key}")
+                        if cached_result:
+                            self.logger.info(
+                                LOG_IDEMPOTENCY_CACHE_HIT,
+                                idempotency_key=idempotency_key,
+                                **context_data
+                            )
+                            return ToolResult(**cached_result)
+            
+            timeout = self.spec.timeout_s or 30
+            result_content = await self._execute_http_request(args, ctx, timeout)
+            
+            execution_time = time.time() - start_time
+            self.logger.info(LOG_EXECUTION_COMPLETED,
+                result=str(result_content),
+                execution_time_ms=round(execution_time * 1000, 2),
+                **context_data)
+            
             if ctx.metrics:
-                await ctx.metrics.timing_ms(
-                    "http_request_duration",
-                    int(duration * 1000),
-                    tags={
-                        "tool_name": self.spec.tool_name,
-                        "status": "success"
-                    }
+                TAGS = {TOOL: self.spec.tool_name, STATUS: SUCCESS}
+                await ctx.metrics.timing_ms(TOOL_EXECUTION_TIME, int(execution_time * 1000), tags=TAGS)
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags=TAGS)
+            
+            usage = self._calculate_usage(start_time, args, result_content)
+            result = self._create_result(result_content, usage)
+            
+            if (
+                self.spec.idempotency.enabled
+                and ctx.memory
+                and self.spec.idempotency.persist_result
+                and not bypass_idempotency
+                and getattr(ctx, "idempotency_key", None)
+            ):
+                await ctx.memory.set(
+                    f"{IDEMPOTENCY_CACHE_PREFIX}:{ctx.idempotency_key}",
+                    result.model_dump(),
+                    ttl_s=self.spec.idempotency.ttl_s
                 )
-                await ctx.metrics.incr(
-                    "http_requests",
-                    tags={"tool_name": self.spec.tool_name, "status": "success"}
-                )
-            
-            # Format and return result
-            return await self._format_response(response, ctx)
-            
-        except asyncio.TimeoutError:
-            duration = time.time() - start_time
-            
-            # Collect timeout metrics
-            if ctx.metrics:
-                await ctx.metrics.incr(
-                    "http_requests",
-                    tags={"tool_name": self.spec.tool_name, "status": "timeout"}
-                )
-            
-            from ....spec.tool_types import ToolError
-            raise ToolError(
-                f"HTTP request timed out after {duration:.2f}s (limit: {timeout}s)",
-                retryable=True,
-                code="HTTP_TIMEOUT"
-            )
+            return result
             
         except Exception as e:
-            duration = time.time() - start_time
+            execution_time = time.time() - start_time
+            self.logger.error(LOG_EXECUTION_FAILED,
+                error=str(e),
+                execution_time_ms=round(execution_time * 1000, 2),
+                **context_data)
             
-            # Collect error metrics
             if ctx.metrics:
-                await ctx.metrics.incr(
-                    "http_requests",
-                    tags={
-                        "tool_name": self.spec.tool_name,
-                        "status": "error",
-                        "error_type": type(e).__name__
-                    }
-                )
+                await ctx.metrics.incr(TOOL_EXECUTIONS, tags={TOOL: self.spec.tool_name, STATUS: ERROR})
             
-            # Re-raise ToolError as-is, wrap others
-            from ....spec.tool_types import ToolError
-            if isinstance(e, ToolError):
-                raise
-            
-            # Check if it's an aiohttp error and if it's retryable
-            is_retryable = False
-            if AIOHTTP_AVAILABLE and e.__class__.__module__.startswith('aiohttp'):
-                is_retryable = self._is_retryable_http_error(e)
-            
-            raise ToolError(
-                f"HTTP execution failed: {str(e)}",
-                retryable=is_retryable,
-                code="HTTP_EXECUTION_ERROR"
-            ) from e
+            usage = self._calculate_usage(start_time, args, None)
+            error_result = self._create_result(
+                content={ERROR: str(e)},
+                usage=usage,
+                warnings=[f"{EXECUTION_FAILED}: {str(e)}"]
+            )
+            return error_result
     
     @abstractmethod
     async def _execute_http_request(
@@ -206,12 +209,15 @@ class BaseHttpExecutor(BaseToolExecutor):
         args: Dict[str, Any],
         ctx: ToolContext,
         timeout: float
-    ) -> Dict[str, Any]:
+    ) -> Any:
         """
         Execute the actual HTTP request.
         
         This method must be implemented by subclasses to define
         how the HTTP request is made.
+        
+        This is the only method that concrete HTTP executors need to implement.
+        The base class handles all validation, security, idempotency, and metrics.
         
         Args:
             args: Input arguments
@@ -219,95 +225,10 @@ class BaseHttpExecutor(BaseToolExecutor):
             timeout: Timeout in seconds
             
         Returns:
-            HTTP response data (typically dict with status, headers, body)
+            HTTP response data (can be any structure: dict, list, etc.)
             
         Raises:
             Exception: Any error from HTTP request
         """
         pass
-    
-    async def _format_response(
-        self,
-        response: Dict[str, Any],
-        ctx: ToolContext
-    ) -> ToolResult:
-        """
-        Format the HTTP response into a ToolResult.
-        
-        Args:
-            response: Raw HTTP response data
-            ctx: Tool context
-            
-        Returns:
-            Formatted ToolResult
-        """
-        return ToolResult(
-            return_type=self.spec.return_type,
-            return_target=self.spec.return_target,
-            content=response,
-            metadata={
-                "tool_name": self.spec.tool_name,
-                "executor": "BaseHttpExecutor"
-            }
-        )
-    
-    def _is_retryable_http_error(self, error: Exception) -> bool:
-        """
-        Determine if an HTTP error is retryable.
-        
-        Args:
-            error: The exception that occurred
-            
-        Returns:
-            True if the error should be retried
-        """
-        if not AIOHTTP_AVAILABLE:
-            return False
-        
-        # Connection errors, timeouts, and 5xx errors are retryable
-        retryable_types = (
-            asyncio.TimeoutError,
-            aiohttp.ClientConnectionError,
-            aiohttp.ClientConnectorError,
-            aiohttp.ServerTimeoutError,
-        )
-        
-        if isinstance(error, retryable_types):
-            return True
-        
-        # Check for 5xx status codes
-        if isinstance(error, aiohttp.ClientResponseError):
-            return 500 <= error.status < 600
-        
-        return False
-    
-    async def _get_session(self) -> 'aiohttp.ClientSession':
-        """
-        Get or create an aiohttp session.
-        
-        Returns:
-            aiohttp ClientSession
-            
-        Raises:
-            ImportError: If aiohttp is not available
-        """
-        if not AIOHTTP_AVAILABLE:
-            raise ImportError("aiohttp is required but not installed")
-        
-        if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession()
-        return self._session
-    
-    async def close(self):
-        """Close the HTTP session if it exists."""
-        if self._session and not self._session.closed:
-            await self._session.close()
-    
-    async def __aenter__(self):
-        """Context manager entry."""
-        return self
-    
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit."""
-        await self.close()
 
