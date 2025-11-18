@@ -6,17 +6,17 @@ with full observability and control, following a modular architecture.
 
 Strategy Pattern Implementation:
 =================================
-All executors implement IHttpExecutor, allowing runtime selection of the
-appropriate execution strategy for each HTTP tool type.
+All executors extend BaseHttpExecutor, providing consistent HTTP request execution
+with full observability and control.
 
 Available Components:
 =====================
-- IHttpExecutor: Abstract interface for HTTP executors
+- BaseHttpExecutor: Base implementation with common patterns
 - HttpToolExecutor: Standard HTTP executor with full observability
 
 Architecture:
 =============
-IHttpExecutor (Interface)
+BaseHttpExecutor (Base implementation)
 └── HttpToolExecutor (Standard implementation)
 
 Usage:
@@ -47,16 +47,16 @@ Extending with Custom Executors:
 ==================================
 To add a custom HTTP executor:
 
-1. Implement the executor by inheriting from HttpToolExecutor or implementing IHttpExecutor:
+1. Implement the executor by inheriting from BaseHttpExecutor:
 
-    from core.tools.runtimes.executors.http_executors import IHttpExecutor
+    from core.tools.runtimes.executors.http_executors import BaseHttpExecutor
     from core.tools.spec.tool_types import ToolSpec
     from core.tools.spec.tool_context import ToolContext
     from core.tools.spec.tool_result import ToolResult
     from typing import Dict, Any
     import aiohttp
     
-    class GraphQLExecutor(IHttpExecutor):
+    class GraphQLExecutor(BaseHttpExecutor):
         def __init__(self, spec: ToolSpec):
             self.spec = spec
         
@@ -89,13 +89,11 @@ Note:
     automatically through the base executor implementation.
 """
 
-from .http_executor_interface import IHttpExecutor
 from .base_http_executor import BaseHttpExecutor
 from .http_executor_factory import HttpExecutorFactory
 from .http_executor import HttpToolExecutor
 
 __all__ = [
-    "IHttpExecutor",
     "BaseHttpExecutor",
     "HttpExecutorFactory",
     "HttpToolExecutor",

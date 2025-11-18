@@ -6,8 +6,10 @@ Disables metrics collection for simple execution without observability overhead.
 
 from typing import Dict, Optional
 
+from ...interfaces.tool_interfaces import IToolMetrics
 
-class NoOpMetrics:
+
+class NoOpMetrics(IToolMetrics):
     """
     No-op implementation of IToolMetrics that doesn't collect metrics.
     

@@ -6,7 +6,7 @@ the database driver type specified in the tool spec.
 """
 
 from typing import Dict, Type
-from .db_executor import IDbExecutor
+from .base_db_executor import BaseDbExecutor
 from .dynamodb_executor import DynamoDBExecutor
 from ....spec.tool_types import DbToolSpec
 from ....constants import (
@@ -54,7 +54,7 @@ class DbExecutorFactory:
     """
     
     # Registry mapping driver names to executor classes
-    _executors: Dict[str, Type[IDbExecutor]] = {
+    _executors: Dict[str, Type[BaseDbExecutor]] = {
         'dynamodb': DynamoDBExecutor,
         # Future database executors:
         # 'postgresql': PostgreSQLExecutor,
@@ -66,7 +66,7 @@ class DbExecutorFactory:
     }
     
     @classmethod
-    def get_executor(cls, spec: DbToolSpec) -> IDbExecutor:
+    def get_executor(cls, spec: DbToolSpec) -> BaseDbExecutor:
         """
         Get the appropriate database executor for the given spec.
         
@@ -74,7 +74,7 @@ class DbExecutorFactory:
             spec: Database tool specification with driver information
             
         Returns:
-            IDbExecutor: Database executor instance
+            BaseDbExecutor: Database executor instance
             
         Raises:
             ValueError: If driver is not supported. Error message includes
@@ -117,16 +117,16 @@ class DbExecutorFactory:
         return executor_class(spec)
     
     @classmethod
-    def register(cls, driver: str, executor_class: Type[IDbExecutor]):
+    def register(cls, driver: str, executor_class: Type[BaseDbExecutor]):
         """
         Register a custom database executor.
         
         Args:
             driver: Database driver name (case-insensitive)
-            executor_class: Executor class (not instance) that implements IDbExecutor
+            executor_class: Executor class (not instance) that extends BaseDbExecutor
         
         Example:
-            from core.tools.runtimes.executors.db_executors import IDbExecutor, BaseDbExecutor
+            from core.tools.runtimes.executors.db_executors import BaseDbExecutor
             
             class MongoDBExecutor(BaseDbExecutor):
                 def __init__(self, spec):

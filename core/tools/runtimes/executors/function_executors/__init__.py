@@ -6,17 +6,17 @@ async functions with full observability and control, following a modular archite
 
 Strategy Pattern Implementation:
 =================================
-All executors implement IFunctionExecutor, allowing runtime selection of the
-appropriate execution strategy for each function type.
+All executors extend BaseFunctionExecutor, providing consistent function execution
+with full observability and control.
 
 Available Components:
 =====================
-- IFunctionExecutor: Abstract interface for function executors
+- BaseFunctionExecutor: Base implementation with common patterns
 - FunctionToolExecutor: Standard function executor with full observability
 
 Architecture:
 =============
-IFunctionExecutor (Interface)
+BaseFunctionExecutor (Base implementation)
 └── FunctionToolExecutor (Standard implementation)
 
 Usage:
@@ -46,15 +46,15 @@ Extending with Custom Executors:
 ==================================
 To add a custom function executor:
 
-1. Implement the executor by inheriting from FunctionToolExecutor or implementing IFunctionExecutor:
+1. Implement the executor by inheriting from BaseFunctionExecutor:
 
-    from core.tools.runtimes.executors.function_executors import IFunctionExecutor
+    from core.tools.runtimes.executors.function_executors import BaseFunctionExecutor
     from core.tools.spec.tool_types import ToolSpec
     from core.tools.spec.tool_context import ToolContext
     from core.tools.spec.tool_result import ToolResult
     from typing import Dict, Any, Callable, Awaitable
     
-    class CachedFunctionExecutor(IFunctionExecutor):
+    class CachedFunctionExecutor(BaseFunctionExecutor):
         def __init__(self, spec: ToolSpec, func: Callable[[Dict[str, Any]], Awaitable[Any]]):
             self.spec = spec
             self.func = func
@@ -84,13 +84,11 @@ Note:
     automatically through the base executor implementation.
 """
 
-from .function_executor_interface import IFunctionExecutor
 from .base_function_executor import BaseFunctionExecutor
 from .function_executor_factory import FunctionExecutorFactory
 from .function_executor import FunctionToolExecutor
 
 __all__ = [
-    "IFunctionExecutor",
     "BaseFunctionExecutor",
     "FunctionExecutorFactory",
     "FunctionToolExecutor",

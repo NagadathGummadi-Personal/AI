@@ -7,8 +7,10 @@ Disables memory/caching operations for stateless execution.
 from contextlib import asynccontextmanager
 from typing import Any, AsyncContextManager, Optional
 
+from ...interfaces.tool_interfaces import IToolMemory
 
-class NoOpMemory:
+
+class NoOpMemory(IToolMemory):
     """
     No-op implementation of IToolMemory that doesn't store or retrieve data.
     

@@ -6,7 +6,7 @@ Provides a centralized way to create and register validators by name.
 
 from typing import Dict
 
-from .validator import IValidator
+from ...interfaces.tool_interfaces import IToolValidator
 from .basic_validator import BasicValidator
 from .noop_validator import NoOpValidator
 
@@ -36,13 +36,13 @@ class ValidatorFactory:
         validator = ValidatorFactory.get_validator('my_custom')
     """
     
-    _validators: Dict[str, IValidator] = {
+    _validators: Dict[str, IToolValidator] = {
         BASIC: BasicValidator(),
         NOOP: NoOpValidator(),
     }
     
     @classmethod
-    def get_validator(cls, name: str = BASIC) -> IValidator:
+    def get_validator(cls, name: str = BASIC) -> IToolValidator:
         """
         Get a validator by name.
         
@@ -50,7 +50,7 @@ class ValidatorFactory:
             name: Validator name ('basic', 'noop', etc.)
             
         Returns:
-            IValidator instance
+            IToolValidator instance
             
         Raises:
             ValueError: If validator name is not registered
@@ -66,13 +66,13 @@ class ValidatorFactory:
         return validator
     
     @classmethod
-    def register(cls, name: str, validator: IValidator):
+    def register(cls, name: str, validator: IToolValidator):
         """
         Register a custom validator.
         
         Args:
             name: Name to register the validator under
-            validator: Validator instance implementing IValidator
+            validator: Validator instance implementing IToolValidator
         
         Example:
             class MyValidator:

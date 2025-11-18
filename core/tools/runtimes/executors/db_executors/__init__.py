@@ -6,12 +6,11 @@ following a modular architecture with interface, factory, and implementations.
 
 Strategy Pattern Implementation:
 =================================
-All executors implement IDbExecutor, allowing runtime selection of the appropriate
-execution strategy for each database type.
+All executors extend BaseDbExecutor, allowing runtime selection of the appropriate
+execution strategy for each database type via DbExecutorFactory.
 
 Available Components:
 =====================
-- IDbExecutor: Abstract interface for database executors
 - DbExecutorFactory: Factory for creating database executors
 - BaseDbExecutor: Base implementation with common patterns
 - DynamoDBExecutor: AWS DynamoDB operations
@@ -25,12 +24,11 @@ Available Executors:
 
 Architecture:
 =============
-IDbExecutor (Interface)
-└── BaseDbExecutor (Base implementation)
-    ├── DynamoDBExecutor (AWS DynamoDB)
-    ├── PostgreSQLExecutor (PostgreSQL - to be implemented)
-    ├── MySQLExecutor (MySQL - to be implemented)
-    └── SQLiteExecutor (SQLite - to be implemented)
+BaseDbExecutor (Base implementation)
+├── DynamoDBExecutor (AWS DynamoDB)
+├── PostgreSQLExecutor (PostgreSQL - to be implemented)
+├── MySQLExecutor (MySQL - to be implemented)
+└── SQLiteExecutor (SQLite - to be implemented)
 
 DbExecutorFactory (Creates executors)
 
@@ -64,7 +62,7 @@ To add a new database executor:
 
 1. Implement the executor by inheriting from BaseDbExecutor:
 
-    from core.tools.runtimes.executors.db_executors import BaseDbExecutor, IDbExecutor
+    from core.tools.runtimes.executors.db_executors import BaseDbExecutor
     
     class MongoDBExecutor(BaseDbExecutor):
         def __init__(self, spec: DbToolSpec):
@@ -96,13 +94,11 @@ Note:
     across multiple executions via the context and metrics systems.
 """
 
-from .db_executor import IDbExecutor
 from .db_executor_factory import DbExecutorFactory
 from .base_db_executor import BaseDbExecutor
 from .dynamodb_executor import DynamoDBExecutor
 
 __all__ = [
-    "IDbExecutor",
     "DbExecutorFactory",
     "BaseDbExecutor",
     "DynamoDBExecutor",

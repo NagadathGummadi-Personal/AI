@@ -5,6 +5,7 @@ Core spec exports for the tools system.
 from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
 #Tool Context
 from .tool_context import ToolContext, ToolUsage
+from .tool_context_builder import ToolContextBuilder
 #Tool Parameters
 from .tool_parameters import (
     ToolParameter,
@@ -37,6 +38,7 @@ __all__ = [
     #Tool Context
     "ToolContext",
     "ToolUsage",
+    "ToolContextBuilder",
     #Tool Parameters
     "ToolParameter",
     "StringParameter",

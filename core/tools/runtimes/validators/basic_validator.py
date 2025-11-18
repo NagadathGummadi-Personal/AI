@@ -8,6 +8,7 @@ import json
 import re
 from typing import Any, Dict
 
+from ...interfaces.tool_interfaces import IToolValidator
 from ...spec.tool_types import ToolSpec
 from ...spec.tool_parameters import (
     ToolParameter,
@@ -32,7 +33,7 @@ from ...constants import (
 )
 
 
-class BasicValidator:
+class BasicValidator(IToolValidator):
     """
     Basic implementation of IValidator with comprehensive validation.
     

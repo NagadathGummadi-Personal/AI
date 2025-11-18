@@ -7,8 +7,10 @@ Disables distributed tracing for simple execution without tracing overhead.
 from contextlib import asynccontextmanager
 from typing import Any, AsyncContextManager, Dict, Optional
 
+from ...interfaces.tool_interfaces import IToolTracer
 
-class NoOpTracer:
+
+class NoOpTracer(IToolTracer):
     """
     No-op implementation of IToolTracer that doesn't create trace spans.
     

@@ -243,3 +243,24 @@ CURRENT_THRESHOLD = 'current_threshold'
 #Validator constants
 BASIC = "basic"
 UNKNOWN_VALIDATOR_ERROR = "Unknown validator: {VALIDATOR_NAME}. Available: {AVAILABLE_VALIDATORS}"
+
+#Memory constants
+UNKNOWN_MEMORY_ERROR = "Unknown memory implementation: {MEMORY_NAME}. Available: {AVAILABLE_MEMORIES}"
+
+#Metrics constants
+UNKNOWN_METRICS_ERROR = "Unknown metrics implementation: {METRICS_NAME}. Available: {AVAILABLE_METRICS}"
+
+#Tracer constants
+UNKNOWN_TRACER_ERROR = "Unknown tracer implementation: {TRACER_NAME}. Available: {AVAILABLE_TRACERS}"
+
+#Limiter constants
+UNKNOWN_LIMITER_ERROR = "Unknown limiter implementation: {LIMITER_NAME}. Available: {AVAILABLE_LIMITERS}"
+
+#Emitter constants
+UNKNOWN_EMITTER_ERROR = "Unknown emitter implementation: {EMITTER_NAME}. Available: {AVAILABLE_EMITTERS}"
+
+#Security constants
+UNKNOWN_SECURITY_ERROR = "Unknown security implementation: {SECURITY_NAME}. Available: {AVAILABLE_SECURITIES}"
+
+#Policy constants
+UNKNOWN_POLICY_ERROR = "Unknown policy implementation: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"

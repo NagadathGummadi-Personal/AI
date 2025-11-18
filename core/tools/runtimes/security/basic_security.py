@@ -6,6 +6,7 @@ Provides user-based and role-based authorization.
 
 from typing import Any, Dict, List, Optional
 
+from ...interfaces.tool_interfaces import IToolSecurity
 from ...spec.tool_context import ToolContext
 from ...spec.tool_result import ToolError
 from ...spec.tool_types import ToolSpec
@@ -19,7 +20,7 @@ from ...constants import (
 )
 
 
-class BasicSecurity:
+class BasicSecurity(IToolSecurity):
     """
     Basic implementation of IToolSecurity with authorization.
     

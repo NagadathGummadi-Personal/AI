@@ -43,13 +43,11 @@ Note:
     Validators should raise ToolError with ERROR_VALIDATION code when validation fails.
 """
 
-from .validator import IValidator
 from .basic_validator import BasicValidator
 from .noop_validator import NoOpValidator
 from .validator_factory import ValidatorFactory
 
 __all__ = [
-    "IValidator",
     "BasicValidator",
     "NoOpValidator",
     "ValidatorFactory",

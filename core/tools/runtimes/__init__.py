@@ -45,8 +45,7 @@ Usage:
 Extending:
 ==========
 All executors follow SOLID principles and can be extended by inheriting
-from base classes or implementing interfaces. See individual subfolder
-README files for detailed extensibility guides.
+from base classes or implementing interfaces.
 """
 
 # Re-export from executors module
@@ -63,28 +62,28 @@ from .executors import (
 )
 
 # Re-export from validators module
-from .validators import NoOpValidator, BasicValidator
+from .validators import NoOpValidator, BasicValidator, ValidatorFactory
 
 # Re-export from security module
-from .security import NoOpSecurity, BasicSecurity
+from .security import NoOpSecurity, BasicSecurity, SecurityFactory
 
 # Re-export from policies module
-from .policies import NoOpPolicy
+from .policies import NoOpPolicy, PolicyFactory
 
 # Re-export from emitters module
-from .emitters import NoOpEmitter
+from .emitters import NoOpEmitter, EmitterFactory
 
 # Re-export from memory module
-from .memory import NoOpMemory
+from .memory import NoOpMemory, MemoryFactory
 
 # Re-export from metrics module
-from .metrics import NoOpMetrics
+from .metrics import NoOpMetrics, MetricsFactory
 
 # Re-export from tracers module
-from .tracers import NoOpTracer
+from .tracers import NoOpTracer, TracerFactory
 
 # Re-export from limiters module
-from .limiters import NoOpLimiter
+from .limiters import NoOpLimiter, LimiterFactory
 
 __all__ = [
     # Core
@@ -102,21 +101,29 @@ __all__ = [
     # Validators
     "NoOpValidator",
     "BasicValidator",
+    "ValidatorFactory",
     # Security
     "NoOpSecurity",
     "BasicSecurity",
+    "SecurityFactory",
     # Policy
     "NoOpPolicy",
+    "PolicyFactory",
     # Emitter
     "NoOpEmitter",
+    "EmitterFactory",
     # Memory
     "NoOpMemory",
+    "MemoryFactory",
     # Metrics
     "NoOpMetrics",
+    "MetricsFactory",
     # Tracer
     "NoOpTracer",
+    "TracerFactory",
     # Limiter
     "NoOpLimiter",
+    "LimiterFactory",
 ]
 
 

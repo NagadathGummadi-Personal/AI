@@ -6,10 +6,11 @@ Disables validation for development/testing or gradual rollouts.
 
 from typing import Any, Dict
 
+from ...interfaces.tool_interfaces import IToolValidator
 from ...spec.tool_types import ToolSpec
 
 
-class NoOpValidator:
+class NoOpValidator(IToolValidator):
     """
     No-op implementation of IValidator that doesn't perform validation.
     

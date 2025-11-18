@@ -7,8 +7,10 @@ Disables rate limiting for simple execution without throttling.
 from contextlib import asynccontextmanager
 from typing import AsyncContextManager, Optional
 
+from ...interfaces.tool_interfaces import IToolLimiter
 
-class NoOpLimiter:
+
+class NoOpLimiter(IToolLimiter):
     """
     No-op implementation of IToolLimiter that doesn't enforce rate limits.
     

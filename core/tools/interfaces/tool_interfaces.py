@@ -1,33 +1,35 @@
+from __future__ import annotations
+
 from typing import Any, Dict, Protocol, runtime_checkable, Callable, Awaitable, AsyncContextManager, Optional, TYPE_CHECKING
 from contextlib import asynccontextmanager
 
-# Local imports - use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
     from ..spec.tool_result import ToolResult
     from ..spec.tool_types import ToolSpec
     from ..spec.tool_context import ToolContext
 
+
 @runtime_checkable
 class IToolExecutor(Protocol):
     """Interface for tool execution"""
-    async def execute(self, args: Dict[str, Any], ctx: "ToolContext") -> "ToolResult":
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         ...
 
 
 @runtime_checkable
 class IToolValidator(Protocol):
     """Interface for parameter validation"""
-    async def validate(self, args: Dict[str, Any], spec: "ToolSpec") -> None:
+    async def validate(self, args: Dict[str, Any], spec: ToolSpec) -> None:
         ...
 
 
 @runtime_checkable
 class IToolSecurity(Protocol):
     """Interface for security checks"""
-    async def authorize(self, ctx: "ToolContext", spec: "ToolSpec") -> None:
+    async def authorize(self, ctx: ToolContext, spec: ToolSpec) -> None:
         ...
 
-    async def check_egress(self, args: Dict[str, Any], spec: "ToolSpec") -> None:
+    async def check_egress(self, args: Dict[str, Any], spec: ToolSpec) -> None:
         ...
 
 
@@ -36,12 +38,12 @@ class IToolPolicy(Protocol):
     """Interface for execution policies (retries, circuit breaker, etc.)"""
     async def with_policy(
         self,
-        attempt_coro_factory: Callable[[], Awaitable["ToolResult"]],
+        attempt_coro_factory: Callable[[], Awaitable[ToolResult]],
         *,
         idempotent: bool,
-        spec: "ToolSpec",
-        ctx: "ToolContext"
-    ) -> "ToolResult":
+        spec: ToolSpec,
+        ctx: ToolContext
+    ) -> ToolResult:
         ...
 
 

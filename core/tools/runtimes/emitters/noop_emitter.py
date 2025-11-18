@@ -6,8 +6,10 @@ Disables event emission for simple execution without event tracking.
 
 from typing import Any, Dict
 
+from ...interfaces.tool_interfaces import IToolEmitter
 
-class NoOpEmitter:
+
+class NoOpEmitter(IToolEmitter):
     """
     No-op implementation of IToolEmitter that doesn't emit events.
     

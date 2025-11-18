@@ -49,8 +49,6 @@ from typing import Any, Dict
 
 # Local imports
 from ..base_executor import BaseToolExecutor
-from ....interfaces.tool_interfaces import IToolExecutor
-from .db_executor import IDbExecutor
 from ....spec.tool_types import DbToolSpec
 from ....spec.tool_context import ToolContext
 from ....spec.tool_result import ToolResult
@@ -84,7 +82,7 @@ from ....defaults import (
 from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
-class BaseDbExecutor(BaseToolExecutor, IDbExecutor, IToolExecutor):
+class BaseDbExecutor(BaseToolExecutor):
     """
     Base class for database tool executors.
     

@@ -16,7 +16,6 @@ Folder Structure:
 - db_strategies/: Database operation strategies (Strategy pattern)
 
 Each executor type follows a consistent pattern:
-- Interface (IDbExecutor, IFunctionExecutor, IHttpExecutor)
 - Factory (DbExecutorFactory for database executors)
 - Base implementation (BaseDbExecutor)
 - Concrete implementations (DynamoDBExecutor, PostgreSQLExecutor, etc.)
@@ -30,17 +29,16 @@ Core:
 - NoOpExecutor: Placeholder executor
 
 Database Executors:
-- IDbExecutor: Interface for database executors
 - DbExecutorFactory: Factory for creating database executors
 - BaseDbExecutor: Base class for database executors
 - DynamoDBExecutor: AWS DynamoDB operations
 
 Function Executors:
-- IFunctionExecutor: Interface for function executors
+- BaseFunctionExecutor: Base class for function executors
 - FunctionToolExecutor: Standard function executor
 
 HTTP Executors:
-- IHttpExecutor: Interface for HTTP executors
+- BaseHttpExecutor: Base class for HTTP executors
 - HttpToolExecutor: Standard HTTP executor
 
 Usage Examples:
@@ -76,8 +74,6 @@ Extending:
 ==========
 Each executor type can be extended by implementing the respective interface
 and following the patterns established in the base implementations.
-
-See README.md files in each subfolder for detailed extensibility guides.
 """
 
 # Core components
@@ -88,19 +84,16 @@ from .noop_executor import NoOpExecutor
 
 # Re-export commonly used executors for convenience
 from .db_executors import (
-    IDbExecutor,
     DbExecutorFactory,
     BaseDbExecutor,
     DynamoDBExecutor,
 )
 from .function_executors import (
-    IFunctionExecutor,
     BaseFunctionExecutor,
     FunctionExecutorFactory,
     FunctionToolExecutor,
 )
 from .http_executors import (
-    IHttpExecutor,
     BaseHttpExecutor,
     HttpExecutorFactory,
     HttpToolExecutor,
@@ -113,17 +106,14 @@ __all__ = [
     "ExecutorFactory",
     "NoOpExecutor",
     # Database executors
-    "IDbExecutor",
     "DbExecutorFactory",
     "BaseDbExecutor",
     "DynamoDBExecutor",
     # Function executors
-    "IFunctionExecutor",
     "BaseFunctionExecutor",
     "FunctionExecutorFactory",
     "FunctionToolExecutor",
     # HTTP executors
-    "IHttpExecutor",
     "BaseHttpExecutor",
     "HttpExecutorFactory",
     "HttpToolExecutor",

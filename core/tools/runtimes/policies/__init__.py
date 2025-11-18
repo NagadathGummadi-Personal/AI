@@ -46,6 +46,7 @@ from .retry import (
 )
 
 from .noop_policy import NoOpPolicy
+from .policy_factory import PolicyFactory
 
 __all__ = [
     # Circuit Breaker
@@ -63,5 +64,6 @@ __all__ = [
     "RetryPolicyFactory",
     # General Policy
     "NoOpPolicy",
+    "PolicyFactory",
 ]
 

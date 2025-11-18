@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, Field
@@ -16,7 +18,6 @@ from ..enum import ToolType, ToolReturnType, ToolReturnTarget
 from .tool_parameters import ToolParameter
 from .tool_config import RetryConfig, CircuitBreakerConfig, IdempotencyConfig
 
-# Type checking imports
 if TYPE_CHECKING:
     from ..runtimes.idempotency.idempotency_key_generator import IIdempotencyKeyGenerator
 

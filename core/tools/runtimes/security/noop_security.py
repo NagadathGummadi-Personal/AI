@@ -6,11 +6,12 @@ Disables security checks for development/testing environments.
 
 from typing import Any, Dict
 
+from ...interfaces.tool_interfaces import IToolSecurity
 from ...spec.tool_context import ToolContext
 from ...spec.tool_types import ToolSpec
 
 
-class NoOpSecurity:
+class NoOpSecurity(IToolSecurity):
     """
     No-op implementation of IToolSecurity that doesn't perform security checks.
     

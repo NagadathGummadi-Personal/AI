@@ -6,12 +6,13 @@ Disables policy controls (retries, circuit breakers) for simple execution.
 
 from typing import Callable, Awaitable
 
+from ...interfaces.tool_interfaces import IToolPolicy
 from ...spec.tool_context import ToolContext
 from ...spec.tool_result import ToolResult
 from ...spec.tool_types import ToolSpec
 
 
-class NoOpPolicy:
+class NoOpPolicy(IToolPolicy):
     """
     No-op implementation of IToolPolicy that doesn't apply policy controls.
     

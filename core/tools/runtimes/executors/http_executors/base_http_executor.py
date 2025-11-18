@@ -43,6 +43,8 @@ Note:
     Subclasses must implement _execute_http_request() method.
 """
 
+from __future__ import annotations
+
 # Standard library
 import time
 import asyncio

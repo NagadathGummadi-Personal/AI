@@ -4,9 +4,10 @@ Executor Interface for Tools Specification System.
 This module defines the interface for tool execution strategies.
 """
 
+from __future__ import annotations
+
 from typing import Protocol, Dict, Any, runtime_checkable, TYPE_CHECKING
 
-# Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
     from ...spec.tool_result import ToolResult
     from ...spec.tool_context import ToolContext
@@ -30,7 +31,7 @@ class IExecutor(Protocol):
                 pass
     """
     
-    async def execute(self, args: Dict[str, Any], ctx: "ToolContext") -> "ToolResult":
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """
         Execute the tool with given arguments and context.
         
