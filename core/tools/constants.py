@@ -193,6 +193,7 @@ EMPTY_STRING = ''
 
 #Enum constants
 JSON = 'json'
+TOON = 'toon'
 TEXT = 'text'
 HUMAN = 'human'
 LLM = 'llm'

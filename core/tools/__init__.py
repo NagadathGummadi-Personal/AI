@@ -58,6 +58,15 @@ from .runtimes.executors import (
     ExecutorFactory,
 )
 
+# Serialization utilities
+from .serializers import (
+    tool_to_json,
+    tool_to_dict,
+    tool_from_json,
+    tool_from_dict,
+    ToolSerializationError,
+)
+
 __all__ = [
     # Types
     "ToolType",
@@ -91,4 +100,10 @@ __all__ = [
     "FunctionToolExecutor",
     "HttpToolExecutor",
     "ExecutorFactory",
+    # Serialization
+    "tool_to_json",
+    "tool_to_dict",
+    "tool_from_json",
+    "tool_from_dict",
+    "ToolSerializationError",
 ]

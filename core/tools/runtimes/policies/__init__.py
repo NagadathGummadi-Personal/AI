@@ -45,6 +45,8 @@ from .retry import (
     RetryPolicyFactory,
 )
 
+from .noop_policy import NoOpPolicy
+
 __all__ = [
     # Circuit Breaker
     "ICircuitBreakerPolicy",
@@ -59,5 +61,7 @@ __all__ = [
     "ExponentialBackoffRetryPolicy",
     "CustomRetryPolicy",
     "RetryPolicyFactory",
+    # General Policy
+    "NoOpPolicy",
 ]
 

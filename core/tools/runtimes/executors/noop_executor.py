@@ -44,11 +44,7 @@ class NoOpExecutor(BaseToolExecutor):
         """
         super().__init__(spec)
     
-    async def _execute_impl(
-        self,
-        args: Dict[str, Any],
-        ctx: ToolContext
-    ) -> ToolResult:
+    async def execute(self, args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         """
         Execute the no-op operation (does nothing).
         
@@ -65,9 +61,7 @@ class NoOpExecutor(BaseToolExecutor):
             return_target=self.spec.return_target or ToolReturnTarget.STEP,
             content={
                 "status": "noop",
-                "message": "NoOp executor - no operation performed"
-            },
-            metadata={
+                "message": "NoOp executor - no operation performed",
                 "executor": "NoOpExecutor",
                 "tool_name": self.spec.tool_name
             }

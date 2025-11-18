@@ -24,11 +24,13 @@ from .constants import (
     CIRCUIT_BREAKER_STATE_CLOSED,
     CIRCUIT_BREAKER_STATE_OPEN,
     CIRCUIT_BREAKER_STATE_HALF_OPEN,
+    TOON,
 )
 
 class ToolReturnType(str, Enum):
     """Enumeration for tool return formats"""
     JSON = JSON
+    TOON = TOON
     TEXT = TEXT
 
 
