@@ -74,6 +74,12 @@ from ....constants import (
     TOOL,
     ERROR,
     DB,
+    TABLE_NAME,
+    DATABASE,
+    DRIVER,
+    ROWS_AFFECTED,
+    ROW_COUNT,
+    IDEMPOTENCY_KEY
 )
 from ....defaults import (
     DEFAULT_DB_CONTEXT_DATA,
@@ -236,10 +242,10 @@ class BaseDbExecutor(BaseToolExecutor):
             async def _invoke_db() -> Dict[str, Any]:
                 if ctx.tracer:
                     # Handle both table_name (DynamoDB) and database (PostgreSQL, MySQL, etc.)
-                    db_name = getattr(self.spec, 'table_name', None) or getattr(self.spec, 'database', None)
+                    db_name = getattr(self.spec, TABLE_NAME, None) or getattr(self.spec, DATABASE, None)
                     async with ctx.tracer.span(
-                        f"{self.spec.tool_name}.db",
-                        {"driver": self.spec.driver, "database": db_name}
+                        f"{self.spec.tool_name}.{DB}",
+                        {DRIVER: self.spec.driver, DATABASE: db_name}
                     ):
                         return await self._execute_db_operation(args, ctx, timeout)
                 return await self._execute_db_operation(args, ctx, timeout)
@@ -259,7 +265,7 @@ class BaseDbExecutor(BaseToolExecutor):
             execution_time = time.time() - start_time
             
             # Log successful completion
-            rows_affected = result_content.get('rows_affected') or result_content.get('row_count', 1)
+            rows_affected = result_content.get(ROWS_AFFECTED) or result_content.get(ROW_COUNT, 1)
             self.logger.info(LOG_DB_COMPLETED,
                 rows_affected=rows_affected,
                 execution_time_ms=round(execution_time * 1000, 2),
@@ -280,7 +286,7 @@ class BaseDbExecutor(BaseToolExecutor):
                 and ctx.memory
                 and self.spec.idempotency.persist_result
                 and not bypass_idempotency
-                and getattr(ctx, "idempotency_key", None)
+                and getattr(ctx, IDEMPOTENCY_KEY, None)
             ):
                 await ctx.memory.set(
                     f"{IDEMPOTENCY_CACHE_PREFIX}:{ctx.idempotency_key}",

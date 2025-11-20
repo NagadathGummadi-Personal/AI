@@ -264,3 +264,22 @@ UNKNOWN_SECURITY_ERROR = "Unknown security implementation: {SECURITY_NAME}. Avai
 
 #Policy constants
 UNKNOWN_POLICY_ERROR = "Unknown policy implementation: {POLICY_NAME}. Available: {AVAILABLE_POLICIES}"
+
+#Base DB Executor constants
+TABLE_NAME = 'table_name'
+DATABASE = 'database'
+DRIVER = 'driver'
+DB_NAME = 'db_name'
+DB_OPERATION = 'db_operation'
+DB_OPERATION_COMPLETED = 'db_operation_completed'
+DB_OPERATION_FAILED = 'db_operation_failed'
+DB_OPERATION_STARTED = 'db_operation_started'
+DB_OPERATION_COMPLETED = 'db_operation_completed'
+DB_OPERATION_FAILED = 'db_operation_failed'
+DB_OPERATION_STARTED = 'db_operation_started'
+DB_OPERATION_COMPLETED = 'db_operation_completed'
+DB_OPERATION_FAILED = 'db_operation_failed'
+DB_OPERATION_STARTED = 'db_operation_started'
+DB='db'
+IDEMPOTENCY_KEY='idempotency_key'
+ROW_COUNT='row_count'
