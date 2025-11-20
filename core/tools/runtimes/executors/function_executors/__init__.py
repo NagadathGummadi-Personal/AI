@@ -85,12 +85,10 @@ Note:
 """
 
 from .base_function_executor import BaseFunctionExecutor
-from .function_executor_factory import FunctionExecutorFactory
 from .function_executor import FunctionToolExecutor
 
 __all__ = [
     "BaseFunctionExecutor",
-    "FunctionExecutorFactory",
     "FunctionToolExecutor",
 ]
 

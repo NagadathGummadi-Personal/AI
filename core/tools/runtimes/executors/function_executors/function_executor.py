@@ -54,41 +54,12 @@ Note:
 """
 
 # Standard library
-import time
 import asyncio
-from typing import Any, Awaitable, Callable, Dict
+from typing import Any, Dict
 
 # Local imports
 from .base_function_executor import BaseFunctionExecutor
-from ....spec.tool_types import ToolSpec
 from ....spec.tool_context import ToolContext
-from ....spec.tool_result import ToolResult
-from ....constants import (
-    LOG_STARTING_EXECUTION,
-    LOG_PARAMETERS,
-    LOG_VALIDATING,
-    LOG_VALIDATION_PASSED,
-    LOG_VALIDATION_SKIPPED,
-    LOG_AUTH_CHECK,
-    LOG_AUTH_PASSED,
-    LOG_AUTH_SKIPPED,
-    LOG_EGRESS_CHECK,
-    LOG_EGRESS_PASSED,
-    LOG_EGRESS_SKIPPED,
-    LOG_IDEMPOTENCY_CACHE_HIT,
-    LOG_EXECUTION_COMPLETED,
-    LOG_EXECUTION_FAILED,
-    IDEMPOTENCY_CACHE_PREFIX,
-    TOOL_EXECUTION_TIME,
-    TOOL_EXECUTIONS,
-    STATUS,
-    SUCCESS,
-    TOOL,
-    ERROR,
-    EXECUTION_FAILED,
-)
-from ....defaults import DEFAULT_TOOL_CONTEXT_DATA
-from utils.logging.LoggerAdaptor import LoggerAdaptor
 
 
 class FunctionToolExecutor(BaseFunctionExecutor):

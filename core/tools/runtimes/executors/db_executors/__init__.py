@@ -2,16 +2,15 @@
 Database Executors for Tools Specification System.
 
 This module provides database-specific executors for various database providers,
-following a modular architecture with interface, factory, and implementations.
+following a modular architecture with base class and specific implementations.
 
 Strategy Pattern Implementation:
 =================================
 All executors extend BaseDbExecutor, allowing runtime selection of the appropriate
-execution strategy for each database type via DbExecutorFactory.
+execution strategy for each database type via ExecutorFactory.
 
 Available Components:
 =====================
-- DbExecutorFactory: Factory for creating database executors
 - BaseDbExecutor: Base implementation with common patterns
 - DynamoDBExecutor: AWS DynamoDB operations
 
@@ -30,11 +29,9 @@ BaseDbExecutor (Base implementation)
 ├── MySQLExecutor (MySQL - to be implemented)
 └── SQLiteExecutor (SQLite - to be implemented)
 
-DbExecutorFactory (Creates executors)
-
 Usage:
-    # Using factory (recommended)
-    from core.tools.runtimes.executors.db_executors import DbExecutorFactory
+    # Using unified ExecutorFactory (recommended)
+    from core.tools.runtimes.executors import ExecutorFactory
     from core.tools.spec.tool_types import DynamoDbToolSpec
     
     spec = DynamoDbToolSpec(
@@ -47,7 +44,7 @@ Usage:
         parameters=[...]
     )
     
-    executor = DbExecutorFactory.get_executor(spec)
+    executor = ExecutorFactory.create_executor(spec)
     result = await executor.execute(args, ctx)
     
     # Or create directly
@@ -77,16 +74,16 @@ To add a new database executor:
                 'status': 'success'
             }
 
-2. Register with the factory:
+2. Register with the unified ExecutorFactory:
 
-    from core.tools.runtimes.executors.db_executors import DbExecutorFactory
+    from core.tools.runtimes.executors import ExecutorFactory
     
-    DbExecutorFactory.register('mongodb', MongoDBExecutor)
+    ExecutorFactory.register_db_executor('mongodb', MongoDBExecutor)
 
 3. Use it:
 
     spec = DbToolSpec(driver='mongodb', ...)
-    executor = DbExecutorFactory.get_executor(spec)
+    executor = ExecutorFactory.create_executor(spec)
     result = await executor.execute(args, ctx)
 
 Note:
@@ -94,12 +91,10 @@ Note:
     across multiple executions via the context and metrics systems.
 """
 
-from .db_executor_factory import DbExecutorFactory
 from .base_db_executor import BaseDbExecutor
 from .dynamodb_executor import DynamoDBExecutor
 
 __all__ = [
-    "DbExecutorFactory",
     "BaseDbExecutor",
     "DynamoDBExecutor",
 ]

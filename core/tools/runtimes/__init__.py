@@ -58,7 +58,6 @@ from .executors import (
     HttpToolExecutor,
     BaseDbExecutor,
     DynamoDBExecutor,
-    DbExecutorFactory,
 )
 
 # Re-export from validators module
@@ -97,7 +96,6 @@ __all__ = [
     # Database executors
     "BaseDbExecutor",
     "DynamoDBExecutor",
-    "DbExecutorFactory",
     # Validators
     "NoOpValidator",
     "BasicValidator",
