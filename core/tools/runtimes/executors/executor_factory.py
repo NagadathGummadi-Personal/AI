@@ -415,7 +415,6 @@ class ExecutorFactory:
         
         del cls._db_executors[driver]
     
-    # ==================== Listing Methods ====================
     
     @classmethod
     def list_function_executor_types(cls) -> list[str]:

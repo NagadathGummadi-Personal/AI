@@ -66,14 +66,4 @@ class NoOpExecutor(BaseToolExecutor):
                 "tool_name": self.spec.tool_name
             }
         )
-    
-    async def validate_args(self, args: Dict[str, Any]) -> None:
-        """
-        Validate arguments (no-op, always passes).
-        
-        Args:
-            args: Input arguments (ignored)
-        """
-        # No validation in no-op executor
-        pass
 
