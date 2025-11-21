@@ -28,7 +28,10 @@ def register_azure_gpt41_mini(registry: 'ModelRegistry') -> None:
         model_family=ModelFamily.AZURE_GPT_4_1_MINI,
         display_name="Azure GPT-4.1 Mini",
         llm_type=LLMType.CHAT,
+        # Can handle text, image, or text+image together (multimodal)
+        # Does NOT support audio or video
         supported_input_types={InputMediaType.TEXT, InputMediaType.IMAGE, InputMediaType.MULTIMODAL},
+        # Can output text, JSON, image, and audio
         supported_output_types={OutputMediaType.TEXT, OutputMediaType.JSON, OutputMediaType.AUDIO, OutputMediaType.IMAGE},
         supports_streaming=True,
         supports_function_calling=True,
@@ -51,6 +54,19 @@ def register_azure_gpt41_mini(registry: 'ModelRegistry') -> None:
             "top_p": 1.0,
             "frequency_penalty": 0.0,
             "presence_penalty": 0.0,
+        },
+        parameter_ranges={
+            # GPT-4.1 Mini restrictions
+            "temperature": (1.0, 1.0),  # Only default (1.0) supported
+            "top_p": (0.0, 1.0),
+            "frequency_penalty": (-2.0, 2.0),
+            "presence_penalty": (-2.0, 2.0),
+            "max_tokens": (1, 16384),
+        },
+        supported_parameters={
+            # GPT-4.1 Mini only supports these parameters
+            "max_tokens", "top_p", "frequency_penalty", "presence_penalty", "stop"
+            # Note: temperature is NOT in supported list (uses default only)
         },
         api_requirements={
             "uses_deployment_name": True,

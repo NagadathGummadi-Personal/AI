@@ -8,11 +8,6 @@ standard defaults for LLM operations.
 from typing import Dict, Any, Optional
 from .enum import LLMProvider, MessageRole
 from .constants import (
-    DEFAULT_TEMPERATURE,
-    DEFAULT_MAX_TOKENS,
-    DEFAULT_TOP_P,
-    DEFAULT_FREQUENCY_PENALTY,
-    DEFAULT_PRESENCE_PENALTY,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_MAX_RETRIES,
     DEFAULT_RETRY_DELAY_SECONDS,
@@ -22,17 +17,8 @@ from .constants import (
 
 
 # ============================================================================
-# DEFAULT PARAMETERS
+# DEFAULT CONNECTOR CONFIG
 # ============================================================================
-
-DEFAULT_LLM_PARAMETERS = {
-    "temperature": DEFAULT_TEMPERATURE,
-    "max_tokens": DEFAULT_MAX_TOKENS,
-    "top_p": DEFAULT_TOP_P,
-    "frequency_penalty": DEFAULT_FREQUENCY_PENALTY,
-    "presence_penalty": DEFAULT_PRESENCE_PENALTY,
-}
-
 
 DEFAULT_CONNECTOR_CONFIG = {
     "timeout": DEFAULT_TIMEOUT_SECONDS,
@@ -353,30 +339,9 @@ def get_provider_defaults(provider: LLMProvider, category: str = "parameters") -
 
 
 # ============================================================================
-# VALIDATION DEFAULTS
+# NOTE: Parameter validation ranges removed - they should be defined 
+# per-model in ModelMetadata since different models/providers have
+# different parameter requirements (e.g., GPT-4.1 Mini only supports
+# temperature=1.0, while GPT-4 supports 0.0-2.0)
 # ============================================================================
-
-DEFAULT_PARAMETER_RANGES = {
-    "temperature": (0.0, 2.0),
-    "top_p": (0.0, 1.0),
-    "frequency_penalty": (-2.0, 2.0),
-    "presence_penalty": (-2.0, 2.0),
-    "max_tokens": (1, 32000),
-}
-
-
-def get_parameter_range(parameter: str) -> tuple[float, float]:
-    """
-    Get the valid range for a parameter.
-    
-    Args:
-        parameter: Parameter name
-        
-    Returns:
-        Tuple of (min, max) values
-        
-    Example:
-        min_val, max_val = get_parameter_range("temperature")
-    """
-    return DEFAULT_PARAMETER_RANGES.get(parameter, (None, None))
 

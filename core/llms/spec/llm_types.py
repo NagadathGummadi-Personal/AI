@@ -5,7 +5,7 @@ This module defines the metadata schema for LLM models, including
 capabilities, parameters, and provider-specific configuration.
 """
 
-from typing import Dict, Any, Optional, Set, Callable
+from typing import Dict, Any, Optional, Set, Tuple
 from pydantic import BaseModel, Field
 from ..enum import (
     LLMProvider,
@@ -97,6 +97,14 @@ class ModelMetadata(BaseModel):
     default_parameters: Dict[str, Any] = Field(
         default_factory=dict,
         description="Default parameter values"
+    )
+    parameter_ranges: Dict[str, tuple[float, float]] = Field(
+        default_factory=dict,
+        description="Valid parameter ranges (min, max) for this model"
+    )
+    supported_parameters: Optional[set[str]] = Field(
+        default=None,
+        description="Set of parameter names supported by this model (None = all standard params)"
     )
     
     # Provider-specific
@@ -235,6 +243,64 @@ class ModelMetadata(BaseModel):
         input_cost = (prompt_tokens / 1000) * self.cost_per_1k_input_tokens
         output_cost = (completion_tokens / 1000) * self.cost_per_1k_output_tokens
         return input_cost + output_cost
+    
+    def validate_parameter(self, param: str, value: Any) -> bool:
+        """
+        Validate a parameter value for this model.
+        
+        Args:
+            param: Parameter name
+            value: Parameter value
+            
+        Returns:
+            True if valid
+            
+        Raises:
+            ValueError: If parameter is not supported or value is out of range
+        """
+        # Check if parameter is supported
+        if self.supported_parameters is not None and param not in self.supported_parameters:
+            raise ValueError(
+                f"Parameter '{param}' not supported by {self.model_name}. "
+                f"Supported: {self.supported_parameters}"
+            )
+        
+        # Check parameter range
+        if param in self.parameter_ranges:
+            min_val, max_val = self.parameter_ranges[param]
+            if not (min_val <= value <= max_val):
+                raise ValueError(
+                    f"Parameter '{param}' value {value} out of range [{min_val}, {max_val}] "
+                    f"for {self.model_name}"
+                )
+        
+        return True
+    
+    def get_parameter_range(self, param: str) -> Optional[Tuple[float, float]]:
+        """
+        Get valid range for a parameter.
+        
+        Args:
+            param: Parameter name
+            
+        Returns:
+            (min, max) tuple or None if no range defined
+        """
+        return self.parameter_ranges.get(param)
+    
+    def is_parameter_supported(self, param: str) -> bool:
+        """
+        Check if a parameter is supported by this model.
+        
+        Args:
+            param: Parameter name
+            
+        Returns:
+            True if supported (or if no restrictions defined)
+        """
+        if self.supported_parameters is None:
+            return True  # No restrictions = all standard params supported
+        return param in self.supported_parameters
     
     def to_dict(self) -> Dict[str, Any]:
         """

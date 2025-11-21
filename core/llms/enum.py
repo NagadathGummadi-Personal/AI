@@ -46,13 +46,16 @@ class InputMediaType(str, Enum):
     Supported input media types.
     
     Defines what types of content can be sent to the LLM.
+    
+    Note: MULTIMODAL indicates the model can handle multiple types in a single
+    request. The exact combination is specified in ModelMetadata.supported_input_types
+    (e.g., {TEXT, IMAGE} for text+vision, {TEXT, AUDIO} for text+audio, etc.)
     """
     TEXT = "text"
     IMAGE = "image"
     AUDIO = "audio"
     VIDEO = "video"
-    DOCUMENT = "document"
-    MULTIMODAL = "multimodal"
+    MULTIMODAL = "multimodal"  # Can mix multiple types - see supported_input_types for specifics
 
 
 class OutputMediaType(str, Enum):
@@ -62,9 +65,10 @@ class OutputMediaType(str, Enum):
     Defines what types of content the LLM can generate.
     """
     TEXT = 'text'
+    JSON = 'json'  # Structured JSON output
     AUDIO = 'audio'
     IMAGE = 'image'
-    JSON = 'json'
+    VIDEO = 'video'
     MULTIMODAL = 'multimodal'
 
 
