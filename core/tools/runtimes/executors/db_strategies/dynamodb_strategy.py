@@ -47,7 +47,12 @@ Note:
 import asyncio
 from typing import Any, Dict, Optional
 from .strategy_interface import IDbOperationStrategy
-
+from core.tools.enum import DatabaseProvider
+from core.tools.constants import (
+    DEFAULT_REGION,
+    ENDPOINT_URL,
+    REGION,
+)
 
 class DynamoDBStrategy(IDbOperationStrategy):
     """
@@ -175,14 +180,14 @@ class DynamoDBStrategy(IDbOperationStrategy):
             def _do_dynamodb_operation():
                 # Get configuration from spec (NOT from args!)
                 table_name = spec.table_name
-                region = getattr(spec, 'region', 'us-west-2')
-                endpoint_url = getattr(spec, 'endpoint_url', None)
+                region = getattr(spec, REGION, DEFAULT_REGION)
+                endpoint_url = getattr(spec, ENDPOINT_URL, None)
                 
                 # Create DynamoDB resource
                 if endpoint_url:
                     # Use custom endpoint (for testing with LocalStack)
                     dynamodb = boto3.resource(
-                        'dynamodb',
+                        DatabaseProvider.DYNAMODB,
                         region_name=region,
                         endpoint_url=endpoint_url,
                         config=config

@@ -1,6 +1,6 @@
 {
-  "backend": "json",
-  "level": "INFO",
+  "backend": "text",
+  "level": "DEBUG",
   "log_directory": "./logs",
   "redaction": {
     "enabled": true,

@@ -25,6 +25,7 @@ from .constants import (
     CIRCUIT_BREAKER_STATE_OPEN,
     CIRCUIT_BREAKER_STATE_HALF_OPEN,
     TOON,
+    DYNAMODB,
 )
 
 class ToolReturnType(str, Enum):
@@ -33,6 +34,9 @@ class ToolReturnType(str, Enum):
     TOON = TOON
     TEXT = TEXT
 
+class DatabaseProvider(str, Enum):
+    """Enumeration for database providers"""
+    DYNAMODB = DYNAMODB
 
 class ToolReturnTarget(str, Enum):
     """Enumeration for tool return routing targets"""
