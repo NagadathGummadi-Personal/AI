@@ -188,6 +188,34 @@ META_DEPLOYMENT = "deployment"
 META_ERROR = "error"
 
 # ============================================================================
+# CONTEXT FIELD KEYS
+# ============================================================================
+
+CONTEXT_REQUEST_ID = "request_id"
+CONTEXT_USER_ID = "user_id"
+CONTEXT_SESSION_ID = "session_id"
+CONTEXT_TENANT_ID = "tenant_id"
+CONTEXT_TRACE_ID = "trace_id"
+CONTEXT_LOCALE = "locale"
+CONTEXT_TIMEZONE = "timezone"
+CONTEXT_METADATA = "metadata"
+CONTEXT_CONFIG = "config"
+
+# Default context values
+DEFAULT_LOCALE = "en-US"
+DEFAULT_TIMEZONE = "UTC"
+
+# Context prefixes
+PREFIX_REQUEST = "req-"
+PREFIX_TEST_USER = "test-user"
+PREFIX_TEST_SESSION = "test-session"
+PREFIX_TEST_TENANT = "test-tenant"
+
+# Context test values
+TEST_ENVIRONMENT_KEY = "environment"
+TEST_ENVIRONMENT_VALUE = "test"
+
+# ============================================================================
 # MESSAGE FIELD KEYS
 # ============================================================================
 

@@ -1,20 +1,20 @@
 """
-OpenAI LLM Implementation.
+Azure OpenAI Base LLM Implementation.
 
-This module provides the concrete LLM implementation for OpenAI's API.
+This module provides the base LLM implementation for Azure OpenAI Service.
+Shared by all Azure models, with model-specific implementations overriding as needed.
 """
 
 import json
 import time
 from typing import Dict, Any, List, AsyncIterator
-from ..base_llm import BaseLLM
+from ..base.implementation import BaseLLM
 from ...spec.llm_result import LLMResponse, LLMStreamChunk, LLMUsage
 from ...spec.llm_context import LLMContext
-from ...exceptions import ProviderError, InvalidResponseError, StreamingError
+from ...exceptions import InvalidResponseError
 from ...enum import FinishReason
 from ...constants import (
     OPENAI_FIELD_MESSAGES,
-    OPENAI_FIELD_MODEL,
     RESPONSE_FIELD_CHOICES,
     RESPONSE_FIELD_MESSAGE,
     RESPONSE_FIELD_CONTENT,
@@ -29,11 +29,11 @@ from ...constants import (
     STREAM_DATA_PREFIX_LENGTH,
     STREAM_DONE_TOKEN,
     STREAM_PARAM_TRUE,
-    MESSAGE_FIELD_CONTENT,
     MESSAGE_FIELD_ROLE,
     META_MODEL,
     META_ID,
-    PROVIDER_OPENAI,
+    META_DEPLOYMENT,
+    PROVIDER_AZURE,
     PARAM_MAX_TOKENS,
     ERROR_MSG_RESPONSE_MISSING_CHOICES,
     FINISH_REASON_STOP,
@@ -44,23 +44,28 @@ from ...constants import (
 )
 
 
-class OpenAILLM(BaseLLM):
+class AzureBaseLLM(BaseLLM):
     """
-    OpenAI LLM implementation.
+    Azure OpenAI base LLM implementation.
     
-    Implements get_answer() and stream_answer() for OpenAI's chat completion API.
+    Provides shared implementation for all Azure OpenAI models.
+    Implements get_answer() and stream_answer() for Azure OpenAI's API.
+    Uses the same response format as OpenAI.
     
     Example:
-        from core.llms.runtimes.connectors.openai import OpenAIConnector, OpenAILLM
+        from core.llms.runtimes.connectors.azure import AzureConnector, AzureLLM
         from core.llms.spec import LLMContext
         
-        config = {"api_key": "sk-..."}
-        connector = OpenAIConnector(config)
-        llm = OpenAILLM(metadata, connector)
+        config = {
+            "api_key": "...",
+            "endpoint": "https://my-resource.openai.azure.com",
+            "deployment_name": "gpt-4"
+        }
+        connector = AzureConnector(config)
+        llm = AzureLLM(metadata, connector)
         
         messages = [{"role": "user", "content": "Hello!"}]
         response = await llm.get_answer(messages, LLMContext(), temperature=0.7)
-        print(response.content)
     """
     
     async def get_answer(
@@ -70,7 +75,7 @@ class OpenAILLM(BaseLLM):
         **kwargs: Any
     ) -> LLMResponse:
         """
-        Get complete response from OpenAI.
+        Get complete response from Azure OpenAI.
         
         Args:
             messages: List of message dicts
@@ -87,7 +92,7 @@ class OpenAILLM(BaseLLM):
         
         # Merge parameters
         params = self._merge_parameters(kwargs)
-        max_tokens = params.get("max_tokens", self.metadata.max_output_tokens)
+        max_tokens = params.get(PARAM_MAX_TOKENS, self.metadata.max_output_tokens)
         
         # Validate token limits
         self._validate_token_limits(messages, max_tokens)
@@ -95,9 +100,8 @@ class OpenAILLM(BaseLLM):
         # Apply parameter mappings
         mapped_params = self._apply_parameter_mappings(params)
         
-        # Build request payload
+        # Build request payload (Azure doesn't need model name in payload)
         payload = {
-            OPENAI_FIELD_MODEL: self.metadata.model_name,
             OPENAI_FIELD_MESSAGES: messages,
             **mapped_params
         }
@@ -105,7 +109,7 @@ class OpenAILLM(BaseLLM):
         # Make request
         response = await self.connector.request("chat/completions", payload)
         
-        # Parse response
+        # Parse response (same format as OpenAI)
         return self._parse_response(response, start_time)
     
     async def stream_answer(
@@ -115,7 +119,7 @@ class OpenAILLM(BaseLLM):
         **kwargs: Any
     ) -> AsyncIterator[LLMStreamChunk]:
         """
-        Get streaming response from OpenAI.
+        Get streaming response from Azure OpenAI.
         
         Args:
             messages: List of message dicts
@@ -132,7 +136,7 @@ class OpenAILLM(BaseLLM):
         
         # Merge parameters
         params = self._merge_parameters(kwargs)
-        max_tokens = params.get("max_tokens", self.metadata.max_output_tokens)
+        max_tokens = params.get(PARAM_MAX_TOKENS, self.metadata.max_output_tokens)
         
         # Validate token limits
         self._validate_token_limits(messages, max_tokens)
@@ -142,7 +146,6 @@ class OpenAILLM(BaseLLM):
         
         # Build request payload
         payload = {
-            OPENAI_FIELD_MODEL: self.metadata.model_name,
             OPENAI_FIELD_MESSAGES: messages,
             STREAM_PARAM_TRUE: True,
             **mapped_params
@@ -152,7 +155,7 @@ class OpenAILLM(BaseLLM):
         accumulated_content = []
         
         async for line in self.connector.stream_request("chat/completions", payload):
-            # OpenAI sends "data: {...}" format
+            # Azure OpenAI uses same format as OpenAI: "data: {...}"
             line = line.strip()
             if not line:
                 continue
@@ -169,7 +172,7 @@ class OpenAILLM(BaseLLM):
                     finish_reason=FinishReason.STOP,
                     usage=LLMUsage(
                         prompt_tokens=self._estimate_tokens(messages),
-                        completion_tokens=self._estimate_tokens([{MESSAGE_FIELD_CONTENT: "".join(accumulated_content)}]),
+                        completion_tokens=self._estimate_tokens([{"content": "".join(accumulated_content)}]),
                         duration_ms=duration_ms
                     )
                 )
@@ -213,7 +216,7 @@ class OpenAILLM(BaseLLM):
     
     def _parse_response(self, response: Dict[str, Any], start_time: float) -> LLMResponse:
         """
-        Parse OpenAI API response into LLMResponse.
+        Parse Azure OpenAI API response into LLMResponse.
         
         Args:
             response: Raw API response
@@ -230,12 +233,16 @@ class OpenAILLM(BaseLLM):
             if not choices:
                 raise InvalidResponseError(
                     ERROR_MSG_RESPONSE_MISSING_CHOICES,
-                    provider=PROVIDER_OPENAI,
+                    provider=PROVIDER_AZURE,
                     details={"response": response}
                 )
             
             message = choices[0].get(RESPONSE_FIELD_MESSAGE, {})
-            content = message.get(RESPONSE_FIELD_CONTENT, "")
+            content = message.get(RESPONSE_FIELD_CONTENT)
+            
+            # Handle null content
+            if content is None:
+                content = ""
             finish_reason = choices[0].get(RESPONSE_FIELD_FINISH_REASON)
             
             # Parse usage
@@ -261,18 +268,19 @@ class OpenAILLM(BaseLLM):
                 metadata={
                     META_MODEL: response.get(META_MODEL),
                     META_ID: response.get(META_ID),
+                    META_DEPLOYMENT: self.connector.deployment_name,
                 }
             )
         
         except (KeyError, TypeError, AttributeError) as e:
             raise InvalidResponseError(
-                f"Failed to parse OpenAI response: {str(e)}",
-                provider=PROVIDER_OPENAI,
+                f"Failed to parse Azure OpenAI response: {str(e)}",
+                provider=PROVIDER_AZURE,
                 details={"error": str(e), "response": response}
             )
     
     def _map_finish_reason(self, reason: str) -> FinishReason:
-        """Map OpenAI finish reason to standard enum."""
+        """Map Azure finish reason to standard enum."""
         mapping = {
             FINISH_REASON_STOP: FinishReason.STOP,
             FINISH_REASON_LENGTH: FinishReason.LENGTH,

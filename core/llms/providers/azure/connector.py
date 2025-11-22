@@ -8,7 +8,7 @@ import os
 import asyncio
 from typing import Dict, Any, Optional
 import aiohttp
-from ..base_connector import BaseConnector
+from ..base.connector import BaseConnector
 from ...exceptions import (
     ConfigurationError,
     AuthenticationError,

@@ -201,24 +201,56 @@ class ModelRegistry:
         if self._initialized:
             return
         
-        # Import and run registration functions
+        # Register models from new providers structure
         try:
-            from .model_registries.openai_models import register_openai_models
-            register_openai_models(self)
-        except ImportError:
-            pass  # OpenAI models not available
-        
-        try:
-            from .model_registries.azure_models import register_azure_models
-            register_azure_models(self)
-        except ImportError:
-            pass  # Azure models not available
-        
-        try:
-            from .model_registries.azure_gpt41_mini import register_azure_gpt41_mini
-            register_azure_gpt41_mini(self)
+            from ..providers.azure.models.gpt41_mini import GPT41MiniMetadata
+            from ..spec.llm_types import ModelMetadata
+            from ..enum import LLMProvider, ModelFamily, InputMediaType, OutputMediaType, LLMType
+            from ..constants import (
+                PARAM_MAX_TOKENS, PARAM_MAX_COMPLETION_TOKENS,
+                PARAM_TOP_P, PARAM_FREQUENCY_PENALTY, PARAM_PRESENCE_PENALTY, PARAM_STOP,
+                API_REQ_USES_DEPLOYMENT_NAME, API_REQ_REQUIRES_API_KEY,
+                API_REQ_REQUIRES_ENDPOINT, API_REQ_REQUIRES_API_VERSION,
+                API_REQ_SUPPORTS_STREAMING,
+            )
+            
+            # Register Azure GPT-4.1 Mini
+            metadata = ModelMetadata(
+                model_name=GPT41MiniMetadata.NAME,
+                provider=LLMProvider.AZURE,
+                model_family=ModelFamily.AZURE_GPT_4_1_MINI,
+                display_name=GPT41MiniMetadata.DISPLAY_NAME,
+                llm_type=LLMType.CHAT,
+                supported_input_types={InputMediaType.TEXT, InputMediaType.IMAGE, InputMediaType.MULTIMODAL},
+                supported_output_types={OutputMediaType.TEXT, OutputMediaType.JSON, OutputMediaType.AUDIO, OutputMediaType.IMAGE},
+                supports_streaming=GPT41MiniMetadata.SUPPORTS_STREAMING,
+                supports_function_calling=GPT41MiniMetadata.SUPPORTS_FUNCTION_CALLING,
+                supports_vision=GPT41MiniMetadata.SUPPORTS_VISION,
+                supports_json_mode=GPT41MiniMetadata.SUPPORTS_JSON_MODE,
+                max_context_length=GPT41MiniMetadata.MAX_CONTEXT_LENGTH,
+                max_output_tokens=GPT41MiniMetadata.MAX_TOKENS,
+                max_input_tokens=GPT41MiniMetadata.MAX_INPUT_TOKENS,
+                parameter_mappings=GPT41MiniMetadata.PARAMETER_MAPPINGS,
+                default_parameters=GPT41MiniMetadata.DEFAULT_PARAMETERS,
+                parameter_ranges=GPT41MiniMetadata.PARAMETER_RANGES,
+                supported_parameters=GPT41MiniMetadata.SUPPORTED_PARAMS,
+                api_requirements={
+                    API_REQ_USES_DEPLOYMENT_NAME: True,
+                    API_REQ_REQUIRES_API_KEY: True,
+                    API_REQ_REQUIRES_ENDPOINT: True,
+                    API_REQ_REQUIRES_API_VERSION: True,
+                    API_REQ_SUPPORTS_STREAMING: True,
+                },
+                cost_per_1k_input_tokens=GPT41MiniMetadata.COST_PER_1K_INPUT,
+                cost_per_1k_output_tokens=GPT41MiniMetadata.COST_PER_1K_OUTPUT,
+                is_deprecated=False,
+            )
+            self.register_model(metadata)
         except ImportError:
             pass  # Azure GPT-4.1 Mini not available
+        
+        # TODO: Add OpenAI models when migrated
+        # TODO: Add other Azure models when implemented
         
         self._initialized = True
 

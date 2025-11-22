@@ -6,16 +6,25 @@ based on model metadata and provider configuration.
 """
 
 from typing import Dict, Any, Optional, List
-from .base_llm import BaseLLM
+from ..providers.base.implementation import BaseLLM
 from .model_registry import get_model_registry
-from .connectors.openai_connector import OpenAIConnector
-from .connectors.azure_connector import AzureConnector
-from .implementations.openai_llm import OpenAILLM
-from .implementations.azure_llm import AzureLLM
+from ..providers.azure.connector import AzureConnector
+from ..providers.azure.base_implementation import AzureBaseLLM
 from ..spec.llm_types import ModelMetadata
 from ..enum import LLMProvider
 from ..exceptions import ModelNotFoundError, ConfigurationError
 from ..constants import PROVIDER_OPENAI, PROVIDER_AZURE
+
+
+# OpenAI not yet migrated - placeholders
+class OpenAIConnector:
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("OpenAI not yet migrated to providers structure")
+
+
+class OpenAILLM:
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("OpenAI not yet migrated to providers structure")
 
 
 class LLMFactory:
@@ -112,7 +121,7 @@ class LLMFactory:
         
         elif provider == LLMProvider.AZURE:
             connector = AzureConnector(connector_config)
-            return AzureLLM(metadata, connector)
+            return AzureBaseLLM(metadata, connector)
         
         else:
             raise ConfigurationError(

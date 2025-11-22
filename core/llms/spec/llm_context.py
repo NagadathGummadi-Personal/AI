@@ -9,6 +9,25 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field
 import uuid
 
+from ..constants import (
+    CONTEXT_REQUEST_ID,
+    CONTEXT_USER_ID,
+    CONTEXT_SESSION_ID,
+    CONTEXT_TENANT_ID,
+    CONTEXT_TRACE_ID,
+    CONTEXT_LOCALE,
+    CONTEXT_METADATA,
+    CONTEXT_CONFIG,
+    DEFAULT_LOCALE,
+    DEFAULT_TIMEZONE,
+    PREFIX_REQUEST,
+    PREFIX_TEST_USER,
+    PREFIX_TEST_SESSION,
+    PREFIX_TEST_TENANT,
+    TEST_ENVIRONMENT_KEY,
+    TEST_ENVIRONMENT_VALUE,
+)
+
 
 class LLMContext(BaseModel):
     """
@@ -38,7 +57,7 @@ class LLMContext(BaseModel):
     
     # Identifiers
     request_id: str = Field(
-        default_factory=lambda: f"req-{uuid.uuid4()}",
+        default_factory=lambda: f"{PREFIX_REQUEST}{uuid.uuid4()}",
         description="Unique request identifier"
     )
     user_id: Optional[str] = Field(
@@ -60,11 +79,11 @@ class LLMContext(BaseModel):
     
     # Localization
     locale: str = Field(
-        default="en-US",
+        default=DEFAULT_LOCALE,
         description="User locale/language"
     )
     timezone: str = Field(
-        default="UTC",
+        default=DEFAULT_TIMEZONE,
         description="User timezone"
     )
     
@@ -83,11 +102,11 @@ class LLMContext(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "request_id": "req-12345",
-                    "user_id": "user-001",
-                    "session_id": "session-abc",
-                    "locale": "en-US",
-                    "metadata": {
+                    CONTEXT_REQUEST_ID: f"{PREFIX_REQUEST}12345",
+                    CONTEXT_USER_ID: "user-001",
+                    CONTEXT_SESSION_ID: "session-abc",
+                    CONTEXT_LOCALE: DEFAULT_LOCALE,
+                    CONTEXT_METADATA: {
                         "app": "chatbot",
                         "version": "1.0"
                     }
@@ -111,7 +130,7 @@ class LLMContext(BaseModel):
         """
         new_metadata = self.metadata.copy()
         new_metadata.update(kwargs)
-        return self.model_copy(update={"metadata": new_metadata})
+        return self.model_copy(update={CONTEXT_METADATA: new_metadata})
     
     def with_config(self, **kwargs) -> 'LLMContext':
         """
@@ -128,7 +147,7 @@ class LLMContext(BaseModel):
         """
         new_config = self.config.copy()
         new_config.update(kwargs)
-        return self.model_copy(update={"config": new_config})
+        return self.model_copy(update={CONTEXT_CONFIG: new_config})
     
     def get_metadata(self, key: str, default: Any = None) -> Any:
         """
@@ -164,12 +183,12 @@ class LLMContext(BaseModel):
             Dictionary with loggable context data
         """
         return {
-            "request_id": self.request_id,
-            "user_id": self.user_id,
-            "session_id": self.session_id,
-            "tenant_id": self.tenant_id,
-            "trace_id": self.trace_id,
-            "locale": self.locale,
+            CONTEXT_REQUEST_ID: self.request_id,
+            CONTEXT_USER_ID: self.user_id,
+            CONTEXT_SESSION_ID: self.session_id,
+            CONTEXT_TENANT_ID: self.tenant_id,
+            CONTEXT_TRACE_ID: self.trace_id,
+            CONTEXT_LOCALE: self.locale,
         }
 
 
@@ -215,9 +234,9 @@ def create_test_context() -> LLMContext:
         context = create_test_context()
     """
     return LLMContext(
-        user_id="test-user",
-        session_id="test-session",
-        tenant_id="test-tenant",
-        metadata={"environment": "test"}
+        user_id=PREFIX_TEST_USER,
+        session_id=PREFIX_TEST_SESSION,
+        tenant_id=PREFIX_TEST_TENANT,
+        metadata={TEST_ENVIRONMENT_KEY: TEST_ENVIRONMENT_VALUE}
     )
 

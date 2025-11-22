@@ -87,19 +87,33 @@ from .spec import (
     create_test_context,
 )
 
-# Runtimes
+# Runtimes - Model Registry and Factory
 from .runtimes import (
-    BaseLLM,
-    BaseConnector,
     ModelRegistry,
     get_model_registry,
     reset_registry,
     LLMFactory,
-    OpenAIConnector,
-    OpenAILLM,
-    AzureConnector,
-    AzureLLM,
 )
+
+# Providers - Base classes and implementations
+from .providers.base import (
+    BaseLLM,
+    BaseConnector,
+)
+
+from .providers.azure import (
+    AzureConnector,
+    AzureBaseLLM as AzureLLM,
+)
+
+# OpenAI not yet migrated - placeholder
+class OpenAIConnector:
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("OpenAI not yet migrated to providers structure. Use the new providers.azure for Azure models.")
+
+class OpenAILLM:
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("OpenAI not yet migrated to providers structure. Use the new providers.azure for Azure models.")
 
 __all__ = [
     # Interfaces
