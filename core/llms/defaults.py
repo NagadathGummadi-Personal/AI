@@ -14,6 +14,38 @@ from .constants import (
     META_MODEL_NAME,
     META_PROVIDER,
     CONFIG_CATEGORY_PARAMETERS,
+    TIMEOUT,
+    MAX_RETRIES,
+    RETRY_DELAY,
+    OPENAI_DEFAULT_TEMPERATURE,
+    OPENAI_DEFAULT_MAX_TOKENS,
+    OPENAI_DEFAULT_TOP_P,
+    OPENAI_DEFAULT_FREQUENCY_PENALTY,
+    OPENAI_DEFAULT_PRESENCE_PENALTY,
+    OPENAI_DEFAULT_N,
+    OPENAI_DEFAULT_API_VERSION,
+    OPENAI_DEFAULT_TIMEOUT,
+    OPENAI_DEFAULT_MAX_RETRIES,
+    OPENAI_DEFAULT_RETRY_DELAY,
+    AZURE_DEFAULT_TEMPERATURE,
+    AZURE_DEFAULT_MAX_TOKENS,
+    AZURE_DEFAULT_TOP_P,
+    AZURE_DEFAULT_FREQUENCY_PENALTY,
+    AZURE_DEFAULT_PRESENCE_PENALTY,
+    AZURE_DEFAULT_API_VERSION,
+    AZURE_DEFAULT_TIMEOUT,
+    AZURE_DEFAULT_MAX_RETRIES,
+    AZURE_DEFAULT_RETRY_DELAY,
+    AZURE_DEFAULT_API_VERSION_2024_02_15_PREVIEW,
+    MESSAGE_COUNT,
+    ESTIMATED_TOKENS,
+    PROMPT_TOKENS,
+    COMPLETION_TOKENS,
+    TOTAL_TOKENS,
+    PARAMETERS,
+    CONNECTOR,
+    ROLE,
+    CONTENT,
 )
 
 
@@ -22,9 +54,9 @@ from .constants import (
 # ============================================================================
 
 DEFAULT_CONNECTOR_CONFIG = {
-    "timeout": DEFAULT_TIMEOUT_SECONDS,
-    "max_retries": DEFAULT_MAX_RETRIES,
-    "retry_delay": DEFAULT_RETRY_DELAY_SECONDS,
+    TIMEOUT: DEFAULT_TIMEOUT_SECONDS,
+    MAX_RETRIES: DEFAULT_MAX_RETRIES,
+    RETRY_DELAY: DEFAULT_RETRY_DELAY_SECONDS,
 }
 
 
@@ -33,20 +65,20 @@ DEFAULT_CONNECTOR_CONFIG = {
 # ============================================================================
 
 OPENAI_DEFAULT_PARAMETERS = {
-    "temperature": 0.7,
-    "max_tokens": 4096,
-    "top_p": 1.0,
-    "frequency_penalty": 0.0,
-    "presence_penalty": 0.0,
-    "n": 1,
+    OPENAI_DEFAULT_TEMPERATURE: 0.7,
+    OPENAI_DEFAULT_MAX_TOKENS: 4096,
+    OPENAI_DEFAULT_TOP_P: 1.0,
+    OPENAI_DEFAULT_FREQUENCY_PENALTY: 0.0,
+    OPENAI_DEFAULT_PRESENCE_PENALTY: 0.0,
+    OPENAI_DEFAULT_N: 1,
 }
 
 
 OPENAI_CONNECTOR_DEFAULTS = {
-    "api_version": None,  # Uses latest by default
-    "timeout": 30,
-    "max_retries": 3,
-    "retry_delay": 1,
+    OPENAI_DEFAULT_API_VERSION: None,
+    OPENAI_DEFAULT_TIMEOUT: 30,
+    OPENAI_DEFAULT_MAX_RETRIES: 3,
+    OPENAI_DEFAULT_RETRY_DELAY: 1,
 }
 
 
@@ -55,19 +87,19 @@ OPENAI_CONNECTOR_DEFAULTS = {
 # ============================================================================
 
 AZURE_DEFAULT_PARAMETERS = {
-    "temperature": 0.7,
-    "max_tokens": 4096,
-    "top_p": 1.0,
-    "frequency_penalty": 0.0,
-    "presence_penalty": 0.0,
+    AZURE_DEFAULT_TEMPERATURE: 0.7,
+    AZURE_DEFAULT_MAX_TOKENS: 4096,
+    AZURE_DEFAULT_TOP_P: 1.0,
+    AZURE_DEFAULT_FREQUENCY_PENALTY: 0.0,
+    AZURE_DEFAULT_PRESENCE_PENALTY: 0.0,
 }
 
 
 AZURE_CONNECTOR_DEFAULTS = {
-    "api_version": "2024-02-15-preview",  # Stable version
-    "timeout": 30,
-    "max_retries": 3,
-    "retry_delay": 1,
+    AZURE_DEFAULT_API_VERSION: AZURE_DEFAULT_API_VERSION_2024_02_15_PREVIEW,
+    AZURE_DEFAULT_TIMEOUT: 30,
+    AZURE_DEFAULT_MAX_RETRIES: 3,
+    AZURE_DEFAULT_RETRY_DELAY: 1,
 }
 
 
@@ -89,8 +121,8 @@ def create_system_message(content: str) -> Dict[str, str]:
         system_msg = create_system_message("You are a helpful assistant.")
     """
     return {
-        "role": MessageRole.SYSTEM.value,
-        "content": content
+        ROLE: MessageRole.SYSTEM.value,
+        CONTENT : content
     }
 
 
@@ -108,8 +140,8 @@ def create_user_message(content: str) -> Dict[str, str]:
         user_msg = create_user_message("Hello, how are you?")
     """
     return {
-        "role": MessageRole.USER.value,
-        "content": content
+        ROLE : MessageRole.USER.value,
+        CONTENT : content
     }
 
 
@@ -127,8 +159,8 @@ def create_assistant_message(content: str) -> Dict[str, str]:
         assistant_msg = create_assistant_message("I'm doing well, thank you!")
     """
     return {
-        "role": MessageRole.ASSISTANT.value,
-        "content": content
+        ROLE : MessageRole.ASSISTANT.value,
+        CONTENT : content
     }
 
 
@@ -193,8 +225,8 @@ def LLM_REQUEST_CONTEXT(
     """
     context = DEFAULT_LLM_CONTEXT_DATA(model_name, provider)
     context.update({
-        "message_count": message_count,
-        "estimated_tokens": estimated_tokens,
+        MESSAGE_COUNT : message_count,
+        ESTIMATED_TOKENS : estimated_tokens,
     })
     context.update(kwargs)
     return context
@@ -267,9 +299,9 @@ def create_empty_usage() -> Dict[str, Any]:
         usage = create_empty_usage()
     """
     return {
-        "prompt_tokens": 0,
-        "completion_tokens": 0,
-        "total_tokens": 0,
+        PROMPT_TOKENS : 0,
+        COMPLETION_TOKENS : 0,
+        TOTAL_TOKENS : 0,
     }
 
 
@@ -299,9 +331,9 @@ def create_usage(
         total_tokens = prompt_tokens + completion_tokens
     
     return {
-        "prompt_tokens": prompt_tokens,
-        "completion_tokens": completion_tokens,
-        "total_tokens": total_tokens,
+        PROMPT_TOKENS : prompt_tokens,
+        COMPLETION_TOKENS : completion_tokens,
+        TOTAL_TOKENS : total_tokens,
     }
 
 
@@ -311,12 +343,12 @@ def create_usage(
 
 PROVIDER_DEFAULTS = {
     LLMProvider.OPENAI: {
-        "parameters": OPENAI_DEFAULT_PARAMETERS,
-        "connector": OPENAI_CONNECTOR_DEFAULTS,
+        PARAMETERS : OPENAI_DEFAULT_PARAMETERS,
+        CONNECTOR : OPENAI_CONNECTOR_DEFAULTS,
     },
     LLMProvider.AZURE: {
-        "parameters": AZURE_DEFAULT_PARAMETERS,
-        "connector": AZURE_CONNECTOR_DEFAULTS,
+        PARAMETERS : AZURE_DEFAULT_PARAMETERS,
+        CONNECTOR : AZURE_CONNECTOR_DEFAULTS,
     },
 }
 
@@ -337,12 +369,3 @@ def get_provider_defaults(provider: LLMProvider, category: str = CONFIG_CATEGORY
     """
     provider_config = PROVIDER_DEFAULTS.get(provider, {})
     return provider_config.get(category, {}).copy()
-
-
-# ============================================================================
-# NOTE: Parameter validation ranges removed - they should be defined 
-# per-model in ModelMetadata since different models/providers have
-# different parameter requirements (e.g., GPT-4.1 Mini only supports
-# temperature=1.0, while GPT-4 supports 0.0-2.0)
-# ============================================================================
-

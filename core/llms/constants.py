@@ -445,6 +445,57 @@ ERROR_CATEGORY_LLM_ERROR = "llm_error"
 ERROR_CATEGORY_UNKNOWN = "unknown"
 
 # ============================================================================
+# LLM Defaults
+# ============================================================================
+
+TIMEOUT = "timeout"
+MAX_RETRIES = "max_retries"
+RETRY_DELAY = "retry_delay"
+DEFAULT_TEMPERATURE = "default_temperature"
+DEFAULT_MAX_TOKENS = "default_max_tokens"
+DEFAULT_TOP_P = "default_top_p"
+DEFAULT_FREQUENCY_PENALTY = "default_frequency_penalty"
+DEFAULT_PRESENCE_PENALTY = "default_presence_penalty"
+DEFAULT_N = "default_n"
+DEFAULT_API_VERSION = "default_api_version"
+DEFAULT_TIMEOUT = "default_timeout"
+DEFAULT_MAX_RETRIES = "default_max_retries"
+DEFAULT_RETRY_DELAY = "default_retry_delay"
+DEFAULT_BACKOFF_FACTOR = "default_backoff_factor"
+MESSAGE_COUNT = "message_count"
+ESTIMATED_TOKENS = "estimated_tokens"
+PROMPT_TOKENS = "prompt_tokens"
+COMPLETION_TOKENS = "completion_tokens"
+TOTAL_TOKENS = "total_tokens"
+PARAMETERS = "parameters"
+CONNECTOR = "connector"
+ROLE = "role"
+CONTENT = "content"
+OPENAI_DEFAULT_TEMPERATURE = "temperature"
+OPENAI_DEFAULT_MAX_TOKENS = "max_tokens"
+OPENAI_DEFAULT_TOP_P = "top_p"
+OPENAI_DEFAULT_FREQUENCY_PENALTY = "frequency_penalty"
+OPENAI_DEFAULT_PRESENCE_PENALTY = "presence_penalty"
+OPENAI_DEFAULT_N = "n"
+OPENAI_DEFAULT_API_VERSION = None
+OPENAI_DEFAULT_TIMEOUT = "timeout"
+OPENAI_DEFAULT_MAX_RETRIES = "max_retries"
+OPENAI_DEFAULT_RETRY_DELAY = "retry_delay"
+AZURE_DEFAULT_TEMPERATURE = "temperature"
+AZURE_DEFAULT_MAX_TOKENS = "max_tokens"
+AZURE_DEFAULT_TOP_P = "top_p"
+AZURE_DEFAULT_FREQUENCY_PENALTY = "frequency_penalty"
+AZURE_DEFAULT_PRESENCE_PENALTY = "presence_penalty"
+AZURE_DEFAULT_API_VERSION = "2024-02-15-preview"
+AZURE_DEFAULT_TIMEOUT = "timeout"
+AZURE_DEFAULT_MAX_RETRIES = "max_retries"
+AZURE_DEFAULT_RETRY_DELAY = "retry_delay"
+AZURE_DEFAULT_API_VERSION_2024_02_15_PREVIEW = "2024-02-15-preview"
+OPENAI_CONNECTOR_DEFAULTS = "connector"
+AZURE_CONNECTOR_DEFAULTS = "connector"
+
+
+# ============================================================================
 # DEFAULT CONTEXT DATA GENERATORS (similar to tools)
 # ============================================================================
 
