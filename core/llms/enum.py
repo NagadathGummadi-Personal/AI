@@ -3,144 +3,153 @@ Enumerations for LLM Subsystem.
 
 This module defines all enumerations used throughout the LLM subsystem including
 providers, model families, media types, roles, and capabilities.
+
+All enum values are imported from constants.py to maintain single source of truth.
 """
 
 from enum import Enum
+from .constants import (
+    # Providers
+    PROVIDER_AZURE,
+    PROVIDER_OPENAI,
+    # Model Families
+    MODEL_FAMILY_GPT_4,
+    MODEL_FAMILY_GPT_4_1_MINI,
+    MODEL_FAMILY_AZURE_GPT_4,
+    MODEL_FAMILY_AZURE_GPT_4_1_MINI,
+    # Media Types
+    MEDIA_TYPE_TEXT,
+    MEDIA_TYPE_IMAGE,
+    MEDIA_TYPE_AUDIO,
+    MEDIA_TYPE_VIDEO,
+    MEDIA_TYPE_JSON,
+    MEDIA_TYPE_MULTIMODAL,
+    # Roles
+    ROLE_SYSTEM,
+    ROLE_USER,
+    ROLE_ASSISTANT,
+    ROLE_FUNCTION,
+    ROLE_TOOL,
+    # Capabilities
+    CAPABILITY_STREAMING,
+    CAPABILITY_FUNCTION_CALLING,
+    CAPABILITY_VISION,
+    CAPABILITY_JSON_MODE,
+    CAPABILITY_TOOL_USE,
+    CAPABILITY_SYSTEM_MESSAGE,
+    CAPABILITY_MULTI_TURN,
+    CAPABILITY_CONTEXT_CACHING,
+    # LLM Types
+    LLM_TYPE_CHAT,
+    LLM_TYPE_COMPLETION,
+    LLM_TYPE_INSTRUCTION,
+    LLM_TYPE_EMBEDDING,
+    LLM_TYPE_CODE,
+    # Stream Events
+    STREAM_EVENT_START,
+    STREAM_EVENT_CONTENT,
+    STREAM_EVENT_FUNCTION_CALL,
+    STREAM_EVENT_TOOL_USE,
+    STREAM_EVENT_END,
+    STREAM_EVENT_ERROR,
+    STREAM_EVENT_METADATA,
+    # Finish Reasons
+    FINISH_REASON_STOP,
+    FINISH_REASON_LENGTH,
+    FINISH_REASON_CONTENT_FILTER,
+    FINISH_REASON_FUNCTION_CALL,
+    FINISH_REASON_ERROR,
+    FINISH_REASON_TIMEOUT,
+)
 
 
 class LLMProvider(str, Enum):
-    """
-    LLM Provider identifiers.
-    
-    Represents the service provider hosting the LLM.
-    """
-    AZURE = "azure"
-    OPENAI = "openai"
-    # BEDROCK = "bedrock"
-    # GEMINI = "gemini"
-    # ANTHROPIC = "anthropic"
+    """LLM Provider identifiers."""
+    AZURE = PROVIDER_AZURE
+    OPENAI = PROVIDER_OPENAI
 
 
 class ModelFamily(str, Enum):
-    """
-    Model family groupings.
-    
-    Groups related models together (e.g., all GPT-4 variants).
-    """
-    # OpenAI families
-    GPT_4 = "gpt-4"
-    GPT_4_1_MINI = "gpt-4.1-mini"
-    
-    # Azure OpenAI (same models but deployed on Azure)
-    AZURE_GPT_4 = "azure-gpt-4"
-    AZURE_GPT_4_1_MINI = "azure-gpt-4.1-mini"
-    
-    # CLAUDE_3 = "claude-3"
-    # CLAUDE_35 = "claude-3.5"
-    # GEMINI_PRO = "gemini-pro"
-    # GEMINI_ULTRA = "gemini-ultra"
+    """Model family groupings."""
+    GPT_4 = MODEL_FAMILY_GPT_4
+    GPT_4_1_MINI = MODEL_FAMILY_GPT_4_1_MINI
+    AZURE_GPT_4 = MODEL_FAMILY_AZURE_GPT_4
+    AZURE_GPT_4_1_MINI = MODEL_FAMILY_AZURE_GPT_4_1_MINI
 
 
 class InputMediaType(str, Enum):
     """
     Supported input media types.
     
-    Defines what types of content can be sent to the LLM.
-    
     Note: MULTIMODAL indicates the model can handle multiple types in a single
-    request. The exact combination is specified in ModelMetadata.supported_input_types
-    (e.g., {TEXT, IMAGE} for text+vision, {TEXT, AUDIO} for text+audio, etc.)
+    request. The exact combination is specified in ModelMetadata.supported_input_types.
     """
-    TEXT = "text"
-    IMAGE = "image"
-    AUDIO = "audio"
-    VIDEO = "video"
-    MULTIMODAL = "multimodal"  # Can mix multiple types - see supported_input_types for specifics
+    TEXT = MEDIA_TYPE_TEXT
+    IMAGE = MEDIA_TYPE_IMAGE
+    AUDIO = MEDIA_TYPE_AUDIO
+    VIDEO = MEDIA_TYPE_VIDEO
+    MULTIMODAL = MEDIA_TYPE_MULTIMODAL
 
 
 class OutputMediaType(str, Enum):
-    """
-    Supported output media types.
-    
-    Defines what types of content the LLM can generate.
-    """
-    TEXT = 'text'
-    JSON = 'json'  # Structured JSON output
-    AUDIO = 'audio'
-    IMAGE = 'image'
-    VIDEO = 'video'
-    MULTIMODAL = 'multimodal'
+    """Supported output media types."""
+    TEXT = MEDIA_TYPE_TEXT
+    JSON = MEDIA_TYPE_JSON
+    AUDIO = MEDIA_TYPE_AUDIO
+    IMAGE = MEDIA_TYPE_IMAGE
+    VIDEO = MEDIA_TYPE_VIDEO
+    MULTIMODAL = MEDIA_TYPE_MULTIMODAL
 
 
 class MessageRole(str, Enum):
-    """
-    Message role identifiers for conversation context.
-    
-    Standard roles used in chat-based LLM interactions.
-    """
-    SYSTEM = "system"
-    USER = "user"
-    ASSISTANT = "assistant"
-    FUNCTION = "function"
-    TOOL = "tool"
+    """Message role identifiers for conversation context."""
+    SYSTEM = ROLE_SYSTEM
+    USER = ROLE_USER
+    ASSISTANT = ROLE_ASSISTANT
+    FUNCTION = ROLE_FUNCTION
+    TOOL = ROLE_TOOL
 
 
 class LLMCapability(str, Enum):
-    """
-    LLM capability flags.
-    
-    Represents specific features or capabilities that a model supports.
-    """
-    STREAMING = "streaming"
-    FUNCTION_CALLING = "function_calling"
-    VISION = "vision"
-    JSON_MODE = "json_mode"
-    TOOL_USE = "tool_use"
-    SYSTEM_MESSAGE = "system_message"
-    MULTI_TURN = "multi_turn"
-    CONTEXT_CACHING = "context_caching"
+    """LLM capability flags."""
+    STREAMING = CAPABILITY_STREAMING
+    FUNCTION_CALLING = CAPABILITY_FUNCTION_CALLING
+    VISION = CAPABILITY_VISION
+    JSON_MODE = CAPABILITY_JSON_MODE
+    TOOL_USE = CAPABILITY_TOOL_USE
+    SYSTEM_MESSAGE = CAPABILITY_SYSTEM_MESSAGE
+    MULTI_TURN = CAPABILITY_MULTI_TURN
+    CONTEXT_CACHING = CAPABILITY_CONTEXT_CACHING
 
 
 class LLMType(str, Enum):
-    """
-    LLM type classification.
-    
-    Categorizes models by their primary use case or architecture.
-    """
-    CHAT = "chat"
-    COMPLETION = "completion"
-    INSTRUCTION = "instruction"
-    EMBEDDING = "embedding"
-    CODE = "code"
+    """LLM type classification."""
+    CHAT = LLM_TYPE_CHAT
+    COMPLETION = LLM_TYPE_COMPLETION
+    INSTRUCTION = LLM_TYPE_INSTRUCTION
+    EMBEDDING = LLM_TYPE_EMBEDDING
+    CODE = LLM_TYPE_CODE
 
 
 class StreamEventType(str, Enum):
-    """
-    Stream event types for streaming responses.
-    
-    Used to classify different types of events in a streaming response.
-    """
-    START = "start"
-    CONTENT = "content"
-    FUNCTION_CALL = "function_call"
-    TOOL_USE = "tool_use"
-    END = "end"
-    ERROR = "error"
-    METADATA = "metadata"
+    """Stream event types for streaming responses."""
+    START = STREAM_EVENT_START
+    CONTENT = STREAM_EVENT_CONTENT
+    FUNCTION_CALL = STREAM_EVENT_FUNCTION_CALL
+    TOOL_USE = STREAM_EVENT_TOOL_USE
+    END = STREAM_EVENT_END
+    ERROR = STREAM_EVENT_ERROR
+    METADATA = STREAM_EVENT_METADATA
 
 
 class FinishReason(str, Enum):
-    """
-    Reasons why LLM generation stopped.
-    
-    Standard finish reasons returned by LLM providers.
-    """
-    STOP = "stop"  # Natural completion
-    LENGTH = "length"  # Max tokens reached
-    CONTENT_FILTER = "content_filter"  # Filtered by safety
-    FUNCTION_CALL = "function_call"  # Function/tool call generated
-    ERROR = "error"  # Error occurred
-    TIMEOUT = "timeout"  # Request timed out
+    """Reasons why LLM generation stopped."""
+    STOP = FINISH_REASON_STOP
+    LENGTH = FINISH_REASON_LENGTH
+    CONTENT_FILTER = FINISH_REASON_CONTENT_FILTER
+    FUNCTION_CALL = FINISH_REASON_FUNCTION_CALL
+    ERROR = FINISH_REASON_ERROR
+    TIMEOUT = FINISH_REASON_TIMEOUT
 
 
 # Helper function to get all values

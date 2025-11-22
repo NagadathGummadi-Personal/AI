@@ -19,6 +19,7 @@ from ...exceptions import (
 )
 from ...constants import (
     ENV_OPENAI_API_KEY,
+    PROVIDER_OPENAI,
 )
 
 
@@ -71,7 +72,7 @@ class OpenAIConnector(BaseConnector):
         if not api_key:
             raise ConfigurationError(
                 "OpenAI API key not found. Provide 'api_key' in config or set OPENAI_API_KEY environment variable.",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"env_var": ENV_OPENAI_API_KEY}
             )
     
@@ -135,14 +136,14 @@ class OpenAIConnector(BaseConnector):
                 if response.status == 401:
                     raise AuthenticationError(
                         "Invalid OpenAI API key",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={"status_code": 401}
                     )
                 
                 if response.status == 503:
                     raise ServiceUnavailableError(
                         "OpenAI service unavailable",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={"status_code": 503}
                     )
                 
@@ -152,7 +153,7 @@ class OpenAIConnector(BaseConnector):
         except aiohttp.ClientError as e:
             raise ServiceUnavailableError(
                 f"Failed to connect to OpenAI: {str(e)}",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"error": str(e)}
             )
     
@@ -189,7 +190,7 @@ class OpenAIConnector(BaseConnector):
                 if response.status == 401:
                     raise AuthenticationError(
                         "Authentication failed",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={"status_code": 401}
                     )
                 
@@ -197,7 +198,7 @@ class OpenAIConnector(BaseConnector):
                     retry_after = response.headers.get("Retry-After")
                     raise RateLimitError(
                         "Rate limit exceeded",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={"status_code": 429},
                         retry_after=int(retry_after) if retry_after else None
                     )
@@ -205,7 +206,7 @@ class OpenAIConnector(BaseConnector):
                 if response.status == 503:
                     raise ServiceUnavailableError(
                         "Service temporarily unavailable",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={"status_code": 503}
                     )
                 
@@ -213,7 +214,7 @@ class OpenAIConnector(BaseConnector):
                     error_body = await response.text()
                     raise ProviderError(
                         f"OpenAI API error: {response.status}",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={
                             "status_code": response.status,
                             "error_body": error_body
@@ -226,14 +227,14 @@ class OpenAIConnector(BaseConnector):
         except asyncio.TimeoutError:
             raise TimeoutError(
                 f"Request timed out after {timeout} seconds",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"timeout_seconds": timeout}
             )
         
         except aiohttp.ClientError as e:
             raise ProviderError(
                 f"Request failed: {str(e)}",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"error": str(e)}
             )
     
@@ -276,7 +277,7 @@ class OpenAIConnector(BaseConnector):
                     error_body = await response.text()
                     raise ProviderError(
                         f"OpenAI API error: {response.status}",
-                        provider="openai",
+                        provider=PROVIDER_OPENAI,
                         details={
                             "status_code": response.status,
                             "error_body": error_body
@@ -291,14 +292,14 @@ class OpenAIConnector(BaseConnector):
         except asyncio.TimeoutError:
             raise TimeoutError(
                 f"Stream request timed out after {timeout} seconds",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"timeout_seconds": timeout}
             )
         
         except aiohttp.ClientError as e:
             raise ProviderError(
                 f"Stream request failed: {str(e)}",
-                provider="openai",
+                provider=PROVIDER_OPENAI,
                 details={"error": str(e)}
             )
 

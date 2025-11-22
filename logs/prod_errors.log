@@ -420,3 +420,6 @@
 {"error": "Division by zero is not allowed", "execution_time_ms": "1.23", "user_id": "user-test-001", "session_id": "session-2b391268-d13e-4ad5-80bb-f99fd8f2e7b1", "tool_name": "division", "trace_id": "trace-4a3ceb80-de04-470c-a930-fd5d481d0e94"}
 {"error": "Invalid parameters", "execution_time_ms": "0.48", "user_id": "user-test-001", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
 {"error": "User not authorized", "execution_time_ms": "0.73", "user_id": "unauthorized-user", "session_id": "session-test-001", "tool_name": "division", "trace_id": "None"}
+Tool execution failed [error=Division by zero is not allowed execution_time_ms=0.0 user_id=user-test-001 session_id=session-5cd8ecb2-2018-4e15-927f-bd29a6093bc6 tool_name=division trace_id=trace-7380a668-abb0-408b-8610-abcefde3bcff]
+Tool execution failed [error=Invalid parameters execution_time_ms=1.32 user_id=user-test-001 session_id=session-test-001 tool_name=division trace_id=None]
+Tool execution failed [error=User not authorized execution_time_ms=1.59 user_id=unauthorized-user session_id=session-test-001 tool_name=division trace_id=None]

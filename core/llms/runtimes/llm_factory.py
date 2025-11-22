@@ -15,6 +15,7 @@ from .implementations.azure_llm import AzureLLM
 from ..spec.llm_types import ModelMetadata
 from ..enum import LLMProvider
 from ..exceptions import ModelNotFoundError, ConfigurationError
+from ..constants import PROVIDER_OPENAI, PROVIDER_AZURE
 
 
 class LLMFactory:
@@ -117,7 +118,7 @@ class LLMFactory:
             raise ConfigurationError(
                 f"Unsupported provider: {provider}",
                 provider=provider.value if hasattr(provider, 'value') else str(provider),
-                details={"supported_providers": ["openai", "azure"]}
+                details={"supported_providers": [PROVIDER_OPENAI, PROVIDER_AZURE]}
             )
     
     @classmethod

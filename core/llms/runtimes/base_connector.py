@@ -18,6 +18,10 @@ from ..constants import (
     DEFAULT_MAX_RETRIES,
     DEFAULT_RETRY_DELAY_SECONDS,
     DEFAULT_BACKOFF_FACTOR,
+    CONFIG_TIMEOUT,
+    CONFIG_MAX_RETRIES,
+    CONFIG_RETRY_DELAY,
+    ERROR_MSG_REQUEST_FAILED_ALL_RETRIES,
 )
 
 
@@ -146,9 +150,9 @@ class BaseConnector(ABC):
             RateLimitError: If rate limited
         """
         if max_retries is None:
-            max_retries = self.config.get("max_retries", DEFAULT_MAX_RETRIES)
+            max_retries = self.config.get(CONFIG_MAX_RETRIES, DEFAULT_MAX_RETRIES)
         
-        retry_delay = self.config.get("retry_delay", DEFAULT_RETRY_DELAY_SECONDS)
+        retry_delay = self.config.get(CONFIG_RETRY_DELAY, DEFAULT_RETRY_DELAY_SECONDS)
         backoff_factor = DEFAULT_BACKOFF_FACTOR
         
         last_exception = None
@@ -185,7 +189,7 @@ class BaseConnector(ABC):
         if last_exception:
             raise last_exception
         
-        raise Exception("Request failed after all retries")
+        raise Exception(ERROR_MSG_REQUEST_FAILED_ALL_RETRIES)
     
     def get_timeout(self) -> int:
         """
@@ -194,7 +198,7 @@ class BaseConnector(ABC):
         Returns:
             Timeout in seconds
         """
-        return self.config.get("timeout", DEFAULT_TIMEOUT_SECONDS)
+        return self.config.get(CONFIG_TIMEOUT, DEFAULT_TIMEOUT_SECONDS)
     
     def get_max_retries(self) -> int:
         """
@@ -203,5 +207,5 @@ class BaseConnector(ABC):
         Returns:
             Maximum retry attempts
         """
-        return self.config.get("max_retries", DEFAULT_MAX_RETRIES)
+        return self.config.get(CONFIG_MAX_RETRIES, DEFAULT_MAX_RETRIES)
 

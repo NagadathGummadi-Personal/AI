@@ -13,6 +13,7 @@ from .constants import (
     DEFAULT_RETRY_DELAY_SECONDS,
     META_MODEL_NAME,
     META_PROVIDER,
+    CONFIG_CATEGORY_PARAMETERS,
 )
 
 
@@ -320,13 +321,13 @@ PROVIDER_DEFAULTS = {
 }
 
 
-def get_provider_defaults(provider: LLMProvider, category: str = "parameters") -> Dict[str, Any]:
+def get_provider_defaults(provider: LLMProvider, category: str = CONFIG_CATEGORY_PARAMETERS) -> Dict[str, Any]:
     """
     Get default values for a specific provider.
     
     Args:
         provider: Provider identifier
-        category: Category of defaults ("parameters" or "connector")
+        category: Category of defaults (CONFIG_CATEGORY_PARAMETERS or CONFIG_CATEGORY_CONNECTOR)
         
     Returns:
         Provider-specific defaults

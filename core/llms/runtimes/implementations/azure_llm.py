@@ -19,8 +19,27 @@ from ...constants import (
     RESPONSE_FIELD_CONTENT,
     RESPONSE_FIELD_FINISH_REASON,
     RESPONSE_FIELD_USAGE,
+    RESPONSE_FIELD_PROMPT_TOKENS,
+    RESPONSE_FIELD_COMPLETION_TOKENS,
+    RESPONSE_FIELD_TOTAL_TOKENS,
     STREAM_FIELD_DELTA,
     STREAM_FIELD_CONTENT,
+    STREAM_DATA_PREFIX,
+    STREAM_DATA_PREFIX_LENGTH,
+    STREAM_DONE_TOKEN,
+    STREAM_PARAM_TRUE,
+    MESSAGE_FIELD_ROLE,
+    META_MODEL,
+    META_ID,
+    META_DEPLOYMENT,
+    PROVIDER_AZURE,
+    PARAM_MAX_TOKENS,
+    ERROR_MSG_RESPONSE_MISSING_CHOICES,
+    FINISH_REASON_STOP,
+    FINISH_REASON_LENGTH,
+    FINISH_REASON_CONTENT_FILTER,
+    FINISH_REASON_FUNCTION_CALL,
+    DEFAULT_RESPONSE_ROLE,
 )
 
 
@@ -71,7 +90,7 @@ class AzureLLM(BaseLLM):
         
         # Merge parameters
         params = self._merge_parameters(kwargs)
-        max_tokens = params.get("max_tokens", self.metadata.max_output_tokens)
+        max_tokens = params.get(PARAM_MAX_TOKENS, self.metadata.max_output_tokens)
         
         # Validate token limits
         self._validate_token_limits(messages, max_tokens)
@@ -115,7 +134,7 @@ class AzureLLM(BaseLLM):
         
         # Merge parameters
         params = self._merge_parameters(kwargs)
-        max_tokens = params.get("max_tokens", self.metadata.max_output_tokens)
+        max_tokens = params.get(PARAM_MAX_TOKENS, self.metadata.max_output_tokens)
         
         # Validate token limits
         self._validate_token_limits(messages, max_tokens)
@@ -126,7 +145,7 @@ class AzureLLM(BaseLLM):
         # Build request payload
         payload = {
             OPENAI_FIELD_MESSAGES: messages,
-            "stream": True,
+            STREAM_PARAM_TRUE: True,
             **mapped_params
         }
         
@@ -139,10 +158,10 @@ class AzureLLM(BaseLLM):
             if not line:
                 continue
             
-            if line.startswith("data: "):
-                line = line[6:]  # Remove "data: " prefix
+            if line.startswith(STREAM_DATA_PREFIX):
+                line = line[STREAM_DATA_PREFIX_LENGTH:]  # Remove "data: " prefix
             
-            if line == "[DONE]":
+            if line == STREAM_DONE_TOKEN:
                 # Final chunk with usage info
                 duration_ms = int((time.time() - start_time) * 1000)
                 yield LLMStreamChunk(
@@ -211,8 +230,8 @@ class AzureLLM(BaseLLM):
             choices = response.get(RESPONSE_FIELD_CHOICES, [])
             if not choices:
                 raise InvalidResponseError(
-                    "Response missing choices",
-                    provider="azure",
+                    ERROR_MSG_RESPONSE_MISSING_CHOICES,
+                    provider=PROVIDER_AZURE,
                     details={"response": response}
                 )
             
@@ -229,9 +248,9 @@ class AzureLLM(BaseLLM):
             duration_ms = int((time.time() - start_time) * 1000)
             
             usage = LLMUsage(
-                prompt_tokens=usage_data.get("prompt_tokens", 0),
-                completion_tokens=usage_data.get("completion_tokens", 0),
-                total_tokens=usage_data.get("total_tokens", 0),
+                prompt_tokens=usage_data.get(RESPONSE_FIELD_PROMPT_TOKENS, 0),
+                completion_tokens=usage_data.get(RESPONSE_FIELD_COMPLETION_TOKENS, 0),
+                total_tokens=usage_data.get(RESPONSE_FIELD_TOTAL_TOKENS, 0),
                 duration_ms=duration_ms
             )
             
@@ -241,31 +260,31 @@ class AzureLLM(BaseLLM):
             
             return LLMResponse(
                 content=content,
-                role=message.get("role", "assistant"),
+                role=message.get(MESSAGE_FIELD_ROLE, DEFAULT_RESPONSE_ROLE),
                 finish_reason=self._map_finish_reason(finish_reason) if finish_reason else None,
                 usage=usage,
                 metadata={
-                    "model": response.get("model"),
-                    "id": response.get("id"),
-                    "deployment": self.connector.deployment_name,
+                    META_MODEL: response.get(META_MODEL),
+                    META_ID: response.get(META_ID),
+                    META_DEPLOYMENT: self.connector.deployment_name,
                 }
             )
         
         except (KeyError, TypeError, AttributeError) as e:
             raise InvalidResponseError(
                 f"Failed to parse Azure OpenAI response: {str(e)}",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"error": str(e), "response": response}
             )
     
     def _map_finish_reason(self, reason: str) -> FinishReason:
         """Map Azure finish reason to standard enum."""
         mapping = {
-            "stop": FinishReason.STOP,
-            "length": FinishReason.LENGTH,
-            "content_filter": FinishReason.CONTENT_FILTER,
-            "function_call": FinishReason.FUNCTION_CALL,
-            "tool_calls": FinishReason.FUNCTION_CALL,
+            FINISH_REASON_STOP: FinishReason.STOP,
+            FINISH_REASON_LENGTH: FinishReason.LENGTH,
+            FINISH_REASON_CONTENT_FILTER: FinishReason.CONTENT_FILTER,
+            FINISH_REASON_FUNCTION_CALL: FinishReason.FUNCTION_CALL,
+            "tool_calls": FinishReason.FUNCTION_CALL,  # Provider-specific
         }
         return mapping.get(reason, FinishReason.STOP)
 

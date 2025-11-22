@@ -12,7 +12,18 @@ from ..spec.llm_result import LLMResponse, LLMStreamChunk, LLMUsage
 from ..spec.llm_context import LLMContext
 from ..exceptions import InputValidationError, TokenLimitError
 from ..runtimes.base_connector import BaseConnector
-from ..constants import CHARS_PER_TOKEN_ESTIMATE, TOKENS_PER_MESSAGE_OVERHEAD
+from ..constants import (
+    CHARS_PER_TOKEN_ESTIMATE,
+    TOKENS_PER_MESSAGE_OVERHEAD,
+    META_PROVIDER,
+    META_MODEL_NAME,
+    MESSAGE_FIELD_ROLE,
+    MESSAGE_FIELD_CONTENT,
+    ERROR_MSG_EMPTY_MESSAGES,
+    ERROR_MSG_MESSAGE_NOT_DICT,
+    ERROR_MSG_MISSING_ROLE,
+    ERROR_MSG_MISSING_CONTENT,
+)
 
 
 class BaseLLM(ABC):
@@ -119,8 +130,8 @@ class BaseLLM(ABC):
         provider_str = provider if isinstance(provider, str) else provider.value
         
         return {
-            "provider": provider_str,
-            "model_name": self.metadata.model_name,
+            META_PROVIDER: provider_str,
+            META_MODEL_NAME: self.metadata.model_name,
             "supported_input_types": [
                 t if isinstance(t, str) else t.value 
                 for t in self.metadata.supported_input_types
@@ -179,26 +190,26 @@ class BaseLLM(ABC):
         """
         if not messages:
             raise InputValidationError(
-                "Messages list cannot be empty",
+                ERROR_MSG_EMPTY_MESSAGES,
                 model_name=self.metadata.model_name
             )
         
         for i, msg in enumerate(messages):
             if not isinstance(msg, dict):
                 raise InputValidationError(
-                    f"Message {i} must be a dictionary",
+                    ERROR_MSG_MESSAGE_NOT_DICT.format(i=i),
                     model_name=self.metadata.model_name
                 )
             
-            if "role" not in msg:
+            if MESSAGE_FIELD_ROLE not in msg:
                 raise InputValidationError(
-                    f"Message {i} missing 'role' field",
+                    ERROR_MSG_MISSING_ROLE.format(i=i),
                     model_name=self.metadata.model_name
                 )
             
-            if "content" not in msg:
+            if MESSAGE_FIELD_CONTENT not in msg:
                 raise InputValidationError(
-                    f"Message {i} missing 'content' field",
+                    ERROR_MSG_MISSING_CONTENT.format(i=i),
                     model_name=self.metadata.model_name
                 )
     
@@ -214,7 +225,7 @@ class BaseLLM(ABC):
         Returns:
             Estimated token count
         """
-        total_chars = sum(len(str(msg.get("content", ""))) for msg in messages)
+        total_chars = sum(len(str(msg.get(MESSAGE_FIELD_CONTENT, ""))) for msg in messages)
         estimated_tokens = (total_chars // CHARS_PER_TOKEN_ESTIMATE) + (len(messages) * TOKENS_PER_MESSAGE_OVERHEAD)
         return estimated_tokens
     

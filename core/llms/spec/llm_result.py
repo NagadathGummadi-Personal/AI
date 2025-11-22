@@ -8,6 +8,7 @@ complete responses and streaming chunks.
 from typing import Any, Dict, Optional, List
 from pydantic import BaseModel, Field
 from ..enum import FinishReason
+from ..constants import DEFAULT_RESPONSE_ROLE
 
 
 class LLMUsage(BaseModel):
@@ -61,7 +62,7 @@ class LLMResponse(BaseModel):
     """
     
     content: Any = Field(description="Generated content")
-    role: str = Field(default="assistant", description="Response role")
+    role: str = Field(default=DEFAULT_RESPONSE_ROLE, description="Response role")
     finish_reason: Optional[FinishReason] = Field(default=None, description="Why generation stopped")
     usage: Optional[LLMUsage] = Field(default=None, description="Token usage statistics")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
@@ -131,7 +132,7 @@ class LLMStreamChunk(BaseModel):
     """
     
     content: str = Field(default="", description="Content fragment")
-    role: Optional[str] = Field(default="assistant", description="Content role")
+    role: Optional[str] = Field(default=DEFAULT_RESPONSE_ROLE, description="Content role")
     is_final: bool = Field(default=False, description="Whether this is the last chunk")
     finish_reason: Optional[FinishReason] = Field(default=None, description="Why generation stopped")
     usage: Optional[LLMUsage] = Field(default=None, description="Usage statistics")

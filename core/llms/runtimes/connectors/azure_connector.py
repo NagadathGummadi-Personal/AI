@@ -22,6 +22,7 @@ from ...constants import (
     ENV_AZURE_OPENAI_ENDPOINT,
     ENV_AZURE_OPENAI_DEPLOYMENT,
     ENV_AZURE_OPENAI_API_VERSION,
+    PROVIDER_AZURE,
 )
 
 
@@ -79,21 +80,21 @@ class AzureConnector(BaseConnector):
         if not self._get_api_key():
             raise ConfigurationError(
                 "Azure OpenAI API key not found. Provide 'api_key' in config or set AZURE_OPENAI_KEY environment variable.",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"env_var": ENV_AZURE_OPENAI_KEY}
             )
         
         if not self._get_endpoint():
             raise ConfigurationError(
                 "Azure OpenAI endpoint not found. Provide 'endpoint' in config or set AZURE_OPENAI_ENDPOINT environment variable.",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"env_var": ENV_AZURE_OPENAI_ENDPOINT}
             )
         
         if not self._get_deployment_name():
             raise ConfigurationError(
                 "Azure OpenAI deployment name not found. Provide 'deployment_name' in config or set AZURE_OPENAI_DEPLOYMENT environment variable.",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"env_var": ENV_AZURE_OPENAI_DEPLOYMENT}
             )
     
@@ -187,14 +188,14 @@ class AzureConnector(BaseConnector):
                 if response.status == 401:
                     raise AuthenticationError(
                         "Invalid Azure OpenAI API key",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={"status_code": 401}
                     )
                 
                 if response.status == 404:
                     raise ConfigurationError(
                         "Azure OpenAI deployment not found. Check endpoint and deployment_name.",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={
                             "status_code": 404,
                             "endpoint": self.endpoint,
@@ -205,7 +206,7 @@ class AzureConnector(BaseConnector):
                 if response.status == 503:
                     raise ServiceUnavailableError(
                         "Azure OpenAI service unavailable",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={"status_code": 503}
                     )
                 
@@ -216,7 +217,7 @@ class AzureConnector(BaseConnector):
         except aiohttp.ClientError as e:
             raise ServiceUnavailableError(
                 f"Failed to connect to Azure OpenAI: {str(e)}",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"error": str(e)}
             )
     
@@ -253,7 +254,7 @@ class AzureConnector(BaseConnector):
                 if response.status == 401:
                     raise AuthenticationError(
                         "Authentication failed",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={"status_code": 401}
                     )
                 
@@ -261,7 +262,7 @@ class AzureConnector(BaseConnector):
                     retry_after = response.headers.get("Retry-After")
                     raise RateLimitError(
                         "Rate limit exceeded",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={"status_code": 429},
                         retry_after=int(retry_after) if retry_after else None
                     )
@@ -269,7 +270,7 @@ class AzureConnector(BaseConnector):
                 if response.status == 503:
                     raise ServiceUnavailableError(
                         "Service temporarily unavailable",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={"status_code": 503}
                     )
                 
@@ -277,7 +278,7 @@ class AzureConnector(BaseConnector):
                     error_body = await response.text()
                     raise ProviderError(
                         f"Azure OpenAI API error: {response.status}",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={
                             "status_code": response.status,
                             "error_body": error_body
@@ -290,14 +291,14 @@ class AzureConnector(BaseConnector):
         except asyncio.TimeoutError:
             raise TimeoutError(
                 f"Request timed out after {timeout} seconds",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"timeout_seconds": timeout}
             )
         
         except aiohttp.ClientError as e:
             raise ProviderError(
                 f"Request failed: {str(e)}",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"error": str(e)}
             )
     
@@ -340,7 +341,7 @@ class AzureConnector(BaseConnector):
                     error_body = await response.text()
                     raise ProviderError(
                         f"Azure OpenAI API error: {response.status}",
-                        provider="azure",
+                        provider=PROVIDER_AZURE,
                         details={
                             "status_code": response.status,
                             "error_body": error_body
@@ -355,14 +356,14 @@ class AzureConnector(BaseConnector):
         except asyncio.TimeoutError:
             raise TimeoutError(
                 f"Stream request timed out after {timeout} seconds",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"timeout_seconds": timeout}
             )
         
         except aiohttp.ClientError as e:
             raise ProviderError(
                 f"Stream request failed: {str(e)}",
-                provider="azure",
+                provider=PROVIDER_AZURE,
                 details={"error": str(e)}
             )
 

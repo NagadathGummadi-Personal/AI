@@ -6,6 +6,19 @@ providing a clear hierarchy for error handling and reporting.
 """
 
 from typing import Optional, Dict, Any
+from .constants import (
+    ERROR_CATEGORY_AUTHENTICATION,
+    ERROR_CATEGORY_RATE_LIMIT,
+    ERROR_CATEGORY_TIMEOUT,
+    ERROR_CATEGORY_QUOTA,
+    ERROR_CATEGORY_SERVICE_UNAVAILABLE,
+    ERROR_CATEGORY_VALIDATION,
+    ERROR_CATEGORY_TOKEN_LIMIT,
+    ERROR_CATEGORY_CONTENT_FILTER,
+    ERROR_CATEGORY_STREAMING,
+    ERROR_CATEGORY_LLM_ERROR,
+    ERROR_CATEGORY_UNKNOWN,
+)
 
 
 class LLMError(Exception):
@@ -371,25 +384,25 @@ def get_error_category(error: Exception) -> str:
         metrics.incr(f"llm.errors.{category}")
     """
     if isinstance(error, AuthenticationError):
-        return "authentication"
+        return ERROR_CATEGORY_AUTHENTICATION
     elif isinstance(error, RateLimitError):
-        return "rate_limit"
+        return ERROR_CATEGORY_RATE_LIMIT
     elif isinstance(error, TimeoutError):
-        return "timeout"
+        return ERROR_CATEGORY_TIMEOUT
     elif isinstance(error, QuotaExceededError):
-        return "quota"
+        return ERROR_CATEGORY_QUOTA
     elif isinstance(error, ServiceUnavailableError):
-        return "service_unavailable"
+        return ERROR_CATEGORY_SERVICE_UNAVAILABLE
     elif isinstance(error, InputValidationError):
-        return "validation"
+        return ERROR_CATEGORY_VALIDATION
     elif isinstance(error, TokenLimitError):
-        return "token_limit"
+        return ERROR_CATEGORY_TOKEN_LIMIT
     elif isinstance(error, ContentFilterError):
-        return "content_filter"
+        return ERROR_CATEGORY_CONTENT_FILTER
     elif isinstance(error, StreamingError):
-        return "streaming"
+        return ERROR_CATEGORY_STREAMING
     elif isinstance(error, LLMError):
-        return "llm_error"
+        return ERROR_CATEGORY_LLM_ERROR
     else:
-        return "unknown"
+        return ERROR_CATEGORY_UNKNOWN
 
